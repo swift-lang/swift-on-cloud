@@ -21,7 +21,40 @@ start_worker ()
         --image=$WORKER_IMAGE \
         --zone=$WORKER_ZONE \
         --machine_type=$WORKER_MACHINE_TYPE \
-        --tags=worker | tee LOG
+        --metadata=startup-script:'#!/bin/bash
+CENTRAL="173.255.112.20"
+WORKERPORT="50005"
+#Ping timeout
+PTIMEOUT=4
+worker_loop ()
+{
+    while :
+    do
+        echo "Pinging headnode"
+        ping headnode -w $PTIMEOUT
+        if [[ "$?" == "0" ]]
+        then
+            echo "Headnode present in same network"
+            worker.pl http://headnode:$WORKERPORT 0099 ~/workerlog -w 3600
+        else
+            echo "Headnode in separate network. Attempt to contact $CENTRAL"
+            ping $CENTRAL -w $PTIMEOUT
+            if [[ "$?" == "0" ]]
+            then
+                echo "CENTRAL present"
+                worker.pl http://$CENTRAL:$WORKERPORT 0099 ~/workerlog -w 3600
+                sleep 5
+            else
+                echo "No CENTRAL or Headnode found"
+                echo "Sleeping"
+                sleep 10;
+            fi
+        fi
+    done
+}
+sudo apt-get install perl
+worker_loop &
+EOF'
     #ssh -i ~/.ssh/google_compute_engine
 }
 
@@ -71,13 +104,15 @@ start_n_more ()
     WORKER_NAMES=$(gcutil listinstances | grep worker | awk '{print $2}')
 }
 
-check_keys;
+
+start_worker 9
+#check_keys;
 #stop_workers;
-start_worker 3
+#start_worker 3
 #start_n_more 5
 
 #start_n_more 3
 #stop_workers;
-exit 0;
+#exit 0;
 # gcutil addfirewall swift '--allowed=tcp:ssh,tcp:50000-55000'
 
