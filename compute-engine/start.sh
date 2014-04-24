@@ -1,13 +1,12 @@
 #!/bin/bash
 
 
-
-#WORKERS=20
+WORKERS=20
 #PROJECT_NAME="swift-ninja"
 WORKER_MACHINE_TYPE="f1-micro"
 WORKER_ZONE="us-central1-b"
-#WORKER_IMAGE="projects/debian-cloud/global/images/debian-7-wheezy-v20140408"
-WORKER_IMAGE="swift-worker-v001"
+WORKER_IMAGE="projects/debian-cloud/global/images/debian-7-wheezy-v20140408"
+#WORKER_IMAGE="swift-worker-image"
 LOG=Setup_$$.log
 
 start_worker ()
@@ -21,41 +20,7 @@ start_worker ()
     gcutil addinstance swift-worker-$ID \
         --image=$WORKER_IMAGE \
         --zone=$WORKER_ZONE \
-        --machine_type=$WORKER_MACHINE_TYPE \
-        --metadata=startup-script:'#!/bin/bash
-CENTRAL="173.255.112.20"
-WORKERPORT="50005"
-#Ping timeout
-PTIMEOUT=4
-worker_loop ()
-{
-    while :
-    do
-        echo "Pinging headnode"
-        ping headnode -w $PTIMEOUT
-        if [[ "$?" == "0" ]]
-        then
-            echo "Headnode present in same network"
-            worker.pl http://headnode:$WORKERPORT 0099 ~/workerlog -w 3600
-        else
-            echo "Headnode in separate network. Attempt to contact $CENTRAL"
-            ping $CENTRAL -w $PTIMEOUT
-            if [[ "$?" == "0" ]]
-            then
-                echo "CENTRAL present"
-                worker.pl http://$CENTRAL:$WORKERPORT 0099 ~/workerlog -w 3600
-                sleep 5
-            else
-                echo "No CENTRAL or Headnode found"
-                echo "Sleeping"
-                sleep 10;
-            fi
-        fi
-    done
-}
-sudo apt-get install perl
-worker_loop &
-EOF'
+        --machine_type=$WORKER_MACHINE_TYPE
     #ssh -i ~/.ssh/google_compute_engine
 }
 
@@ -107,10 +72,10 @@ start_n_more ()
 
 
 #start_worker 9
-check_keys;
+#check_keys;
 #stop_workers;
-#start_worker 0
-#start_n_more 2
+start_worker 1
+#start_n_more 15
 
 #start_n_more 3
 #stop_workers;
