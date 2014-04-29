@@ -99,9 +99,11 @@ setup_GCE ()
 
     # Setup project
     [[ -z "$GCE_PROJECT" ]] && echo "SETUP: GCE_PROJECT not set, exiting" && return
-    gcloud config set project $GCE_PROJECT
-
-    #
+    #gcloud config set project $GCE_PROJECT
+    
+    
+    # Create a firewall rule to allow ports used by swift
+    gcutil addfirewall --network=default swift-ports '--allowed=tcp:50000-60000,udp:50000-60000' --allowed_ip_sources='0.0.0.0/0'
 }
 
 # ensure that this script is being sourced
@@ -119,4 +121,5 @@ log "Project name : $GCE_PROJECT"
 log "Project id   : $GCE_PROJECTID"
 log "GCE_Workers  : $GCE_WORKERS"
 setup_GCE | tee $LOG;
+
 
