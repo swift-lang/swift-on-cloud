@@ -727,23 +727,17 @@ install: function(toclevels) {
 }
 
 }
-asciidoc.install(2);
+asciidoc.install();
 /*]]>*/
 </script>
 </head>
-<body class="article" style="max-width:750px">
+<body class="article">
 <div id="header">
-<div id="toc">
-  <div id="toctitle">Table of Contents</div>
-  <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
-</div>
 </div>
 <div id="content">
 <div class="sect1">
 <h2 id="_swift_cloud_on_google_compute_engine">Swift cloud on Google Compute Engine</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_set_up_for_google_8217_s_compute_engine">Set up for Google&#8217;s Compute Engine</h3>
 <div class="sect3">
 <h4 id="_sign_up_online">Sign up online</h4>
 <div class="olist arabic"><ol class="arabic">
@@ -773,9 +767,9 @@ Enter billing information.
 <td class="icon">
 <div class="title">Note</div>
 </td>
-<td class="content">You should sign into your google account. You might need to wait a couple of minutes
-      for the page to update with the new project. Please note the project id used for later
-      steps, in the config file</td>
+<td class="content">You should sign into your google account. Once the billing info is set, you might need
+    to wait a few minutes. Please note the project-name and project-id in the config file in
+    the swift-on-cloud/compute-engine folder.</td>
 </tr></table>
 </div>
 </div>
@@ -796,49 +790,68 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>gcloud auth login</tt></pre></div></div>
-<div class="paragraph"><p>One time setup.</p></div>
-<div class="admonitionblock">
-<table><tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">To be scripted out.</td>
-</tr></table>
 </div>
-<div class="olist arabic"><ol class="arabic">
-<li>
-<p>
-Check for project id and check connection.
-</p>
-</li>
-<li>
-<p>
-Create a bucket for the project id.
-</p>
-</li>
-<li>
-<p>
-Copy images to the project-bucket, Is this necessary ? Or can this be taken from a public URL?
-</p>
-</li>
-<li>
-<p>
-Create a headnode with headnode-image
-</p>
-</li>
-<li>
-<p>
-Setup network with firewall, open up ports 50000-60000
-</p>
-</li>
-<li>
-<p>
-Open up ssh.
-</p>
-</li>
-</ol></div>
+<div class="sect3">
+<h4 id="_manage_you_cloud_resources">Manage you Cloud resources</h4>
+<div class="paragraph"><p>Update the configs file with the following information:
+* Image types for workers and headnode
+* AWS Region to use (Multiple regions are not supported now)
+* Do not change the images for the worker and headnode. If you use other images,
+the swift components will not be present and that will result in the cluster not
+functioning properly.</p></div>
+<div class="paragraph"><p>Start your setup:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900"># The setup.sh script must be sourced. It will start the headnode and the requested</span></span>
+<span style="font-style: italic"><span style="color: #9A1900"># number of worker nodes. A swift.properties file will be generated which can be</span></span>
+<span style="font-style: italic"><span style="color: #9A1900"># used by swift (0.95 and higher) to connect to the headnode started in the cloud.</span></span>
+<span style="font-style: italic"><span style="color: #9A1900"># Alternatively, you could connect to the headnode by issuing "connect headnode" command</span></span>
+<span style="font-style: italic"><span style="color: #9A1900"># and run on the headnode of the cluster you create.</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">source</span></span> setup<span style="color: #990000">.</span>sh</tt></pre></div></div>
+<div class="paragraph"><p>To see resources use :</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>list_resources</tt></pre></div></div>
+<div class="paragraph"><p>To ssh to any resource listed :</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900"># Specify the resource name as listed by list_resources here</span></span>
+<span style="font-style: italic"><span style="color: #9A1900"># If resource_name is omitted, connect will try to connect to the</span></span>
+<span style="font-style: italic"><span style="color: #9A1900"># headnode</span></span>
+connect <span style="color: #990000">&lt;</span>resource_name<span style="color: #990000">&gt;</span></tt></pre></div></div>
+<div class="paragraph"><p>To stop all resources use:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900"># This will delete the headnode as well as all workers.</span></span>
+<span style="font-style: italic"><span style="color: #9A1900"># This command will take a few minutes to execute</span></span>
+dissolve</tt></pre></div></div>
+<div class="paragraph"><p>To add more worker nodes use:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900"># The number of nodes you can create is limited by the quota's set by google.</span></span>
+<span style="font-style: italic"><span style="color: #9A1900"># To increase quotas contact google using the change request form available</span></span>
+<span style="font-style: italic"><span style="color: #9A1900"># under Your project / Compute engine / Quotas tab in developer console</span></span>
+start_n_more <span style="color: #990000">&lt;</span>Number of nodes<span style="color: #990000">&gt;</span>
+
+<span style="font-style: italic"><span style="color: #9A1900"># Alternatively update the configs with the total number of nodes you require</span></span>
+<span style="font-style: italic"><span style="color: #9A1900"># and rerun the setup script</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">source</span></span> setup<span style="color: #990000">.</span>sh</tt></pre></div></div>
 <div class="paragraph"><p>Note: Creating an Image <a href="https://developers.google.com/compute/docs/images#creatingimage">Link</a></p></div>
-</div>
 </div>
 </div>
 </div>
@@ -846,7 +859,7 @@ Open up ssh.
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-04-28 15:59:08 CDT
+Last updated 2014-05-01 14:39:39 CDT
 </div>
 </div>
 </body>

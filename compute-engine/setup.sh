@@ -67,7 +67,6 @@ setup_GCE ()
         log "SETUP: gcloud and gcutil already installed"
     else
         log "SETUP: gcloud / gcutil missing. Installing"
-        #install_gce_client;
         install_gcloud_sdk | tee $LOG;
     fi
 
@@ -97,13 +96,6 @@ setup_GCE ()
         log "SETUP: Authenticated with google"
     fi
 
-    # Setup project
-    [[ -z "$GCE_PROJECT" ]] && echo "SETUP: GCE_PROJECT not set, exiting" && return
-    #gcloud config set project $GCE_PROJECT
-    
-    
-    # Create a firewall rule to allow ports used by swift
-    gcutil addfirewall --network=default swift-ports '--allowed=tcp:50000-60000,udp:50000-60000' --allowed_ip_sources='0.0.0.0/0'
 }
 
 # ensure that this script is being sourced
@@ -117,9 +109,16 @@ log "Running setup on system $(uname -a)"
 
 # Load the configs file
 source configs
-log "Project name : $GCE_PROJECT"
-log "Project id   : $GCE_PROJECTID"
-log "GCE_Workers  : $GCE_WORKERS"
-setup_GCE | tee $LOG;
+echo "Attempting updates"
+gcloud components update
+log "Project name  : $GCE_PROJECT"
+log "Project id    : $GCE_PROJECTID"
+log "GCE_Workers   : $GCE_WORKER_COUNT"
+source commands.sh
+
+
+start_headnode
+start_n_workers $GCE_WORKER_COUNT
+
 
 
