@@ -13,7 +13,7 @@ start_worker ()
     gcutil --project=$GCE_PROJECTID \
         addinstance swift-worker-$ID \
         --image=$WORKER_IMAGE \
-        --zone=$AWS_ZONE \
+        --zone=$GCE_ZONE \
         --machine_type=$WORKER_MACHINE_TYPE \
         --auto_delete_boot_disk \
         --metadata=startup-script:'#!/bin/bash
@@ -186,7 +186,7 @@ start_headnode()
     gcutil --project=$GCE_PROJECTID \
         addinstance headnode \
         --image=$HEADNODE_IMAGE \
-        --zone=$AWS_ZONE \
+        --zone=$GCE_ZONE \
         --auto_delete_boot_disk \
         --machine_type=$HEADNODE_MACHINE_TYPE \
         --metadata=startup-script:'#!/bin/bash

@@ -1,6 +1,6 @@
 GCE_PROJECT="swift-ninja"
 GCE_PROJECTID="swift-ninja"
-AWS_ZONE="us-central1-b"
+GCE_ZONE="us-central1-b"
 
 # Micro sized VM's are the cheapest that GCE provides
 WORKER_MACHINE_TYPE="f1-micro"

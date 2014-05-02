@@ -793,12 +793,66 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 <div class="sect3">
 <h4 id="_manage_you_cloud_resources">Manage you Cloud resources</h4>
-<div class="paragraph"><p>Update the configs file with the following information:
-* Image types for workers and headnode
-* AWS Region to use (Multiple regions are not supported now)
-* Do not change the images for the worker and headnode. If you use other images,
+<div class="paragraph"><p>Update the configs file with the following information:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+GCE_PROJECT : Name of project
+</p>
+</li>
+<li>
+<p>
+GCE_PROJECTID : This is the unique ID for your project selected during sign up.
+</p>
+</li>
+<li>
+<p>
+WORKER_MACHINE_TYPE, HEADNODE_MACHINE_TYPE: VM types for workers and headnode, choose between:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<em>f1-micro</em>
+</p>
+</li>
+<li>
+<p>
+<em>g1-small</em>
+</p>
+</li>
+<li>
+<p>
+<em>n1-standard-&lt;1,2,4,8&gt;</em>
+</p>
+</li>
+<li>
+<p>
+<em>n1-&lt;highmem/highcpu&gt;-&lt;2,4,8&gt;</em>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+GCE_WORKER_COUNT : Number of workers to start at setup
+</p>
+</li>
+<li>
+<p>
+GCE_ZONE : GCE Region to use (Multiple regions are not supported now)
+</p>
+</li>
+</ul></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">Do <strong>NOT</strong> change the images for the worker and headnode. If you use other images,
 the swift components will not be present and that will result in the cluster not
-functioning properly.</p></div>
+functioning properly.</td>
+</tr></table>
+</div>
 <div class="paragraph"><p>Start your setup:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.6
@@ -811,6 +865,13 @@ http://www.gnu.org/software/src-highlite -->
 <span style="font-style: italic"><span style="color: #9A1900"># Alternatively, you could connect to the headnode by issuing "connect headnode" command</span></span>
 <span style="font-style: italic"><span style="color: #9A1900"># and run on the headnode of the cluster you create.</span></span>
 <span style="font-weight: bold"><span style="color: #0000FF">source</span></span> setup<span style="color: #990000">.</span>sh</tt></pre></div></div>
+<div class="paragraph"><p>Run a test swift script</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt></tt></pre></div></div>
 <div class="paragraph"><p>To see resources use :</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.6
@@ -859,7 +920,7 @@ start_n_more <span style="color: #990000">&lt;</span>Number of nodes<span style=
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-05-01 14:39:39 CDT
+Last updated 2014-05-01 17:22:04 CDT
 </div>
 </div>
 </body>
