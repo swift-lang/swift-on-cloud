@@ -18,7 +18,9 @@ else
 fi
 
 # Start coaster-service and generate sites.xml
-for p in 04 05 06; do
+if [[ $HOSTNAME != "headnode" ]]
+for p in 01 02 03 04 05 06
+do
   cp ../compute-engine/swift.properties part${p}/swift.properties
 done
 

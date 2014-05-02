@@ -99,7 +99,8 @@ setup_GCE ()
 }
 
 # ensure that this script is being sourced
-if [ ${BASH_VERSINFO[0]} -gt 2 -a "${BASH_SOURCE[0]}" = "${0}" ] ; then
+if [[ ${BASH_VERSINFO[0]} -gt 2 -a "${BASH_SOURCE[0]}" = "${0}" ]]
+then
   log ERROR: script ${BASH_SOURCE[0]} must be executed as: source ${BASH_SOURCE[0]}
   exit 1
 fi

@@ -70,7 +70,7 @@ stop_workers()
 stop_n_workers()
 {
     COUNT=1
-    [ ! -z "$1" ] && COUNT=$1
+    [[ ! -z "$1" ]] && COUNT=$1
     echo "Stopping $COUNT instances"
     INSTANCES=$(gcutil --project=$GCE_PROJECTID listinstances | grep worker | awk '{print $2}' | tail -n $COUNT)
     gcutil --project=$GCE_PROJECTID deleteinstance $INSTANCES --delete_boot_pd --force
@@ -175,7 +175,7 @@ start_headnode()
 {
     setup_firewall
     headnode_detail=$(gcutil --project=$GCE_PROJECTID listinstances | grep "headnode")
-    if [ "$?" == "0" ]
+    if [[ "$?" == "0" ]]
     then
         echo "Headnode is present [$headnode_detail]"
         generate_swiftproperties
