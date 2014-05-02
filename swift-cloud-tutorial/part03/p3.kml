@@ -1,0 +1,273 @@
+<project><!-- CACHE ID f1622cb4-2179-479b-8c8b-201ddea16c6c-no-provenance -->
+  <import file="sys.xml"/>
+  <import file="scheduler.xml"/>
+  <import file="rlog.xml"/>
+  <import file="vdl.k"/>
+  <types>
+     <xs:schema targetNamespace="http://ci.uchicago.edu/swift/2009/02/swiftscript" xmlns="http://ci.uchicago.edu/swift/2009/02/swiftscript" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      	   <xs:simpleType name="file">
+      	   <xs:restriction base="string"/>
+      	   </xs:simpleType>
+     </xs:schema>
+  </types>
+  <global name="swift#string#17002">
+    <vdl:new type="string" value="--nvalues" />
+  </global>
+  <global name="swift#string#17007">
+    <vdl:new type="string" value="range" />
+  </global>
+  <global name="swift#string#17003">
+    <vdl:new type="string" value="nsim" />
+  </global>
+  <global name="swift#string#17000">
+    <vdl:new type="string" value="--timesteps" />
+  </global>
+  <global name="swift#string#17013">
+    <vdl:new type="string" value=".out" />
+  </global>
+  <global name="swift#string#17005">
+    <vdl:new type="string" value="steps" />
+  </global>
+  <global name="swift#string#17004">
+    <vdl:new type="string" value="10" />
+  </global>
+  <global name="swift#string#17006">
+    <vdl:new type="string" value="1" />
+  </global>
+  <global name="swift#string#17009">
+    <vdl:new type="string" value="values" />
+  </global>
+  <global name="swift#string#17010">
+    <vdl:new type="string" value="5" />
+  </global>
+  <global name="swift#string#17001">
+    <vdl:new type="string" value="--range" />
+  </global>
+  <global name="swift#string#17008">
+    <vdl:new type="string" value="100" />
+  </global>
+  <global name="swift#string#17012">
+    <vdl:new type="string" value="output/sim_" />
+  </global>
+  <global name="swift#int#0">
+    <vdl:new type="int" value="0" />
+  </global>
+  <global name="swift#int#1">
+    <vdl:new type="int" value="1" />
+  </global>
+  <element name="simulation" arguments="o,sim_steps,sim_range,sim_values" _defline="3">
+     
+     
+     
+     
+    <unitStart name="simulation" line="3" type="PROCEDURE" outputs="o"/>
+    <vdl:execute>
+      <vdl:tr>simulate</vdl:tr>
+      <vdl:stagein var="{sim_steps}"/>
+      <vdl:stagein var="{sim_range}"/>
+      <vdl:stagein var="{sim_values}"/>
+      <vdl:stageout var="{o}"/>
+
+      <vdl:arguments>
+        <variable>swift#string#17000</variable>
+        <variable>sim_steps</variable>
+        <variable>swift#string#17001</variable>
+        <variable>sim_range</variable>
+        <variable>swift#string#17002</variable>
+        <variable>sim_values</variable>
+      </vdl:arguments>
+      <vdl:stdout>
+        <swiftscript:filename _traceline="5">
+         <variable>o</variable> 
+        </swiftscript:filename>
+      </vdl:stdout>
+    </vdl:execute>
+    <vdl:closedataset var="{o}"/>
+    <unitEnd name="simulation" line="3" type="PROCEDURE"/></element>
+
+  <element name="analyze" arguments="o,s" _defline="8">
+     
+     
+    <unitStart name="analyze" line="8" type="PROCEDURE" outputs="o"/>
+    <vdl:execute>
+      <vdl:tr>stats</vdl:tr>
+      <vdl:stagein var="{s}"/>
+      <vdl:stageout var="{o}"/>
+
+      <vdl:arguments>
+        <swiftscript:filenames _traceline="10">
+         <variable>s</variable> 
+        </swiftscript:filenames>
+      </vdl:arguments>
+      <vdl:stdout>
+        <swiftscript:filename _traceline="10">
+         <variable>o</variable> 
+        </swiftscript:filename>
+      </vdl:stdout>
+    </vdl:execute>
+    <vdl:closedataset var="{o}"/>
+    <unitEnd name="analyze" line="8" type="PROCEDURE"/></element>
+
+  <set name="nsim">
+        <vdl:new type="int" dbgname="nsim" waitCount="1" _defline="13"/>
+  </set>
+   
+  <set name="steps">
+        <vdl:new type="int" dbgname="steps" waitCount="1" _defline="14"/>
+  </set>
+   
+  <set name="range">
+        <vdl:new type="int" dbgname="range" waitCount="1" _defline="15"/>
+  </set>
+   
+  <set name="values">
+        <vdl:new type="int" dbgname="values" waitCount="1" _defline="16"/>
+  </set>
+   
+  <set name="sims">
+    <vdl:new type="file[]" dbgname="sims" waitCount="1" _defline="18">
+      <vdl:mapping descriptor="concurrent_mapper">
+        <vdl:parameter name="prefix">sims-c0f5445c-ca5b-436d-b75d-d39bf185a6c2</vdl:parameter>
+      </vdl:mapping>
+    </vdl:new>
+  </set>
+   
+  <set name="stats">
+        <vdl:new type="file" dbgname="stats" _defline="26">
+          <vdl:mapping descriptor="single_file_mapper">
+            <vdl:parameter name="file" value="output/average.out"/>
+          </vdl:mapping>
+        </vdl:new>
+  </set>
+   
+  <restartLog>
+  	<vdl:mains>
+		<vdl:startprogressticker />
+		<vdl:mainp>
+		    <uparallel>
+		        <sequential>
+		             <vdl:setfieldvalue _traceline="14">
+		                 <variable>nsim</variable>
+		                 <swiftscript:to_int _traceline="13">
+		                  <swiftscript:arg _traceline="13">
+		                  <variable>swift#string#17003</variable><variable>swift#string#17004</variable> 
+		                 </swiftscript:arg> 
+		                 </swiftscript:to_int>
+		             </vdl:setfieldvalue>
+		             <partialCloseDataset var="{nsim}"/>
+		        </sequential>
+		        <sequential>
+		             <vdl:setfieldvalue _traceline="15">
+		                 <variable>steps</variable>
+		                 <swiftscript:to_int _traceline="14">
+		                  <swiftscript:arg _traceline="14">
+		                  <variable>swift#string#17005</variable><variable>swift#string#17006</variable> 
+		                 </swiftscript:arg> 
+		                 </swiftscript:to_int>
+		             </vdl:setfieldvalue>
+		             <partialCloseDataset var="{steps}"/>
+		        </sequential>
+		        <sequential>
+		             <vdl:setfieldvalue _traceline="16">
+		                 <variable>range</variable>
+		                 <swiftscript:to_int _traceline="15">
+		                  <swiftscript:arg _traceline="15">
+		                  <variable>swift#string#17007</variable><variable>swift#string#17008</variable> 
+		                 </swiftscript:arg> 
+		                 </swiftscript:to_int>
+		             </vdl:setfieldvalue>
+		             <partialCloseDataset var="{range}"/>
+		        </sequential>
+		        <sequential>
+		             <vdl:setfieldvalue _traceline="18">
+		                 <variable>values</variable>
+		                 <swiftscript:to_int _traceline="16">
+		                  <swiftscript:arg _traceline="16">
+		                  <variable>swift#string#17009</variable><variable>swift#string#17010</variable> 
+		                 </swiftscript:arg> 
+		                 </swiftscript:to_int>
+		             </vdl:setfieldvalue>
+		             <partialCloseDataset var="{values}"/>
+		        </sequential>
+		        <sequential>
+		          <vdl:tparallelFor name="$" _vvar="i" refs="sims 1">
+		          	<getarrayiterator>
+		          			<sequential>
+		          				<set name="swift#rangeout">
+		          					<vdl:range>
+		          						<argument name="from"><variable>swift#int#0</variable></argument>
+		          						<argument name="to"><vdlop:subtraction>
+		          		  <variable>nsim</variable>
+		          		  <variable>swift#int#1</variable>
+		          		</vdlop:subtraction></argument>
+		          					</vdl:range>
+		          				</set>
+		          				 
+		          				<variable>swift#rangeout</variable>
+		          			</sequential> 
+		          	</getarrayiterator>
+		          	<set names="$$, i">
+		          		<each items="{$}"/>
+		          	</set>
+		          <unitStart line="20" type="FOREACH_IT"/>
+		          	<set name="swift#mapper#17011">
+		          	      <vdl:new type="string" dbgname="swift#mapper#17011" _defline=""/>
+		          	</set>
+		          	 
+		          	<set name="simout">
+		          	  <vdl:new type="file" dbgname="simout" _defline="21">
+		          	    <vdl:mapping descriptor="single_file_mapper">
+		          	      <vdl:parameter name="file"><variable>swift#mapper#17011</variable></vdl:parameter>
+		          	    </vdl:mapping>
+		          	  </vdl:new>
+		          	</set>
+		          	 
+		          	<uparallel>
+		          	    <sequential>
+		          	         <vdl:setfieldvalue _traceline="-1">
+		          	             <variable>swift#mapper#17011</variable>
+		          	             <swiftscript:strcat _traceline="21">
+		          	              <variable>swift#string#17012</variable><variable>i</variable><variable>swift#string#17013</variable> 
+		          	             </swiftscript:strcat>
+		          	         </vdl:setfieldvalue>
+
+		          	    </sequential>
+		          	    <sequential>
+		          	      <simulation _traceline="22">
+		          	          <variable>simout</variable>
+		          	          <variable>steps</variable>
+		          	          <variable>range</variable>
+		          	          <variable>values</variable>
+		          	      </simulation>
+
+		          	    </sequential>
+		          	    <sequential>
+		          	         <vdl:setfieldvalue _traceline="24">
+		          	             <vdl:getfieldsubscript>
+		          	               <argument name="var"><variable>sims</variable></argument>
+		          	               <argument name="subscript"><variable>i</variable></argument>
+		          	             </vdl:getfieldsubscript>
+		          	             <variable>simout</variable>
+		          	         </vdl:setfieldvalue>
+		          	         <partialCloseDataset var="{sims}"/>
+		          	    </sequential>
+		          	</uparallel>
+		          	<vdl:cleandataset var="{simout}"/>	<unitEnd line="20" type="FOREACH_IT"/>
+		          </vdl:tparallelFor>
+		        </sequential>
+		        <sequential>
+		          <analyze _traceline="27">
+		              <variable>stats</variable>
+		              <variable>sims</variable>
+		          </analyze>
+
+		        </sequential>
+		    </uparallel>
+		</vdl:mainp>
+		<vdl:stopprogressticker />
+	</vdl:mains>
+  </restartLog>
+  <vdl:cleandataset var="{stats}"/>
+  <vdl:cleandataset var="{sims}"/>
+  <vdl:cleandataset shutdown="true"/>
+</project>

@@ -1,0 +1,1238 @@
+2014-05-01 19:21:46,967-0500 DEBUG Loader setting: sites.file to: /home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/run003/sites.xml
+2014-05-01 19:21:46,969-0500 DEBUG Loader setting: tc.file to: /home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/run003/apps
+2014-05-01 19:21:46,969-0500 INFO  Loader VERSION Swift trunk swift-r7752 (swift modified locally) cog-r3890 (cog modified locally)
+2014-05-01 19:21:46,969-0500 INFO  Loader RUN_ID run003
+2014-05-01 19:21:46,970-0500 INFO  Loader ARGUMENTS [-runid, run003, -logfile, /home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/run003/run003.log, -sites.file, /home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/run003/sites.xml, -tc.file, /home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/run003/apps, -config, /home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/run003/cf, p4.swift]
+2014-05-01 19:21:46,970-0500 INFO  Loader MAX_HEAP 954466304
+2014-05-01 19:21:46,970-0500 INFO  Loader GLOBUS_HOSTNAME borgmachine
+2014-05-01 19:21:46,970-0500 INFO  Loader CWD /home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/.
+2014-05-01 19:21:46,970-0500 DEBUG Loader SWIFT_CONFIGURATION Swift configuration ([/home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/run003/cf]): {pgraph.node.options=color="seagreen", style="filled", clustering.min.time=60, clustering.queue.delay=4, sites.file=/home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/run003/sites.xml, ticker.prefix=Progress: , provenance.log=false, kickstart.enabled=maybe, tc.file=/home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/run003/apps, foreach.max.threads=16384, lazy.errors=false, ticker.date.format=, sitedir.keep=false, throttle.score.job.factor=0.2, kickstart.always.transfer=false, throttle.host.submit=2, replication.limit=3, clustering.enabled=false, pgraph=false, file.gc.enabled=true, replication.min.queue.time=60, wrapper.parameter.mode=args, replication.enabled=false, throttle.transfers=4, wrapperlog.always.transfer=false, throttle.submit=4, pgraph.graph.options=splines="compound", rankdir="TB", caching.algorithm=LRU, use.wrapper.staging=false, tracing.enabled=true, provider.staging.pin.swiftfiles=false, wrapper.invocation.mode=absolute, mapping.checker=on, execution.retries=2, cdm.broadcast.mode=file, status.mode=files, use.provider.staging=true, throttle.file.operations=8}
+2014-05-01 19:21:46,970-0500 INFO  Loader SITES_FILE /home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/run003/sites.xml
+2014-05-01 19:21:46,972-0500 DEBUG textfiles BEGIN SITES:
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.ci.uchicago.edu/swift/SwiftSites">
+
+<pool handle="cloud">
+<profile namespace="globus" key="workerManager">passive</profile>
+<profile namespace="globus" key="maxwalltime">04:00:00</profile>
+<profile namespace="karajan" key="initialScore">10000</profile>
+<workdirectory>/home/yadu/work</workdirectory>
+<filesystem provider="local"/>
+<execution provider="coaster-persistent" jobmanager="local:local" url="http://162.222.177.15:50010"/>
+<profile namespace="karajan" key="jobThrottle">7.99</profile>
+</pool>
+
+<pool handle="local1">
+<filesystem provider="local"/>
+<profile namespace="karajan" key="initialScore">10000</profile>
+<workdirectory>/tmp/swiftwork</workdirectory>
+<execution provider="coaster" jobmanager="local:local"/>
+</pool>
+
+</config>
+
+
+2014-05-01 19:21:46,972-0500 DEBUG textfiles END SITES:
+2014-05-01 19:21:46,972-0500 INFO  Loader TC_FILE /home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/run003/apps
+2014-05-01 19:21:46,972-0500 DEBUG textfiles BEGIN TC:
+* * * INSTALLED INTEL32::LINUX null
+
+
+2014-05-01 19:21:46,972-0500 DEBUG textfiles END TC:
+2014-05-01 19:21:46,972-0500 DEBUG textfiles BEGIN SWIFTSCRIPT:
+type file;
+
+app (file out, file log) simulation (int sim_steps, int sim_range, int sim_values, file sim_script)
+{
+  bash "simulate.sh" "--timesteps" sim_steps "--range" sim_range "--nvalues" sim_values stdout=@out stderr=@log;
+}
+
+app (file out, file log) analyze (file s[], file stat_script)
+{
+  bash "stats.sh" @filenames(s) stdout=@out stderr=@log;
+}
+
+int nsim   = @toInt(@arg("nsim",   "10"));
+int steps  = @toInt(@arg("steps",  "1"));
+int range  = @toInt(@arg("range",  "100"));
+int values = @toInt(@arg("values", "5"));
+
+file simulate_script <"simulate.sh">;
+file stats_script <"stats.sh">;
+
+file sims[];
+
+foreach i in [0:nsim-1] {
+  file simout <single_file_mapper; file=@strcat("output/sim_",i,".out")>;
+  file simlog <single_file_mapper; file=@strcat("output/sim_",i,".log")>;
+  (simout,simlog) = simulation(steps,range,values,simulate_script);
+  sims[i] = simout;
+}
+
+file stats_out<"output/average.out">;
+file stats_log<"output/average.log">;
+(stats_out, stats_log) = analyze(sims, stats_script);
+
+
+2014-05-01 19:21:46,972-0500 DEBUG textfiles END SWIFTSCRIPT:
+2014-05-01 19:21:46,972-0500 INFO  Loader p4.swift: source file is new. Recompiling.
+2014-05-01 19:21:47,446-0500 INFO  Warnings Warning: The @ syntax for function invocation is deprecated
+2014-05-01 19:21:47,844-0500 INFO  Loader RUN_START
+2014-05-01 19:21:47,846-0500 INFO  SwiftExecutor swift.home = /home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn
+2014-05-01 19:21:47,852-0500 INFO  swift Using sites file: /home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/run003/sites.xml
+2014-05-01 19:21:47,870-0500 INFO  swift Using tc.data: /home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/run003/apps
+2014-05-01 19:21:47,941-0500 INFO  AbstractScheduler Setting resources to: {cloud=cloud, local1=local1}
+2014-05-01 19:21:47,943-0500 INFO  TRACE Variable declaration, line 12, thread R, null = --nvalues
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 13, thread R, null = range
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 14, thread R, null = nsim
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 15, thread R, null = stats.sh
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 16, thread R, null = --timesteps
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 17, thread R, null = .out
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 18, thread R, null = steps
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 19, thread R, null = 10
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 20, thread R, null = 1
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 21, thread R, null = values
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 22, thread R, null = simulate.sh
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 23, thread R, null = .log
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 24, thread R, null = 5
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 25, thread R, null = --range
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 26, thread R, null = 100
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 27, thread R, null = output/sim_
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 28, thread R, null = 0
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 29, thread R, null = 1
+2014-05-01 19:21:47,944-0500 INFO  TRACE VARIABLE, line 13, thread R, nsim INITIALIZED org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 13, thread R, nsim org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,944-0500 INFO  TRACE VARIABLE, line 14, thread R, steps INITIALIZED org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 14, thread R, steps org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,944-0500 INFO  TRACE VARIABLE, line 15, thread R, range INITIALIZED org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 15, thread R, range org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,944-0500 INFO  TRACE VARIABLE, line 16, thread R, values INITIALIZED org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,944-0500 INFO  TRACE Variable declaration, line 16, thread R, values org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,945-0500 INFO  TRACE VARIABLE, line 18, thread R, simulate_script INITIALIZED <SingleFileMapper; , file = file://localhost/simulate.sh>
+2014-05-01 19:21:47,945-0500 INFO  TRACE VARIABLE, line 18, thread R, simulate_script INITIALIZED <SingleFileMapper; , file = file://localhost/simulate.sh>
+2014-05-01 19:21:47,945-0500 INFO  TRACE VARIABLE, line 18, thread R, simulate_script MAPPING $, file://localhost/simulate.sh
+2014-05-01 19:21:47,946-0500 INFO  TRACE Variable declaration, line 18, thread R, simulate_script <SingleFileMapper; , file = file://localhost/simulate.sh>
+2014-05-01 19:21:47,946-0500 INFO  TRACE VARIABLE, line 19, thread R, stats_script INITIALIZED <SingleFileMapper; , file = file://localhost/stats.sh>
+2014-05-01 19:21:47,946-0500 INFO  TRACE VARIABLE, line 19, thread R, stats_script INITIALIZED <SingleFileMapper; , file = file://localhost/stats.sh>
+2014-05-01 19:21:47,946-0500 INFO  TRACE VARIABLE, line 19, thread R, stats_script MAPPING $, file://localhost/stats.sh
+2014-05-01 19:21:47,946-0500 INFO  TRACE Variable declaration, line 19, thread R, stats_script <SingleFileMapper; , file = file://localhost/stats.sh>
+2014-05-01 19:21:47,947-0500 INFO  TRACE Variable declaration, line 21, thread R, sims
+2014-05-01 19:21:47,947-0500 INFO  TRACE VARIABLE, line 21, thread R, sims INITIALIZED <ConcurrentMapper; , prefix = sims-6b4c36fd-b6cf-4669-ba64-41a63c662f99, suffix = null, pattern = sims-6b4c36fd-b6cf-4669-ba64-41a63c662f99*, location = null>
+2014-05-01 19:21:47,947-0500 INFO  TRACE VARIABLE, line 30, thread R, stats_out INITIALIZED <SingleFileMapper; , file = file://localhost/output/average.out>
+2014-05-01 19:21:47,947-0500 INFO  TRACE Variable declaration, line 30, thread R, stats_out <SingleFileMapper; , file = file://localhost/output/average.out>
+2014-05-01 19:21:47,948-0500 INFO  TRACE VARIABLE, line 31, thread R, stats_log INITIALIZED <SingleFileMapper; , file = file://localhost/output/average.log>
+2014-05-01 19:21:47,948-0500 INFO  TRACE Variable declaration, line 31, thread R, stats_log <SingleFileMapper; , file = file://localhost/output/average.log>
+2014-05-01 19:21:47,955-0500 INFO  RuntimeStats$ProgressTicker 
+2014-05-01 19:21:47,955-0500 INFO  RuntimeStats$ProgressTicker HeapMax: 954466304, CrtHeap: 156893184, UsedHeap: 17873896
+2014-05-01 19:21:47,956-0500 INFO  TRACE APPCALL, line 8, thread R-6, analyze()
+2014-05-01 19:21:47,956-0500 DEBUG swift PROCEDURE line=8 thread=R-6 name=analyze
+2014-05-01 19:21:47,956-0500 INFO  TRACE APPCALL, line 68, thread R-6, k:block WAIT sims:file[int] - Open
+2014-05-01 19:21:47,957-0500 INFO  TRACE ASSIGN, line 15, thread R-2, steps = 1
+2014-05-01 19:21:47,957-0500 INFO  TRACE ASSIGN, line 16, thread R-3, range = 100
+2014-05-01 19:21:47,957-0500 INFO  TRACE ASSIGN, line 18, thread R-4, values = 5
+2014-05-01 19:21:47,957-0500 INFO  TRACE VARIABLE, line 14, thread R, steps INITIALIZED org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,957-0500 INFO  TRACE VARIABLE, line 15, thread R, range INITIALIZED org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,957-0500 INFO  TRACE VARIABLE, line 16, thread R, values INITIALIZED org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,957-0500 INFO  TRACE VARIABLE, line 14, thread R, steps CLOSE write ref count is zero
+2014-05-01 19:21:47,957-0500 INFO  TRACE VARIABLE, line 15, thread R, range CLOSE write ref count is zero
+2014-05-01 19:21:47,957-0500 INFO  TRACE VARIABLE, line 16, thread R, values CLOSE write ref count is zero
+2014-05-01 19:21:47,957-0500 INFO  TRACE ASSIGN, line 14, thread R-1, nsim = 10
+2014-05-01 19:21:47,958-0500 INFO  TRACE VARIABLE, line 13, thread R, nsim INITIALIZED org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,958-0500 INFO  TRACE VARIABLE, line 13, thread R, nsim CLOSE write ref count is zero
+2014-05-01 19:21:47,961-0500 INFO  TRACE FOREACH, line 23, thread R-5
+2014-05-01 19:21:47,962-0500 INFO  TRACE ITERATION, line 23, thread R-5-0, i=0
+2014-05-01 19:21:47,962-0500 DEBUG swift FOREACH_IT_START line=23 thread=R-5-0
+2014-05-01 19:21:47,962-0500 DEBUG swift SCOPE thread=R-5-0
+2014-05-01 19:21:47,962-0500 INFO  TRACE ITERATION, line 23, thread R-5-1, i=1
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 166, thread R-5-0, swift#mapper#17013 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,963-0500 DEBUG swift FOREACH_IT_START line=23 thread=R-5-1
+2014-05-01 19:21:47,963-0500 DEBUG swift SCOPE thread=R-5-1
+2014-05-01 19:21:47,963-0500 INFO  TRACE ITERATION, line 23, thread R-5-2, i=2
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 166, thread R-5-1, swift#mapper#17013 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,963-0500 DEBUG swift FOREACH_IT_START line=23 thread=R-5-2
+2014-05-01 19:21:47,963-0500 DEBUG swift SCOPE thread=R-5-2
+2014-05-01 19:21:47,963-0500 INFO  TRACE VARIABLE, line 24, thread R-5-0, simout WAIT swift#mapper#17013
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 166, thread R-5-2, swift#mapper#17013 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,963-0500 INFO  TRACE ITERATION, line 23, thread R-5-3, i=3
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 24, thread R-5-0, simout <SingleFileMapper; , file = ?swift#mapper#17013>
+2014-05-01 19:21:47,963-0500 INFO  TRACE ITERATION, line 23, thread R-5-4, i=4
+2014-05-01 19:21:47,963-0500 DEBUG swift FOREACH_IT_START line=23 thread=R-5-3
+2014-05-01 19:21:47,963-0500 INFO  TRACE VARIABLE, line 24, thread R-5-1, simout WAIT swift#mapper#17013
+2014-05-01 19:21:47,963-0500 INFO  TRACE VARIABLE, line 24, thread R-5-2, simout WAIT swift#mapper#17013
+2014-05-01 19:21:47,963-0500 DEBUG swift SCOPE thread=R-5-3
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 174, thread R-5-0, swift#mapper#17016 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 24, thread R-5-1, simout <SingleFileMapper; , file = ?swift#mapper#17013>
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 24, thread R-5-2, simout <SingleFileMapper; , file = ?swift#mapper#17013>
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 166, thread R-5-3, swift#mapper#17013 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 174, thread R-5-1, swift#mapper#17016 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 174, thread R-5-2, swift#mapper#17016 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,963-0500 DEBUG swift FOREACH_IT_START line=23 thread=R-5-4
+2014-05-01 19:21:47,963-0500 INFO  TRACE VARIABLE, line 25, thread R-5-0, simlog WAIT swift#mapper#17016
+2014-05-01 19:21:47,963-0500 INFO  TRACE ITERATION, line 23, thread R-5x2, i=5
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 25, thread R-5-0, simlog <SingleFileMapper; , file = ?swift#mapper#17016>
+2014-05-01 19:21:47,963-0500 INFO  TRACE VARIABLE, line 24, thread R-5-3, simout WAIT swift#mapper#17013
+2014-05-01 19:21:47,963-0500 INFO  TRACE VARIABLE, line 25, thread R-5-2, simlog WAIT swift#mapper#17016
+2014-05-01 19:21:47,963-0500 DEBUG swift SCOPE thread=R-5-4
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 24, thread R-5-3, simout <SingleFileMapper; , file = ?swift#mapper#17013>
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 25, thread R-5-2, simlog <SingleFileMapper; , file = ?swift#mapper#17016>
+2014-05-01 19:21:47,963-0500 INFO  TRACE VARIABLE, line 25, thread R-5-1, simlog WAIT swift#mapper#17016
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 166, thread R-5-4, swift#mapper#17013 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 25, thread R-5-1, simlog <SingleFileMapper; , file = ?swift#mapper#17016>
+2014-05-01 19:21:47,963-0500 INFO  TRACE APPCALL, line 3, thread R-5-2x2, simulation()
+2014-05-01 19:21:47,963-0500 DEBUG swift PROCEDURE line=3 thread=R-5-2x2 name=simulation
+2014-05-01 19:21:47,963-0500 INFO  TRACE VARIABLE, line 24, thread R-5-4, simout WAIT swift#mapper#17013
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 24, thread R-5-4, simout <SingleFileMapper; , file = ?swift#mapper#17013>
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 174, thread R-5-4, swift#mapper#17016 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,963-0500 INFO  TRACE ASSIGN, line 182, thread R-5-2-0, swift#mapper#17013 = "output/sim_2.out"
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 174, thread R-5-3, swift#mapper#17016 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,963-0500 INFO  TRACE ASSIGN, line 28, thread R-5-0-3, sims[0] = ?simout
+2014-05-01 19:21:47,963-0500 INFO  TRACE VARIABLE, line 24, thread R-5-2, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_2.out>
+2014-05-01 19:21:47,963-0500 INFO  TRACE VARIABLE, line 25, thread R-5-4, simlog WAIT swift#mapper#17016
+2014-05-01 19:21:47,963-0500 INFO  TRACE Variable declaration, line 25, thread R-5-4, simlog <SingleFileMapper; , file = ?swift#mapper#17016>
+2014-05-01 19:21:47,963-0500 INFO  TRACE APPCALL, line 3, thread R-5-1-2, simulation()
+2014-05-01 19:21:47,963-0500 INFO  TRACE ASSIGN, line 28, thread R-5-2-3, sims[2] = ?simout
+2014-05-01 19:21:47,963-0500 DEBUG swift PROCEDURE line=3 thread=R-5-1-2 name=simulation
+2014-05-01 19:21:47,963-0500 INFO  TRACE ASSIGN, line 182, thread R-5-1-0, swift#mapper#17013 = "output/sim_1.out"
+2014-05-01 19:21:47,963-0500 INFO  TRACE VARIABLE, line 24, thread R-5-1, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_1.out>
+2014-05-01 19:21:47,963-0500 INFO  TRACE ASSIGN, line 28, thread R-5-1-3, sims[1] = ?simout
+2014-05-01 19:21:47,964-0500 INFO  TRACE ASSIGN, line 189, thread R-5-1x2, swift#mapper#17016 = "output/sim_1.log"
+2014-05-01 19:21:47,964-0500 INFO  TRACE APPCALL, line 68, thread R-6, k:block WAIT sims:file[int] - Open
+2014-05-01 19:21:47,964-0500 INFO  TRACE VARIABLE, line 25, thread R-5-1, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_1.log>
+2014-05-01 19:21:47,964-0500 INFO  TRACE ASSIGN, line 28, thread R-5-4-3, sims[4] = ?simout
+2014-05-01 19:21:47,964-0500 INFO  TRACE APPCALL, line 3, thread R-5-4-2, simulation()
+2014-05-01 19:21:47,964-0500 DEBUG swift PROCEDURE line=3 thread=R-5-4-2 name=simulation
+2014-05-01 19:21:47,964-0500 INFO  TRACE ASSIGN, line 182, thread R-5-4-0, swift#mapper#17013 = "output/sim_4.out"
+2014-05-01 19:21:47,964-0500 INFO  TRACE VARIABLE, line 24, thread R-5-4, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_4.out>
+2014-05-01 19:21:47,964-0500 INFO  TRACE ASSIGN, line 189, thread R-5-4-1, swift#mapper#17016 = "output/sim_4.log"
+2014-05-01 19:21:47,964-0500 INFO  TRACE VARIABLE, line 25, thread R-5-4, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_4.log>
+2014-05-01 19:21:47,964-0500 INFO  TRACE APPCALL, line 3, thread R-5-0-2, simulation()
+2014-05-01 19:21:47,964-0500 DEBUG swift PROCEDURE line=3 thread=R-5-0-2 name=simulation
+2014-05-01 19:21:47,964-0500 INFO  TRACE ASSIGN, line 189, thread R-5-0-1, swift#mapper#17016 = "output/sim_0.log"
+2014-05-01 19:21:47,964-0500 INFO  TRACE VARIABLE, line 25, thread R-5-0, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_0.log>
+2014-05-01 19:21:47,963-0500 DEBUG swift FOREACH_IT_START line=23 thread=R-5x2
+2014-05-01 19:21:47,964-0500 DEBUG swift SCOPE thread=R-5x2
+2014-05-01 19:21:47,963-0500 INFO  TRACE VARIABLE, line 25, thread R-5-3, simlog WAIT swift#mapper#17016
+2014-05-01 19:21:47,963-0500 INFO  TRACE ASSIGN, line 189, thread R-5-2-1, swift#mapper#17016 = "output/sim_2.log"
+2014-05-01 19:21:47,964-0500 INFO  TRACE ASSIGN, line 182, thread R-5-0x2, swift#mapper#17013 = "output/sim_0.out"
+2014-05-01 19:21:47,964-0500 INFO  TRACE Variable declaration, line 166, thread R-5x2, swift#mapper#17013 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,964-0500 INFO  TRACE VARIABLE, line 24, thread R-5-0, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_0.out>
+2014-05-01 19:21:47,964-0500 INFO  TRACE VARIABLE, line 25, thread R-5-2, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_2.log>
+2014-05-01 19:21:47,964-0500 INFO  TRACE APPCALL, line 68, thread R-6, k:block WAIT sims:file[int] - Open
+2014-05-01 19:21:47,964-0500 INFO  TRACE Variable declaration, line 25, thread R-5-3, simlog <SingleFileMapper; , file = ?swift#mapper#17016>
+2014-05-01 19:21:47,964-0500 INFO  TRACE VARIABLE, line 24, thread R-5x2, simout WAIT swift#mapper#17013
+2014-05-01 19:21:47,964-0500 INFO  TRACE Variable declaration, line 24, thread R-5x2, simout <SingleFileMapper; , file = ?swift#mapper#17013>
+2014-05-01 19:21:47,965-0500 INFO  TRACE ASSIGN, line 28, thread R-5-3x2, sims[3] = ?simout
+2014-05-01 19:21:47,965-0500 INFO  TRACE Variable declaration, line 174, thread R-5x2, swift#mapper#17016 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,965-0500 INFO  TRACE ASSIGN, line 182, thread R-5-3-0, swift#mapper#17013 = "output/sim_3.out"
+2014-05-01 19:21:47,965-0500 INFO  TRACE VARIABLE, line 24, thread R-5-3, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_3.out>
+2014-05-01 19:21:47,965-0500 INFO  TRACE APPCALL, line 3, thread R-5-3-2, simulation()
+2014-05-01 19:21:47,965-0500 DEBUG swift PROCEDURE line=3 thread=R-5-3-2 name=simulation
+2014-05-01 19:21:47,965-0500 INFO  TRACE VARIABLE, line 25, thread R-5x2, simlog WAIT swift#mapper#17016
+2014-05-01 19:21:47,965-0500 INFO  TRACE Variable declaration, line 25, thread R-5x2, simlog <SingleFileMapper; , file = ?swift#mapper#17016>
+2014-05-01 19:21:47,965-0500 INFO  TRACE ASSIGN, line 189, thread R-5-3-1, swift#mapper#17016 = "output/sim_3.log"
+2014-05-01 19:21:47,965-0500 INFO  TRACE VARIABLE, line 25, thread R-5-3, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_3.log>
+2014-05-01 19:21:47,965-0500 INFO  TRACE APPCALL, line 68, thread R-6, k:block WAIT sims:file[int] - Open
+2014-05-01 19:21:47,965-0500 INFO  TRACE ASSIGN, line 182, thread R-5x2-0, swift#mapper#17013 = "output/sim_5.out"
+2014-05-01 19:21:47,965-0500 INFO  TRACE VARIABLE, line 24, thread R-5x2, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_5.out>
+2014-05-01 19:21:47,965-0500 INFO  TRACE ASSIGN, line 189, thread R-5x2-1, swift#mapper#17016 = "output/sim_5.log"
+2014-05-01 19:21:47,965-0500 INFO  TRACE VARIABLE, line 25, thread R-5x2, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_5.log>
+2014-05-01 19:21:47,965-0500 INFO  TRACE ASSIGN, line 28, thread R-5x2-3, sims[5] = ?simout
+2014-05-01 19:21:47,965-0500 INFO  TRACE APPCALL, line 3, thread R-5x2-2, simulation()
+2014-05-01 19:21:47,965-0500 DEBUG swift PROCEDURE line=3 thread=R-5x2-2 name=simulation
+2014-05-01 19:21:47,965-0500 INFO  TRACE APPCALL, line 68, thread R-6, k:block WAIT sims:file[int] - Open
+2014-05-01 19:21:47,966-0500 INFO  TRACE ITERATION, line 23, thread R-5-6, i=6
+2014-05-01 19:21:47,966-0500 DEBUG swift FOREACH_IT_START line=23 thread=R-5-6
+2014-05-01 19:21:47,966-0500 DEBUG swift SCOPE thread=R-5-6
+2014-05-01 19:21:47,966-0500 INFO  TRACE Variable declaration, line 166, thread R-5-6, swift#mapper#17013 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,966-0500 INFO  TRACE ITERATION, line 23, thread R-5-7, i=7
+2014-05-01 19:21:47,966-0500 INFO  TRACE VARIABLE, line 24, thread R-5-6, simout WAIT swift#mapper#17013
+2014-05-01 19:21:47,967-0500 INFO  TRACE ITERATION, line 23, thread R-5-8, i=8
+2014-05-01 19:21:47,967-0500 INFO  TRACE Variable declaration, line 24, thread R-5-6, simout <SingleFileMapper; , file = ?swift#mapper#17013>
+2014-05-01 19:21:47,967-0500 DEBUG swift FOREACH_IT_START line=23 thread=R-5-7
+2014-05-01 19:21:47,967-0500 DEBUG swift SCOPE thread=R-5-7
+2014-05-01 19:21:47,967-0500 DEBUG swift FOREACH_IT_START line=23 thread=R-5-8
+2014-05-01 19:21:47,967-0500 INFO  TRACE Variable declaration, line 174, thread R-5-6, swift#mapper#17016 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,967-0500 DEBUG swift SCOPE thread=R-5-8
+2014-05-01 19:21:47,967-0500 INFO  TRACE ITERATION, line 23, thread R-5-9, i=9
+2014-05-01 19:21:47,967-0500 INFO  TRACE Variable declaration, line 166, thread R-5-7, swift#mapper#17013 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,967-0500 INFO  TRACE Variable declaration, line 166, thread R-5-8, swift#mapper#17013 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,967-0500 DEBUG swift FOREACH_IT_START line=23 thread=R-5-9
+2014-05-01 19:21:47,967-0500 DEBUG swift SCOPE thread=R-5-9
+2014-05-01 19:21:47,967-0500 INFO  TRACE VARIABLE, line 25, thread R-5-6, simlog WAIT swift#mapper#17016
+2014-05-01 19:21:47,967-0500 INFO  TRACE Variable declaration, line 25, thread R-5-6, simlog <SingleFileMapper; , file = ?swift#mapper#17016>
+2014-05-01 19:21:47,967-0500 INFO  TRACE Variable declaration, line 166, thread R-5-9, swift#mapper#17013 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,967-0500 INFO  TRACE VARIABLE, line 24, thread R-5-7, simout WAIT swift#mapper#17013
+2014-05-01 19:21:47,967-0500 INFO  TRACE VARIABLE, line 24, thread R-5-8, simout WAIT swift#mapper#17013
+2014-05-01 19:21:47,967-0500 INFO  TRACE Variable declaration, line 24, thread R-5-7, simout <SingleFileMapper; , file = ?swift#mapper#17013>
+2014-05-01 19:21:47,967-0500 INFO  TRACE APPCALL, line 3, thread R-5-6-2, simulation()
+2014-05-01 19:21:47,967-0500 INFO  TRACE Variable declaration, line 24, thread R-5-8, simout <SingleFileMapper; , file = ?swift#mapper#17013>
+2014-05-01 19:21:47,967-0500 DEBUG swift PROCEDURE line=3 thread=R-5-6-2 name=simulation
+2014-05-01 19:21:47,967-0500 INFO  TRACE Variable declaration, line 174, thread R-5-7, swift#mapper#17016 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,967-0500 INFO  TRACE VARIABLE, line 24, thread R-5-9, simout WAIT swift#mapper#17013
+2014-05-01 19:21:47,967-0500 INFO  TRACE Variable declaration, line 174, thread R-5-8, swift#mapper#17016 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,967-0500 INFO  TRACE Variable declaration, line 24, thread R-5-9, simout <SingleFileMapper; , file = ?swift#mapper#17013>
+2014-05-01 19:21:47,967-0500 INFO  TRACE Variable declaration, line 174, thread R-5-9, swift#mapper#17016 org.griphyn.vdl.mapping.NullMapper@66c17f01
+2014-05-01 19:21:47,967-0500 INFO  TRACE VARIABLE, line 25, thread R-5-7, simlog WAIT swift#mapper#17016
+2014-05-01 19:21:47,967-0500 INFO  TRACE VARIABLE, line 25, thread R-5-8, simlog WAIT swift#mapper#17016
+2014-05-01 19:21:47,967-0500 INFO  TRACE Variable declaration, line 25, thread R-5-7, simlog <SingleFileMapper; , file = ?swift#mapper#17016>
+2014-05-01 19:21:47,967-0500 INFO  TRACE ASSIGN, line 28, thread R-5-6-3, sims[6] = ?simout
+2014-05-01 19:21:47,967-0500 INFO  TRACE Variable declaration, line 25, thread R-5-8, simlog <SingleFileMapper; , file = ?swift#mapper#17016>
+2014-05-01 19:21:47,967-0500 INFO  TRACE VARIABLE, line 25, thread R-5-9, simlog WAIT swift#mapper#17016
+2014-05-01 19:21:47,967-0500 INFO  TRACE Variable declaration, line 25, thread R-5-9, simlog <SingleFileMapper; , file = ?swift#mapper#17016>
+2014-05-01 19:21:47,967-0500 INFO  TRACE ASSIGN, line 189, thread R-5-6-1, swift#mapper#17016 = "output/sim_6.log"
+2014-05-01 19:21:47,967-0500 INFO  TRACE APPCALL, line 68, thread R-6, k:block WAIT sims:file[int] - Open
+2014-05-01 19:21:47,967-0500 INFO  TRACE VARIABLE, line 25, thread R-5-6, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_6.log>
+2014-05-01 19:21:47,967-0500 INFO  TRACE ASSIGN, line 182, thread R-5-6-0, swift#mapper#17013 = "output/sim_6.out"
+2014-05-01 19:21:47,967-0500 INFO  TRACE APPCALL, line 3, thread R-5-7-2, simulation()
+2014-05-01 19:21:47,967-0500 DEBUG swift PROCEDURE line=3 thread=R-5-7-2 name=simulation
+2014-05-01 19:21:47,967-0500 INFO  TRACE VARIABLE, line 24, thread R-5-6, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_6.out>
+2014-05-01 19:21:47,967-0500 INFO  TRACE ASSIGN, line 28, thread R-5-7-3, sims[7] = ?simout
+2014-05-01 19:21:47,967-0500 INFO  TRACE ASSIGN, line 182, thread R-5-8-0, swift#mapper#17013 = "output/sim_8.out"
+2014-05-01 19:21:47,968-0500 INFO  TRACE VARIABLE, line 24, thread R-5-8, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_8.out>
+2014-05-01 19:21:47,968-0500 INFO  TRACE ASSIGN, line 189, thread R-5-7-1, swift#mapper#17016 = "output/sim_7.log"
+2014-05-01 19:21:47,968-0500 INFO  TRACE VARIABLE, line 25, thread R-5-7, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_7.log>
+2014-05-01 19:21:47,968-0500 INFO  TRACE ASSIGN, line 189, thread R-5-8-1, swift#mapper#17016 = "output/sim_8.log"
+2014-05-01 19:21:47,968-0500 INFO  TRACE VARIABLE, line 25, thread R-5-8, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_8.log>
+2014-05-01 19:21:47,968-0500 INFO  TRACE APPCALL, line 3, thread R-5-8-2, simulation()
+2014-05-01 19:21:47,968-0500 INFO  TRACE ASSIGN, line 28, thread R-5-8-3, sims[8] = ?simout
+2014-05-01 19:21:47,968-0500 DEBUG swift PROCEDURE line=3 thread=R-5-8-2 name=simulation
+2014-05-01 19:21:47,968-0500 INFO  TRACE ASSIGN, line 28, thread R-5-9-3, sims[9] = ?simout
+2014-05-01 19:21:47,968-0500 INFO  TRACE APPCALL, line 3, thread R-5-9-2, simulation()
+2014-05-01 19:21:47,968-0500 DEBUG swift PROCEDURE line=3 thread=R-5-9-2 name=simulation
+2014-05-01 19:21:47,968-0500 INFO  TRACE ASSIGN, line 182, thread R-5-9-0, swift#mapper#17013 = "output/sim_9.out"
+2014-05-01 19:21:47,968-0500 INFO  TRACE VARIABLE, line 24, thread R-5-9, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_9.out>
+2014-05-01 19:21:47,968-0500 INFO  TRACE ASSIGN, line 189, thread R-5-9-1, swift#mapper#17016 = "output/sim_9.log"
+2014-05-01 19:21:47,968-0500 INFO  TRACE VARIABLE, line 25, thread R-5-9, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_9.log>
+2014-05-01 19:21:47,968-0500 INFO  TRACE APPCALL, line 68, thread R-6, k:block WAIT sims:file[int] - Open
+2014-05-01 19:21:47,968-0500 INFO  TRACE ASSIGN, line 182, thread R-5-7-0, swift#mapper#17013 = "output/sim_7.out"
+2014-05-01 19:21:47,969-0500 INFO  TRACE VARIABLE, line 24, thread R-5-7, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_7.out>
+2014-05-01 19:21:47,971-0500 DEBUG swift THREAD_ASSOCIATION jobid=bash-u0vlb1ql thread=R-5-6-2 host=local1 replicationGroup=null
+2014-05-01 19:21:47,971-0500 DEBUG swift THREAD_ASSOCIATION jobid=bash-v0vlb1ql thread=R-5-4-2 host=local1 replicationGroup=null
+2014-05-01 19:21:47,972-0500 DEBUG swift THREAD_ASSOCIATION jobid=bash-x0vlb1ql thread=R-5-2x2 host=cloud replicationGroup=null
+2014-05-01 19:21:47,972-0500 DEBUG swift THREAD_ASSOCIATION jobid=bash-y0vlb1ql thread=R-5-0-2 host=cloud replicationGroup=null
+2014-05-01 19:21:47,972-0500 DEBUG swift THREAD_ASSOCIATION jobid=bash-z0vlb1ql thread=R-5-8-2 host=cloud replicationGroup=null
+2014-05-01 19:21:47,972-0500 DEBUG swift THREAD_ASSOCIATION jobid=bash-01vlb1ql thread=R-5-9-2 host=local1 replicationGroup=null
+2014-05-01 19:21:47,973-0500 DEBUG swift THREAD_ASSOCIATION jobid=bash-11vlb1ql thread=R-5-3-2 host=cloud replicationGroup=null
+2014-05-01 19:21:47,973-0500 DEBUG swift THREAD_ASSOCIATION jobid=bash-21vlb1ql thread=R-5-7-2 host=cloud replicationGroup=null
+2014-05-01 19:21:47,973-0500 DEBUG swift THREAD_ASSOCIATION jobid=bash-31vlb1ql thread=R-5x2-2 host=cloud replicationGroup=null
+2014-05-01 19:21:47,973-0500 DEBUG swift THREAD_ASSOCIATION jobid=bash-41vlb1ql thread=R-5-1-2 host=cloud replicationGroup=null
+2014-05-01 19:21:47,974-0500 DEBUG swift JOB_START jobid=bash-y0vlb1ql tr=bash arguments=[simulate.sh, --timesteps, 1, --range, 100, --nvalues, 5] tmpdir=p4-run003/jobs/y/bash-y0vlb1ql host=cloud
+2014-05-01 19:21:47,974-0500 DEBUG swift JOB_START jobid=bash-v0vlb1ql tr=bash arguments=[simulate.sh, --timesteps, 1, --range, 100, --nvalues, 5] tmpdir=p4-run003/jobs/v/bash-v0vlb1ql host=local1
+2014-05-01 19:21:47,974-0500 DEBUG swift JOB_START jobid=bash-41vlb1ql tr=bash arguments=[simulate.sh, --timesteps, 1, --range, 100, --nvalues, 5] tmpdir=p4-run003/jobs/4/bash-41vlb1ql host=cloud
+2014-05-01 19:21:47,974-0500 DEBUG swift JOB_START jobid=bash-21vlb1ql tr=bash arguments=[simulate.sh, --timesteps, 1, --range, 100, --nvalues, 5] tmpdir=p4-run003/jobs/2/bash-21vlb1ql host=cloud
+2014-05-01 19:21:47,974-0500 DEBUG swift JOB_START jobid=bash-x0vlb1ql tr=bash arguments=[simulate.sh, --timesteps, 1, --range, 100, --nvalues, 5] tmpdir=p4-run003/jobs/x/bash-x0vlb1ql host=cloud
+2014-05-01 19:21:47,974-0500 DEBUG swift JOB_START jobid=bash-11vlb1ql tr=bash arguments=[simulate.sh, --timesteps, 1, --range, 100, --nvalues, 5] tmpdir=p4-run003/jobs/1/bash-11vlb1ql host=cloud
+2014-05-01 19:21:47,974-0500 DEBUG swift JOB_START jobid=bash-01vlb1ql tr=bash arguments=[simulate.sh, --timesteps, 1, --range, 100, --nvalues, 5] tmpdir=p4-run003/jobs/0/bash-01vlb1ql host=local1
+2014-05-01 19:21:47,974-0500 DEBUG swift JOB_START jobid=bash-z0vlb1ql tr=bash arguments=[simulate.sh, --timesteps, 1, --range, 100, --nvalues, 5] tmpdir=p4-run003/jobs/z/bash-z0vlb1ql host=cloud
+2014-05-01 19:21:47,974-0500 DEBUG swift JOB_START jobid=bash-31vlb1ql tr=bash arguments=[simulate.sh, --timesteps, 1, --range, 100, --nvalues, 5] tmpdir=p4-run003/jobs/3/bash-31vlb1ql host=cloud
+2014-05-01 19:21:47,975-0500 DEBUG swift JOB_START jobid=bash-u0vlb1ql tr=bash arguments=[simulate.sh, --timesteps, 1, --range, 100, --nvalues, 5] tmpdir=p4-run003/jobs/u/bash-u0vlb1ql host=local1
+2014-05-01 19:21:47,985-0500 INFO  GlobalSubmitQueue No global submit throttle set. Using default (1024)
+2014-05-01 19:21:48,001-0500 INFO  RemoteConfiguration Find: http://162.222.177.15:50010
+2014-05-01 19:21:48,001-0500 INFO  RemoteConfiguration Find:  keepalive(120), reconnect - http://162.222.177.15:50010
+2014-05-01 19:21:48,010-0500 INFO  AbstractCoasterChannel Timeout check started for TCPChannel [type: client, contact: unknown]
+2014-05-01 19:21:48,070-0500 INFO  AbstractTCPChannel Channel started: TCPChannel [type: client, contact: http://162.222.177.15:50010]
+2014-05-01 19:21:48,072-0500 INFO  AbstractStreamCoasterChannel Using NIO sender for TCPChannel [type: client, contact: http://162.222.177.15:50010]
+2014-05-01 19:21:48,241-0500 INFO  ChannelConfigurationCommand Got reply
+2014-05-01 19:21:48,241-0500 INFO  AbstractStreamCoasterChannel Channel configured
+2014-05-01 19:21:48,241-0500 INFO  MetaChannel MetaChannel [context: http://162.222.177.15:50010, boundTo: null] binding to TCPChannel [type: client, contact: http://162.222.177.15:50010]
+2014-05-01 19:21:48,501-0500 INFO  LocalService Started local service: 127.0.1.1:54238
+2014-05-01 19:21:48,503-0500 INFO  BootstrapService Socket bound. URL is http://borgmachine:56844
+2014-05-01 19:21:48,520-0500 INFO  Settings Local contacts: [http://192.168.0.100:51482]
+2014-05-01 19:21:48,522-0500 INFO  CoasterService Started local service: http://127.0.1.1:51482
+2014-05-01 19:21:48,522-0500 INFO  CoasterService Reserving channel for registration
+2014-05-01 19:21:48,523-0500 INFO  MetaChannel MetaChannel [context: cpipe, boundTo: null] binding to cpipe://1
+2014-05-01 19:21:48,523-0500 INFO  MetaChannel MetaChannel [context: spipe, boundTo: null] binding to spipe://1
+2014-05-01 19:21:48,523-0500 INFO  CoasterService Sending registration
+2014-05-01 19:21:48,524-0500 INFO  MetaChannel Trying to re-bind current channel
+2014-05-01 19:21:48,524-0500 INFO  RequestHandler Handler(tag: 1, REGISTER) unregistering (send)
+2014-05-01 19:21:48,525-0500 INFO  CoasterService Registration complete
+2014-05-01 19:21:48,525-0500 INFO  CoasterService Started coaster service: http://127.0.1.1:39914
+2014-05-01 19:21:48,525-0500 INFO  RequestHandler Handler(tag: 1, CONFIGSERVICE) unregistering (send)
+2014-05-01 19:21:48,532-0500 INFO  BlockQueueProcessor Starting... id=0501-2107480
+2014-05-01 19:21:48,532-0500 INFO  RequestHandler Handler(tag: 3, SUBMITJOB) unregistering (send)
+2014-05-01 19:21:48,533-0500 INFO  RequestHandler Handler(tag: 2, SUBMITJOB) unregistering (send)
+2014-05-01 19:21:48,533-0500 INFO  RequestHandler Handler(tag: 4, SUBMITJOB) unregistering (send)
+2014-05-01 19:21:48,537-0500 INFO  BlockQueueProcessor 
+Settings {
+	slots = 20
+	jobsPerNode = 1
+	workersPerNode = 1
+	nodeGranularity = 1
+	allocationStepSize = 0.1
+	maxNodes = 2097151
+	lowOverallocation = 10.0
+	highOverallocation = 1.0
+	overallocationDecayFactor = 0.001
+	spread = 0.9
+	reserve = 60.000s
+	maxtime = 2147483647
+	remoteMonitorEnabled = false
+	internalHostname = 192.168.0.100
+	hookClass = null
+	workerManager = block
+	workerLoggingLevel = NONE
+	workerLoggingDirectory = DEFAULT
+	ldLibraryPath = null
+	workerCopies = null
+	directory = null
+	useHashBang = null
+	parallelism = 0.01
+	coresPerNode = 1
+	perfTraceWorker = false
+	perfTraceInterval = -1
+	attributes = {}
+	callbackURIs = [http://192.168.0.100:51482]
+}
+
+2014-05-01 19:21:48,537-0500 INFO  BlockQueueProcessor Jobs in holding queue: 3
+2014-05-01 19:21:48,537-0500 INFO  BlockQueueProcessor Time estimate for holding queue (seconds): 3
+2014-05-01 19:21:48,537-0500 INFO  BlockQueueProcessor Allocating blocks for a total walltime of: 3s
+2014-05-01 19:21:48,537-0500 INFO  BlockQueueProcessor 	 Considering: Job(id:2 600.000s)
+2014-05-01 19:21:48,537-0500 INFO  BlockQueueProcessor 	  Max Walltime (seconds):   600
+2014-05-01 19:21:48,537-0500 INFO  BlockQueueProcessor 	  Time estimate (seconds):  3600
+2014-05-01 19:21:48,537-0500 INFO  BlockQueueProcessor 	  Total for this new Block (est. seconds): 2
+2014-05-01 19:21:48,539-0500 INFO  BlockQueueProcessor index: 2, last: 0, holding.size(): 3
+2014-05-01 19:21:48,539-0500 INFO  BlockQueueProcessor Queued: 1 jobs to new Block
+2014-05-01 19:21:48,539-0500 INFO  BlockQueueProcessor index: 2, last: 0, ii: 1, holding.size(): 3
+2014-05-01 19:21:48,539-0500 INFO  Block Starting block: workers=1, walltime=3600.000s
+2014-05-01 19:21:48,541-0500 INFO  RemoteLogHandler BLOCK_REQUESTED id=0501-2107480-000000, cores=1, coresPerWorker=1, walltime=3600
+2014-05-01 19:21:48,541-0500 INFO  RequestHandler Handler(tag: 2, RLOG) unregistering (send)
+2014-05-01 19:21:48,541-0500 INFO  BlockTaskSubmitter Queuing block Block 0501-2107480-000000 (1x3600.000s) for submission
+2014-05-01 19:21:48,541-0500 INFO  BlockQueueProcessor Added 1 jobs to new blocks
+2014-05-01 19:21:48,541-0500 INFO  BlockTaskSubmitter Submitting block Block 0501-2107480-000000 (1x3600.000s)
+2014-05-01 19:21:48,542-0500 INFO  ExecutionTaskHandler provider=local
+2014-05-01 19:21:48,545-0500 INFO  Block Block task status changed: Submitting
+2014-05-01 19:21:48,545-0500 INFO  JobSubmissionTaskHandler Submit: in: / command: /usr/bin/perl /home/yadu/.globus/coasters/cscript7132826469493430388.pl http://192.168.0.100:51482 0501-2107480-000000 NOLOGGING
+2014-05-01 19:21:48,546-0500 INFO  Block Block task status changed: Submitted
+2014-05-01 19:21:48,547-0500 INFO  Block Block task status changed: Active
+2014-05-01 19:21:48,547-0500 INFO  RemoteLogHandler BLOCK_ACTIVE id=0501-2107480-000000
+2014-05-01 19:21:48,547-0500 INFO  RequestHandler Handler(tag: 3, RLOG) unregistering (send)
+2014-05-01 19:21:48,587-0500 INFO  AbstractCoasterChannel Timeout check started for TCPChannel [type: server, contact: unknown]
+2014-05-01 19:21:48,587-0500 INFO  AbstractTCPChannel Channel started: TCPChannel [type: server, contact: 192.168.0.100:34208]
+2014-05-01 19:21:48,587-0500 INFO  LocalTCPService Received registration: blockid = 0501-2107480-000000, url = borgmachine
+2014-05-01 19:21:48,587-0500 INFO  MetaChannel MetaChannel [context: worker-1, boundTo: null] binding to TCPChannel [type: server, contact: 192.168.0.100:34208]
+2014-05-01 19:21:48,588-0500 INFO  RemoteLogHandler WORKER_ACTIVE blockid=0501-2107480-000000
+2014-05-01 19:21:48,588-0500 INFO  RequestHandler Handler(tag: 4, RLOG) unregistering (send)
+2014-05-01 19:21:48,589-0500 DEBUG Cpu worker started: block=0501-2107480-000000 host=borgmachine id=0
+2014-05-01 19:21:48,589-0500 DEBUG Cpu ready for work: block=0501-2107480-000000 id=0
+2014-05-01 19:21:48,590-0500 INFO  Block Started CPU 0:1398990108s
+2014-05-01 19:21:48,590-0500 INFO  Block Started worker 0501-2107480-000000:000000
+2014-05-01 19:21:48,590-0500 DEBUG Cpu requesting work: block=0501-2107480-000000 id=0 Cpus sleeping: 1
+2014-05-01 19:21:48,590-0500 INFO  RequestHandler Handler(tag: 694, REGISTER) unregistering (send)
+2014-05-01 19:21:48,591-0500 INFO  Cpu 0501-2107480-000000:0 (quality: 1.0) submitting urn:1398990107869-1398990107880-1398990107881: /bin/bash _swiftwrap.staging -e bash -out output/sim_6.out -err output/sim_6.log -i -d output -if simulate.sh -of output/sim_6.out|output/sim_6.log -cf  -cdmfile  -status provider -a simulate.sh --timesteps 1 --range 100 --nvalues 5
+2014-05-01 19:21:48,592-0500 INFO  RequestHandler Handler(tag: 5, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,593-0500 INFO  RequestHandler Handler(tag: 6, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,593-0500 DEBUG Cpu Stagein workerid=000000
+2014-05-01 19:21:48,593-0500 INFO  RequestHandler Handler(tag: 695, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,593-0500 INFO  RequestHandler Handler(tag: 7, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,594-0500 INFO  GetFileHandler Handler(tag: 696, GET) request complete; src=proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:48,603-0500 INFO  GetFileHandler Handler(tag: 696, GET) reader: PR proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:48,603-0500 INFO  GetFileHandler Handler(tag: 696, GET) -> 8
+2014-05-01 19:21:48,603-0500 INFO  GetFileHandler Handler(tag: 8, GET) request complete; src=file://localhost//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:48,604-0500 INFO  GetFileHandler Handler(tag: 8, GET) reader: LR-Handler(tag: 8, GET)
+2014-05-01 19:21:48,604-0500 INFO  GetFileHandler Handler(tag: 8, GET) sending length: 6261, 301402856
+2014-05-01 19:21:48,604-0500 INFO  GetFileHandler Handler(tag: 696, GET) sending length: 6261, 1911361166
+2014-05-01 19:21:48,604-0500 INFO  ReadBuffer RB-LR-Handler(tag: 8, GET) will ask for 1 buffers for a size of 6261
+2014-05-01 19:21:48,604-0500 INFO  ReadBuffer RB-LR-Handler(tag: 8, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:48,604-0500 INFO  LocalIOProvider LR-Handler(tag: 8, GET) rbuf: RB-LR-Handler(tag: 8, GET)
+2014-05-01 19:21:48,605-0500 INFO  GetFileHandler Handler(tag: 8, GET) unregistering (last)
+2014-05-01 19:21:48,605-0500 INFO  ReadBuffer RB-LR-Handler(tag: 8, GET) de-allocating 1 buffers
+2014-05-01 19:21:48,605-0500 INFO  GetFileHandler Handler(tag: 696, GET) unregistering (last)
+2014-05-01 19:21:48,605-0500 INFO  GetFileHandler Handler(tag: 697, GET) request complete; src=proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./simulate.sh
+2014-05-01 19:21:48,606-0500 INFO  GetFileHandler Handler(tag: 697, GET) reader: PR proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./simulate.sh
+2014-05-01 19:21:48,606-0500 INFO  GetFileHandler Handler(tag: 697, GET) -> 9
+2014-05-01 19:21:48,606-0500 INFO  GetFileHandler Handler(tag: 9, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/simulate.sh
+2014-05-01 19:21:48,606-0500 INFO  GetFileHandler Handler(tag: 9, GET) reader: LR-Handler(tag: 9, GET)
+2014-05-01 19:21:48,606-0500 INFO  GetFileHandler Handler(tag: 9, GET) sending length: 3068, 2135543921
+2014-05-01 19:21:48,606-0500 INFO  ReadBuffer RB-LR-Handler(tag: 9, GET) will ask for 1 buffers for a size of 3068
+2014-05-01 19:21:48,606-0500 INFO  GetFileHandler Handler(tag: 697, GET) sending length: 3068, 1827346548
+2014-05-01 19:21:48,606-0500 INFO  ReadBuffer RB-LR-Handler(tag: 9, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:48,606-0500 INFO  LocalIOProvider LR-Handler(tag: 9, GET) rbuf: RB-LR-Handler(tag: 9, GET)
+2014-05-01 19:21:48,606-0500 INFO  GetFileHandler Handler(tag: 9, GET) unregistering (last)
+2014-05-01 19:21:48,606-0500 INFO  ReadBuffer RB-LR-Handler(tag: 9, GET) de-allocating 1 buffers
+2014-05-01 19:21:48,606-0500 INFO  GetFileHandler Handler(tag: 697, GET) unregistering (last)
+2014-05-01 19:21:48,607-0500 DEBUG Cpu Active workerid=0501-2107480-000000:000000
+2014-05-01 19:21:48,607-0500 INFO  RequestHandler Handler(tag: 698, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,607-0500 INFO  RequestHandler Handler(tag: 10, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,659-0500 INFO  RequestHandler Handler(tag: 1, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,660-0500 INFO  RequestHandler Handler(tag: 2, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,660-0500 INFO  RequestHandler Handler(tag: 3, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,660-0500 INFO  RequestHandler Handler(tag: 4, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,660-0500 INFO  GetFileHandler Handler(tag: 7, GET) request complete; src=file://localhost//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:48,661-0500 INFO  GetFileHandler Handler(tag: 7, GET) reader: LR-Handler(tag: 7, GET)
+2014-05-01 19:21:48,661-0500 INFO  GetFileHandler Handler(tag: 7, GET) sending length: 6261, 1993552032
+2014-05-01 19:21:48,661-0500 INFO  ReadBuffer RB-LR-Handler(tag: 7, GET) will ask for 1 buffers for a size of 6261
+2014-05-01 19:21:48,661-0500 INFO  ReadBuffer RB-LR-Handler(tag: 7, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:48,661-0500 INFO  LocalIOProvider LR-Handler(tag: 7, GET) rbuf: RB-LR-Handler(tag: 7, GET)
+2014-05-01 19:21:48,661-0500 INFO  GetFileHandler Handler(tag: 7, GET) unregistering (last)
+2014-05-01 19:21:48,661-0500 INFO  ReadBuffer RB-LR-Handler(tag: 7, GET) de-allocating 1 buffers
+2014-05-01 19:21:48,661-0500 INFO  RequestHandler Handler(tag: 8, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,702-0500 INFO  RequestHandler Handler(tag: 9, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,702-0500 INFO  GetFileHandler Handler(tag: 10, GET) request complete; src=file://localhost//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:48,702-0500 INFO  GetFileHandler Handler(tag: 10, GET) reader: LR-Handler(tag: 10, GET)
+2014-05-01 19:21:48,702-0500 INFO  GetFileHandler Handler(tag: 10, GET) sending length: 6261, 1559194184
+2014-05-01 19:21:48,702-0500 INFO  ReadBuffer RB-LR-Handler(tag: 10, GET) will ask for 1 buffers for a size of 6261
+2014-05-01 19:21:48,702-0500 INFO  ReadBuffer RB-LR-Handler(tag: 10, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:48,702-0500 INFO  LocalIOProvider LR-Handler(tag: 10, GET) rbuf: RB-LR-Handler(tag: 10, GET)
+2014-05-01 19:21:48,702-0500 INFO  GetFileHandler Handler(tag: 10, GET) unregistering (last)
+2014-05-01 19:21:48,702-0500 INFO  ReadBuffer RB-LR-Handler(tag: 10, GET) de-allocating 1 buffers
+2014-05-01 19:21:48,703-0500 INFO  RequestHandler Handler(tag: 11, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,703-0500 INFO  RequestHandler Handler(tag: 12, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,703-0500 INFO  RequestHandler Handler(tag: 13, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,704-0500 INFO  RequestHandler Handler(tag: 14, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,741-0500 INFO  RequestHandler Handler(tag: 15, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,741-0500 INFO  GetFileHandler Handler(tag: 16, GET) request complete; src=file://localhost//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:48,742-0500 INFO  GetFileHandler Handler(tag: 16, GET) reader: LR-Handler(tag: 16, GET)
+2014-05-01 19:21:48,742-0500 INFO  GetFileHandler Handler(tag: 16, GET) sending length: 6261, 380224087
+2014-05-01 19:21:48,742-0500 INFO  ReadBuffer RB-LR-Handler(tag: 16, GET) will ask for 1 buffers for a size of 6261
+2014-05-01 19:21:48,742-0500 INFO  ReadBuffer RB-LR-Handler(tag: 16, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:48,742-0500 INFO  LocalIOProvider LR-Handler(tag: 16, GET) rbuf: RB-LR-Handler(tag: 16, GET)
+2014-05-01 19:21:48,742-0500 INFO  GetFileHandler Handler(tag: 16, GET) unregistering (last)
+2014-05-01 19:21:48,742-0500 INFO  ReadBuffer RB-LR-Handler(tag: 16, GET) de-allocating 1 buffers
+2014-05-01 19:21:48,742-0500 INFO  RequestHandler Handler(tag: 17, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:48,742-0500 INFO  GetFileHandler Handler(tag: 18, GET) request complete; src=file://localhost//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:48,742-0500 INFO  GetFileHandler Handler(tag: 18, GET) reader: LR-Handler(tag: 18, GET)
+2014-05-01 19:21:48,742-0500 INFO  GetFileHandler Handler(tag: 18, GET) sending length: 6261, 1640564430
+2014-05-01 19:21:48,742-0500 INFO  ReadBuffer RB-LR-Handler(tag: 18, GET) will ask for 1 buffers for a size of 6261
+2014-05-01 19:21:48,742-0500 INFO  ReadBuffer RB-LR-Handler(tag: 18, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:48,742-0500 INFO  LocalIOProvider LR-Handler(tag: 18, GET) rbuf: RB-LR-Handler(tag: 18, GET)
+2014-05-01 19:21:48,742-0500 INFO  GetFileHandler Handler(tag: 18, GET) unregistering (last)
+2014-05-01 19:21:48,742-0500 INFO  ReadBuffer RB-LR-Handler(tag: 18, GET) de-allocating 1 buffers
+2014-05-01 19:21:48,957-0500 INFO  RuntimeStats$ProgressTicker   Stage in:4  Submitting:1  Submitted:4  Active:1
+2014-05-01 19:21:48,957-0500 INFO  RuntimeStats$ProgressTicker HeapMax: 954466304, CrtHeap: 156893184, UsedHeap: 49802192
+2014-05-01 19:21:49,013-0500 INFO  GetFileHandler Handler(tag: 19, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/simulate.sh
+2014-05-01 19:21:49,013-0500 INFO  GetFileHandler Handler(tag: 19, GET) reader: LR-Handler(tag: 19, GET)
+2014-05-01 19:21:49,013-0500 INFO  GetFileHandler Handler(tag: 19, GET) sending length: 3068, 360283487
+2014-05-01 19:21:49,013-0500 INFO  ReadBuffer RB-LR-Handler(tag: 19, GET) will ask for 1 buffers for a size of 3068
+2014-05-01 19:21:49,013-0500 INFO  ReadBuffer RB-LR-Handler(tag: 19, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:49,013-0500 INFO  LocalIOProvider LR-Handler(tag: 19, GET) rbuf: RB-LR-Handler(tag: 19, GET)
+2014-05-01 19:21:49,014-0500 INFO  GetFileHandler Handler(tag: 19, GET) unregistering (last)
+2014-05-01 19:21:49,014-0500 INFO  ReadBuffer RB-LR-Handler(tag: 19, GET) de-allocating 1 buffers
+2014-05-01 19:21:49,014-0500 INFO  GetFileHandler Handler(tag: 20, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/simulate.sh
+2014-05-01 19:21:49,014-0500 INFO  GetFileHandler Handler(tag: 20, GET) reader: LR-Handler(tag: 20, GET)
+2014-05-01 19:21:49,014-0500 INFO  GetFileHandler Handler(tag: 20, GET) sending length: 3068, 593102911
+2014-05-01 19:21:49,015-0500 INFO  ReadBuffer RB-LR-Handler(tag: 20, GET) will ask for 1 buffers for a size of 3068
+2014-05-01 19:21:49,015-0500 INFO  ReadBuffer RB-LR-Handler(tag: 20, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:49,015-0500 INFO  LocalIOProvider LR-Handler(tag: 20, GET) rbuf: RB-LR-Handler(tag: 20, GET)
+2014-05-01 19:21:49,015-0500 INFO  GetFileHandler Handler(tag: 20, GET) unregistering (last)
+2014-05-01 19:21:49,015-0500 INFO  ReadBuffer RB-LR-Handler(tag: 20, GET) de-allocating 1 buffers
+2014-05-01 19:21:49,250-0500 INFO  GetFileHandler Handler(tag: 21, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/simulate.sh
+2014-05-01 19:21:49,251-0500 INFO  GetFileHandler Handler(tag: 21, GET) reader: LR-Handler(tag: 21, GET)
+2014-05-01 19:21:49,251-0500 INFO  GetFileHandler Handler(tag: 21, GET) sending length: 3068, 345674251
+2014-05-01 19:21:49,251-0500 INFO  ReadBuffer RB-LR-Handler(tag: 21, GET) will ask for 1 buffers for a size of 3068
+2014-05-01 19:21:49,251-0500 INFO  ReadBuffer RB-LR-Handler(tag: 21, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:49,251-0500 INFO  LocalIOProvider LR-Handler(tag: 21, GET) rbuf: RB-LR-Handler(tag: 21, GET)
+2014-05-01 19:21:49,251-0500 INFO  GetFileHandler Handler(tag: 21, GET) unregistering (last)
+2014-05-01 19:21:49,251-0500 INFO  ReadBuffer RB-LR-Handler(tag: 21, GET) de-allocating 1 buffers
+2014-05-01 19:21:49,252-0500 INFO  GetFileHandler Handler(tag: 22, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/simulate.sh
+2014-05-01 19:21:49,252-0500 INFO  GetFileHandler Handler(tag: 22, GET) reader: LR-Handler(tag: 22, GET)
+2014-05-01 19:21:49,252-0500 INFO  GetFileHandler Handler(tag: 22, GET) sending length: 3068, 1720954282
+2014-05-01 19:21:49,252-0500 INFO  ReadBuffer RB-LR-Handler(tag: 22, GET) will ask for 1 buffers for a size of 3068
+2014-05-01 19:21:49,252-0500 INFO  ReadBuffer RB-LR-Handler(tag: 22, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:49,252-0500 INFO  LocalIOProvider LR-Handler(tag: 22, GET) rbuf: RB-LR-Handler(tag: 22, GET)
+2014-05-01 19:21:49,252-0500 INFO  GetFileHandler Handler(tag: 22, GET) unregistering (last)
+2014-05-01 19:21:49,252-0500 INFO  ReadBuffer RB-LR-Handler(tag: 22, GET) de-allocating 1 buffers
+2014-05-01 19:21:49,374-0500 INFO  RequestHandler Handler(tag: 23, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,375-0500 INFO  RequestHandler Handler(tag: 24, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,463-0500 INFO  RequestHandler Handler(tag: 25, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,516-0500 INFO  RequestHandler Handler(tag: 26, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,626-0500 DEBUG Cpu Stageout workerid=000000
+2014-05-01 19:21:49,626-0500 INFO  RequestHandler Handler(tag: 699, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,626-0500 INFO  RequestHandler Handler(tag: 11, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,626-0500 INFO  PutFileHandler Handler(tag: 700, PUT) source: /tmp/swiftwork/p4-run003/jobs/u/bash-u0vlb1ql/output/sim_6.log
+2014-05-01 19:21:49,626-0500 INFO  PutFileHandler Handler(tag: 700, PUT) destination: proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./output/sim_6.log
+2014-05-01 19:21:49,633-0500 INFO  PutFileCommand Sending Command(tag: 12, PUT) (t) on cpipe://1
+2014-05-01 19:21:49,633-0500 INFO  PutFileCommand Command(tag: 12, PUT) (t) sending data
+2014-05-01 19:21:49,633-0500 INFO  PutFileHandler Handler(tag: 700, PUT) -> 12
+2014-05-01 19:21:49,633-0500 INFO  PutFileHandler Handler(tag: 12, PUT) source: /tmp/swiftwork/p4-run003/jobs/u/bash-u0vlb1ql/output/sim_6.log
+2014-05-01 19:21:49,633-0500 INFO  PutFileHandler Handler(tag: 12, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_6.log
+2014-05-01 19:21:49,634-0500 INFO  PutFileHandler Writing to proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./output/sim_6.log data out : 
+[B@7f4d4b79
+2014-05-01 19:21:49,635-0500 DEBUG Cpu Stageout workerid=000000
+2014-05-01 19:21:49,635-0500 INFO  RequestHandler Handler(tag: 701, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,636-0500 INFO  PutFileHandler Handler(tag: 702, PUT) source: /tmp/swiftwork/p4-run003/jobs/u/bash-u0vlb1ql/output/sim_6.out
+2014-05-01 19:21:49,636-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_6.log data out : 
+[B@50ecb7c8
+2014-05-01 19:21:49,636-0500 INFO  PutFileHandler Handler(tag: 702, PUT) destination: proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./output/sim_6.out
+2014-05-01 19:21:49,636-0500 INFO  PutFileCommand Sending Command(tag: 14, PUT) (t) on cpipe://1
+2014-05-01 19:21:49,636-0500 INFO  PutFileCommand Command(tag: 14, PUT) (t) sending data
+2014-05-01 19:21:49,636-0500 INFO  PutFileHandler Handler(tag: 702, PUT) -> 14
+2014-05-01 19:21:49,636-0500 INFO  RequestHandler Handler(tag: 13, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,636-0500 INFO  PutFileHandler Writing to proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./output/sim_6.out data out : 
+[B@6515d4f9
+2014-05-01 19:21:49,637-0500 INFO  PutFileHandler Handler(tag: 14, PUT) source: /tmp/swiftwork/p4-run003/jobs/u/bash-u0vlb1ql/output/sim_6.out
+2014-05-01 19:21:49,637-0500 INFO  PutFileHandler Handler(tag: 14, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_6.out
+2014-05-01 19:21:49,637-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_6.out data out : 
+[B@413fd214
+2014-05-01 19:21:49,637-0500 INFO  PutFileHandler Handler(tag: 12, PUT) Transfer done
+2014-05-01 19:21:49,637-0500 INFO  RequestHandler Handler(tag: 12, PUT) unregistering (send)
+2014-05-01 19:21:49,637-0500 INFO  PutFileHandler Handler(tag: 700, PUT) Transfer done
+2014-05-01 19:21:49,637-0500 INFO  RequestHandler Handler(tag: 700, PUT) unregistering (send)
+2014-05-01 19:21:49,638-0500 INFO  PutFileHandler Handler(tag: 14, PUT) Transfer done
+2014-05-01 19:21:49,638-0500 INFO  RequestHandler Handler(tag: 14, PUT) unregistering (send)
+2014-05-01 19:21:49,638-0500 INFO  PutFileHandler Handler(tag: 702, PUT) Transfer done
+2014-05-01 19:21:49,638-0500 INFO  RequestHandler Handler(tag: 702, PUT) unregistering (send)
+2014-05-01 19:21:49,639-0500 DEBUG Cpu Completed
+2014-05-01 19:21:49,639-0500 INFO  Cpu 0501-2107480-000000:0 jobTerminated
+2014-05-01 19:21:49,639-0500 DEBUG Cpu ready for work: block=0501-2107480-000000 id=0
+2014-05-01 19:21:49,639-0500 DEBUG Cpu requesting work: block=0501-2107480-000000 id=0 Cpus sleeping: 1
+2014-05-01 19:21:49,639-0500 INFO  RequestHandler Handler(tag: 703, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,639-0500 INFO  LateBindingScheduler jobs queued: 0
+2014-05-01 19:21:49,639-0500 INFO  Cpu 0501-2107480-000000:0 (quality: 2.0) submitting urn:1398990107868-1398990107883-1398990107884: /bin/bash _swiftwrap.staging -e bash -out output/sim_4.out -err output/sim_4.log -i -d output -if simulate.sh -of output/sim_4.out|output/sim_4.log -cf  -cdmfile  -status provider -a simulate.sh --timesteps 1 --range 100 --nvalues 5
+2014-05-01 19:21:49,639-0500 INFO  RequestHandler Handler(tag: 15, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,639-0500 INFO  RequestHandler Handler(tag: 16, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,639-0500 DEBUG swift JOB_END jobid=bash-u0vlb1ql
+2014-05-01 19:21:49,640-0500 INFO  ProcessStageouts Collect list: []
+2014-05-01 19:21:49,640-0500 INFO  TRACE VARIABLE, line 24, thread R-5-6, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_6.out>
+2014-05-01 19:21:49,640-0500 INFO  TRACE ASSIGN, line 28, thread R-5-6-3, sims[6] = <file://localhost/output/sim_6.out>
+2014-05-01 19:21:49,640-0500 INFO  TRACE VARIABLE, line 25, thread R-5-6, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_6.log>
+2014-05-01 19:21:49,640-0500 INFO  swift END_SUCCESS thread=R-5-6-2 tr=bash
+2014-05-01 19:21:49,640-0500 DEBUG swift PROCEDURE_END line=3 thread=R-5-6-2 name=simulation
+2014-05-01 19:21:49,641-0500 INFO  RequestHandler Handler(tag: 17, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,641-0500 DEBUG Cpu Stagein workerid=000000
+2014-05-01 19:21:49,641-0500 INFO  RequestHandler Handler(tag: 704, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,641-0500 INFO  RequestHandler Handler(tag: 18, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,641-0500 INFO  GetFileHandler Handler(tag: 705, GET) request complete; src=proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:49,641-0500 INFO  GetFileHandler Handler(tag: 705, GET) reader: PR proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:49,641-0500 INFO  GetFileHandler Handler(tag: 705, GET) -> 19
+2014-05-01 19:21:49,641-0500 INFO  GetFileHandler Handler(tag: 19, GET) request complete; src=file://localhost//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:49,641-0500 INFO  SwiftFunction Cleaning simout:file = <FILE> - Closed
+2014-05-01 19:21:49,641-0500 INFO  SwiftFunction Cleaning simlog:file = <FILE> - Closed
+2014-05-01 19:21:49,642-0500 DEBUG swift FOREACH_IT_END line=23 thread=R-5-6
+2014-05-01 19:21:49,642-0500 INFO  GetFileHandler Handler(tag: 19, GET) reader: LR-Handler(tag: 19, GET)
+2014-05-01 19:21:49,642-0500 INFO  GetFileHandler Handler(tag: 19, GET) sending length: 6261, 2045578395
+2014-05-01 19:21:49,642-0500 INFO  ReadBuffer RB-LR-Handler(tag: 19, GET) will ask for 1 buffers for a size of 6261
+2014-05-01 19:21:49,642-0500 INFO  GetFileHandler Handler(tag: 705, GET) sending length: 6261, 970379942
+2014-05-01 19:21:49,642-0500 INFO  ReadBuffer RB-LR-Handler(tag: 19, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:49,642-0500 INFO  LocalIOProvider LR-Handler(tag: 19, GET) rbuf: RB-LR-Handler(tag: 19, GET)
+2014-05-01 19:21:49,642-0500 INFO  GetFileHandler Handler(tag: 19, GET) unregistering (last)
+2014-05-01 19:21:49,642-0500 INFO  ReadBuffer RB-LR-Handler(tag: 19, GET) de-allocating 1 buffers
+2014-05-01 19:21:49,642-0500 INFO  GetFileHandler Handler(tag: 705, GET) unregistering (last)
+2014-05-01 19:21:49,643-0500 INFO  GetFileHandler Handler(tag: 706, GET) request complete; src=proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./simulate.sh
+2014-05-01 19:21:49,643-0500 INFO  GetFileHandler Handler(tag: 706, GET) reader: PR proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./simulate.sh
+2014-05-01 19:21:49,643-0500 INFO  GetFileHandler Handler(tag: 706, GET) -> 20
+2014-05-01 19:21:49,643-0500 INFO  GetFileHandler Handler(tag: 20, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/simulate.sh
+2014-05-01 19:21:49,643-0500 INFO  GetFileHandler Handler(tag: 20, GET) reader: LR-Handler(tag: 20, GET)
+2014-05-01 19:21:49,643-0500 INFO  GetFileHandler Handler(tag: 20, GET) sending length: 3068, 1136919730
+2014-05-01 19:21:49,643-0500 INFO  ReadBuffer RB-LR-Handler(tag: 20, GET) will ask for 1 buffers for a size of 3068
+2014-05-01 19:21:49,643-0500 INFO  GetFileHandler Handler(tag: 706, GET) sending length: 3068, 2047894751
+2014-05-01 19:21:49,643-0500 INFO  ReadBuffer RB-LR-Handler(tag: 20, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:49,643-0500 INFO  LocalIOProvider LR-Handler(tag: 20, GET) rbuf: RB-LR-Handler(tag: 20, GET)
+2014-05-01 19:21:49,643-0500 INFO  GetFileHandler Handler(tag: 20, GET) unregistering (last)
+2014-05-01 19:21:49,644-0500 INFO  ReadBuffer RB-LR-Handler(tag: 20, GET) de-allocating 1 buffers
+2014-05-01 19:21:49,644-0500 INFO  GetFileHandler Handler(tag: 706, GET) unregistering (last)
+2014-05-01 19:21:49,645-0500 DEBUG Cpu Active workerid=0501-2107480-000000:000000
+2014-05-01 19:21:49,645-0500 INFO  RequestHandler Handler(tag: 707, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,645-0500 INFO  RequestHandler Handler(tag: 21, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,682-0500 INFO  BlockQueueProcessor Jobs in holding queue: 1
+2014-05-01 19:21:49,682-0500 INFO  BlockQueueProcessor Time estimate for holding queue (seconds): 1
+2014-05-01 19:21:49,682-0500 INFO  BlockQueueProcessor Allocating blocks for a total walltime of: 1s
+2014-05-01 19:21:49,682-0500 INFO  BlockQueueProcessor 	 Considering: Job(id:2 600.000s)
+2014-05-01 19:21:49,682-0500 INFO  BlockQueueProcessor 	  Max Walltime (seconds):   600
+2014-05-01 19:21:49,682-0500 INFO  BlockQueueProcessor 	  Time estimate (seconds):  3600
+2014-05-01 19:21:49,682-0500 INFO  BlockQueueProcessor 	  Total for this new Block (est. seconds): 0
+2014-05-01 19:21:49,682-0500 INFO  BlockQueueProcessor index: 0, last: 0, holding.size(): 1
+2014-05-01 19:21:49,682-0500 INFO  BlockQueueProcessor Queued: 1 jobs to new Block
+2014-05-01 19:21:49,682-0500 INFO  BlockQueueProcessor index: 0, last: 0, ii: 1, holding.size(): 1
+2014-05-01 19:21:49,682-0500 INFO  Block Starting block: workers=1, walltime=3600.000s
+2014-05-01 19:21:49,682-0500 INFO  RemoteLogHandler BLOCK_REQUESTED id=0501-2107480-000001, cores=1, coresPerWorker=1, walltime=3600
+2014-05-01 19:21:49,682-0500 INFO  BlockTaskSubmitter Queuing block Block 0501-2107480-000001 (1x3600.000s) for submission
+2014-05-01 19:21:49,683-0500 INFO  RequestHandler Handler(tag: 22, RLOG) unregistering (send)
+2014-05-01 19:21:49,683-0500 INFO  BlockQueueProcessor Added 1 jobs to new blocks
+2014-05-01 19:21:49,683-0500 INFO  BlockTaskSubmitter Submitting block Block 0501-2107480-000001 (1x3600.000s)
+2014-05-01 19:21:49,683-0500 INFO  ExecutionTaskHandler provider=local
+2014-05-01 19:21:49,683-0500 INFO  Block Block task status changed: Submitting
+2014-05-01 19:21:49,683-0500 INFO  JobSubmissionTaskHandler Submit: in: / command: /usr/bin/perl /home/yadu/.globus/coasters/cscript7132826469493430388.pl http://192.168.0.100:51482 0501-2107480-000001 NOLOGGING
+2014-05-01 19:21:49,683-0500 INFO  Block Block task status changed: Submitted
+2014-05-01 19:21:49,685-0500 INFO  Block Block task status changed: Active
+2014-05-01 19:21:49,685-0500 INFO  RemoteLogHandler BLOCK_ACTIVE id=0501-2107480-000001
+2014-05-01 19:21:49,685-0500 INFO  RequestHandler Handler(tag: 23, RLOG) unregistering (send)
+2014-05-01 19:21:49,734-0500 INFO  TCPBufferManager Adjusting buffer size to 8650752 for 2 sockets
+2014-05-01 19:21:49,734-0500 INFO  AbstractCoasterChannel Timeout check started for TCPChannel [type: server, contact: unknown]
+2014-05-01 19:21:49,734-0500 INFO  AbstractTCPChannel Channel started: TCPChannel [type: server, contact: 192.168.0.100:34209]
+2014-05-01 19:21:49,734-0500 INFO  LocalTCPService Received registration: blockid = 0501-2107480-000001, url = borgmachine
+2014-05-01 19:21:49,734-0500 INFO  MetaChannel MetaChannel [context: worker-2, boundTo: null] binding to TCPChannel [type: server, contact: 192.168.0.100:34209]
+2014-05-01 19:21:49,734-0500 DEBUG Cpu worker started: block=0501-2107480-000001 host=borgmachine id=0
+2014-05-01 19:21:49,734-0500 DEBUG Cpu ready for work: block=0501-2107480-000001 id=0
+2014-05-01 19:21:49,734-0500 INFO  Block Started CPU 0:1398990109s
+2014-05-01 19:21:49,734-0500 INFO  Block Started worker 0501-2107480-000001:000000
+2014-05-01 19:21:49,734-0500 DEBUG Cpu requesting work: block=0501-2107480-000001 id=0 Cpus sleeping: 1
+2014-05-01 19:21:49,734-0500 INFO  RemoteLogHandler WORKER_ACTIVE blockid=0501-2107480-000001
+2014-05-01 19:21:49,735-0500 INFO  RequestHandler Handler(tag: 4581, REGISTER) unregistering (send)
+2014-05-01 19:21:49,735-0500 INFO  RequestHandler Handler(tag: 24, RLOG) unregistering (send)
+2014-05-01 19:21:49,735-0500 INFO  Cpu 0501-2107480-000001:0 (quality: 1.0) submitting urn:1398990107877-1398990107886-1398990107887: /bin/bash _swiftwrap.staging -e bash -out output/sim_9.out -err output/sim_9.log -i -d output -if simulate.sh -of output/sim_9.out|output/sim_9.log -cf  -cdmfile  -status provider -a simulate.sh --timesteps 1 --range 100 --nvalues 5
+2014-05-01 19:21:49,735-0500 INFO  RequestHandler Handler(tag: 25, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,736-0500 INFO  RequestHandler Handler(tag: 26, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,736-0500 DEBUG Cpu Stagein workerid=000000
+2014-05-01 19:21:49,736-0500 INFO  RequestHandler Handler(tag: 4582, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,736-0500 INFO  RequestHandler Handler(tag: 27, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,736-0500 INFO  GetFileHandler Handler(tag: 4583, GET) request complete; src=proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:49,736-0500 INFO  GetFileHandler Handler(tag: 4583, GET) reader: PR proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:49,736-0500 INFO  GetFileHandler Handler(tag: 4583, GET) -> 28
+2014-05-01 19:21:49,736-0500 INFO  GetFileHandler Handler(tag: 28, GET) request complete; src=file://localhost//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:49,736-0500 INFO  GetFileHandler Handler(tag: 28, GET) reader: LR-Handler(tag: 28, GET)
+2014-05-01 19:21:49,736-0500 INFO  GetFileHandler Handler(tag: 28, GET) sending length: 6261, 771712663
+2014-05-01 19:21:49,736-0500 INFO  ReadBuffer RB-LR-Handler(tag: 28, GET) will ask for 1 buffers for a size of 6261
+2014-05-01 19:21:49,736-0500 INFO  GetFileHandler Handler(tag: 4583, GET) sending length: 6261, 1520982808
+2014-05-01 19:21:49,736-0500 INFO  ReadBuffer RB-LR-Handler(tag: 28, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:49,736-0500 INFO  LocalIOProvider LR-Handler(tag: 28, GET) rbuf: RB-LR-Handler(tag: 28, GET)
+2014-05-01 19:21:49,737-0500 INFO  GetFileHandler Handler(tag: 28, GET) unregistering (last)
+2014-05-01 19:21:49,737-0500 INFO  ReadBuffer RB-LR-Handler(tag: 28, GET) de-allocating 1 buffers
+2014-05-01 19:21:49,737-0500 INFO  GetFileHandler Handler(tag: 4583, GET) unregistering (last)
+2014-05-01 19:21:49,737-0500 INFO  GetFileHandler Handler(tag: 4584, GET) request complete; src=proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./simulate.sh
+2014-05-01 19:21:49,737-0500 INFO  GetFileHandler Handler(tag: 4584, GET) reader: PR proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./simulate.sh
+2014-05-01 19:21:49,737-0500 INFO  GetFileHandler Handler(tag: 4584, GET) -> 29
+2014-05-01 19:21:49,737-0500 INFO  GetFileHandler Handler(tag: 29, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/simulate.sh
+2014-05-01 19:21:49,737-0500 INFO  GetFileHandler Handler(tag: 29, GET) reader: LR-Handler(tag: 29, GET)
+2014-05-01 19:21:49,737-0500 INFO  GetFileHandler Handler(tag: 29, GET) sending length: 3068, 1165006309
+2014-05-01 19:21:49,737-0500 INFO  ReadBuffer RB-LR-Handler(tag: 29, GET) will ask for 1 buffers for a size of 3068
+2014-05-01 19:21:49,737-0500 INFO  GetFileHandler Handler(tag: 4584, GET) sending length: 3068, 1652625664
+2014-05-01 19:21:49,737-0500 INFO  ReadBuffer RB-LR-Handler(tag: 29, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:49,737-0500 INFO  LocalIOProvider LR-Handler(tag: 29, GET) rbuf: RB-LR-Handler(tag: 29, GET)
+2014-05-01 19:21:49,737-0500 INFO  GetFileHandler Handler(tag: 29, GET) unregistering (last)
+2014-05-01 19:21:49,737-0500 INFO  ReadBuffer RB-LR-Handler(tag: 29, GET) de-allocating 1 buffers
+2014-05-01 19:21:49,738-0500 INFO  GetFileHandler Handler(tag: 4584, GET) unregistering (last)
+2014-05-01 19:21:49,738-0500 DEBUG Cpu Active workerid=0501-2107480-000001:000000
+2014-05-01 19:21:49,738-0500 INFO  RequestHandler Handler(tag: 4585, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,739-0500 INFO  RequestHandler Handler(tag: 30, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:49,958-0500 INFO  RuntimeStats$ProgressTicker   Submitted:3  Active:6  Finished successfully:1
+2014-05-01 19:21:49,958-0500 INFO  RuntimeStats$ProgressTicker HeapMax: 954466304, CrtHeap: 156893184, UsedHeap: 52839296
+2014-05-01 19:21:50,446-0500 INFO  RequestHandler Handler(tag: 27, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,446-0500 INFO  PutFileHandler Handler(tag: 28, PUT) source: /home/yadu/work/p4-run003/jobs/2/bash-21vlb1ql/output/sim_7.log
+2014-05-01 19:21:50,446-0500 INFO  PutFileHandler Handler(tag: 28, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_7.log
+2014-05-01 19:21:50,447-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_7.log data out : 
+[B@df6abc4
+2014-05-01 19:21:50,447-0500 INFO  PutFileHandler Handler(tag: 28, PUT) Transfer done
+2014-05-01 19:21:50,447-0500 INFO  RequestHandler Handler(tag: 28, PUT) unregistering (send)
+2014-05-01 19:21:50,455-0500 INFO  RequestHandler Handler(tag: 29, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,455-0500 INFO  PutFileHandler Handler(tag: 30, PUT) source: /home/yadu/work/p4-run003/jobs/2/bash-21vlb1ql/output/sim_7.out
+2014-05-01 19:21:50,455-0500 INFO  PutFileHandler Handler(tag: 30, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_7.out
+2014-05-01 19:21:50,455-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_7.out data out : 
+[B@6528537b
+2014-05-01 19:21:50,455-0500 INFO  PutFileHandler Handler(tag: 30, PUT) Transfer done
+2014-05-01 19:21:50,456-0500 INFO  RequestHandler Handler(tag: 30, PUT) unregistering (send)
+2014-05-01 19:21:50,456-0500 INFO  RequestHandler Handler(tag: 31, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,456-0500 INFO  PutFileHandler Handler(tag: 32, PUT) source: /home/yadu/work/p4-run003/jobs/3/bash-31vlb1ql/output/sim_5.out
+2014-05-01 19:21:50,456-0500 INFO  PutFileHandler Handler(tag: 32, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_5.out
+2014-05-01 19:21:50,456-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_5.out data out : 
+[B@6400cd3a
+2014-05-01 19:21:50,456-0500 INFO  PutFileHandler Handler(tag: 32, PUT) Transfer done
+2014-05-01 19:21:50,457-0500 INFO  RequestHandler Handler(tag: 32, PUT) unregistering (send)
+2014-05-01 19:21:50,457-0500 INFO  RequestHandler Handler(tag: 33, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,457-0500 INFO  PutFileHandler Handler(tag: 34, PUT) source: /home/yadu/work/p4-run003/jobs/3/bash-31vlb1ql/output/sim_5.log
+2014-05-01 19:21:50,457-0500 INFO  PutFileHandler Handler(tag: 34, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_5.log
+2014-05-01 19:21:50,501-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_5.log data out : 
+[B@ee3d0a5
+2014-05-01 19:21:50,502-0500 INFO  PutFileHandler Handler(tag: 34, PUT) Transfer done
+2014-05-01 19:21:50,502-0500 INFO  RequestHandler Handler(tag: 34, PUT) unregistering (send)
+2014-05-01 19:21:50,502-0500 INFO  RequestHandler Handler(tag: 35, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,502-0500 INFO  PutFileHandler Handler(tag: 36, PUT) source: /home/yadu/work/p4-run003/jobs/z/bash-z0vlb1ql/output/sim_8.out
+2014-05-01 19:21:50,503-0500 INFO  PutFileHandler Handler(tag: 36, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_8.out
+2014-05-01 19:21:50,503-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_8.out data out : 
+[B@5da03325
+2014-05-01 19:21:50,503-0500 INFO  PutFileHandler Handler(tag: 36, PUT) Transfer done
+2014-05-01 19:21:50,503-0500 INFO  RequestHandler Handler(tag: 36, PUT) unregistering (send)
+2014-05-01 19:21:50,507-0500 INFO  RequestHandler Handler(tag: 37, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,508-0500 INFO  PutFileHandler Handler(tag: 38, PUT) source: /home/yadu/work/p4-run003/jobs/z/bash-z0vlb1ql/output/sim_8.log
+2014-05-01 19:21:50,508-0500 INFO  PutFileHandler Handler(tag: 38, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_8.log
+2014-05-01 19:21:50,508-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_8.log data out : 
+[B@3559b630
+2014-05-01 19:21:50,508-0500 INFO  PutFileHandler Handler(tag: 38, PUT) Transfer done
+2014-05-01 19:21:50,508-0500 INFO  RequestHandler Handler(tag: 38, PUT) unregistering (send)
+2014-05-01 19:21:50,515-0500 INFO  RequestHandler Handler(tag: 39, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,515-0500 INFO  PutFileHandler Handler(tag: 40, PUT) source: /home/yadu/work/p4-run003/jobs/y/bash-y0vlb1ql/output/sim_0.log
+2014-05-01 19:21:50,516-0500 INFO  PutFileHandler Handler(tag: 40, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_0.log
+2014-05-01 19:21:50,516-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_0.log data out : 
+[B@641385a1
+2014-05-01 19:21:50,516-0500 INFO  PutFileHandler Handler(tag: 40, PUT) Transfer done
+2014-05-01 19:21:50,516-0500 INFO  RequestHandler Handler(tag: 40, PUT) unregistering (send)
+2014-05-01 19:21:50,582-0500 INFO  RequestHandler Handler(tag: 41, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,583-0500 INFO  PutFileHandler Handler(tag: 42, PUT) source: /home/yadu/work/p4-run003/jobs/y/bash-y0vlb1ql/output/sim_0.out
+2014-05-01 19:21:50,583-0500 INFO  PutFileHandler Handler(tag: 42, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_0.out
+2014-05-01 19:21:50,583-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_0.out data out : 
+[B@2409b0bf
+2014-05-01 19:21:50,583-0500 INFO  PutFileHandler Handler(tag: 42, PUT) Transfer done
+2014-05-01 19:21:50,583-0500 INFO  RequestHandler Handler(tag: 42, PUT) unregistering (send)
+2014-05-01 19:21:50,589-0500 INFO  LateBindingScheduler jobs queued: 0
+2014-05-01 19:21:50,589-0500 INFO  RequestHandler Handler(tag: 43, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,589-0500 DEBUG swift JOB_END jobid=bash-21vlb1ql
+2014-05-01 19:21:50,589-0500 INFO  ProcessStageouts Collect list: []
+2014-05-01 19:21:50,590-0500 INFO  TRACE VARIABLE, line 24, thread R-5-7, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_7.out>
+2014-05-01 19:21:50,590-0500 INFO  TRACE ASSIGN, line 28, thread R-5-7-3, sims[7] = <file://localhost/output/sim_7.out>
+2014-05-01 19:21:50,590-0500 INFO  RequestHandler Handler(tag: 44, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,590-0500 INFO  TRACE VARIABLE, line 25, thread R-5-7, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_7.log>
+2014-05-01 19:21:50,590-0500 INFO  swift END_SUCCESS thread=R-5-7-2 tr=bash
+2014-05-01 19:21:50,590-0500 DEBUG swift PROCEDURE_END line=3 thread=R-5-7-2 name=simulation
+2014-05-01 19:21:50,590-0500 INFO  SwiftFunction Cleaning simout:file = <FILE> - Closed
+2014-05-01 19:21:50,590-0500 INFO  SwiftFunction Cleaning simlog:file = <FILE> - Closed
+2014-05-01 19:21:50,590-0500 DEBUG swift FOREACH_IT_END line=23 thread=R-5-7
+2014-05-01 19:21:50,590-0500 INFO  LateBindingScheduler jobs queued: 0
+2014-05-01 19:21:50,590-0500 INFO  RequestHandler Handler(tag: 45, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,591-0500 DEBUG swift JOB_END jobid=bash-31vlb1ql
+2014-05-01 19:21:50,591-0500 INFO  ProcessStageouts Collect list: []
+2014-05-01 19:21:50,591-0500 INFO  TRACE VARIABLE, line 24, thread R-5x2, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_5.out>
+2014-05-01 19:21:50,591-0500 INFO  TRACE VARIABLE, line 25, thread R-5x2, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_5.log>
+2014-05-01 19:21:50,591-0500 INFO  TRACE ASSIGN, line 28, thread R-5x2-3, sims[5] = <file://localhost/output/sim_5.out>
+2014-05-01 19:21:50,591-0500 INFO  swift END_SUCCESS thread=R-5x2-2 tr=bash
+2014-05-01 19:21:50,592-0500 INFO  RequestHandler Handler(tag: 46, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,592-0500 DEBUG swift PROCEDURE_END line=3 thread=R-5x2-2 name=simulation
+2014-05-01 19:21:50,592-0500 INFO  SwiftFunction Cleaning simout:file = <FILE> - Closed
+2014-05-01 19:21:50,592-0500 INFO  SwiftFunction Cleaning simlog:file = <FILE> - Closed
+2014-05-01 19:21:50,592-0500 DEBUG swift FOREACH_IT_END line=23 thread=R-5x2
+2014-05-01 19:21:50,593-0500 INFO  RequestHandler Handler(tag: 47, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,594-0500 INFO  RequestHandler Handler(tag: 48, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,594-0500 INFO  GetFileHandler Handler(tag: 49, GET) request complete; src=file://localhost//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:50,595-0500 INFO  GetFileHandler Handler(tag: 49, GET) reader: LR-Handler(tag: 49, GET)
+2014-05-01 19:21:50,595-0500 INFO  GetFileHandler Handler(tag: 49, GET) sending length: 6261, 1036275057
+2014-05-01 19:21:50,595-0500 INFO  ReadBuffer RB-LR-Handler(tag: 49, GET) will ask for 1 buffers for a size of 6261
+2014-05-01 19:21:50,595-0500 INFO  ReadBuffer RB-LR-Handler(tag: 49, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:50,595-0500 INFO  LocalIOProvider LR-Handler(tag: 49, GET) rbuf: RB-LR-Handler(tag: 49, GET)
+2014-05-01 19:21:50,595-0500 INFO  GetFileHandler Handler(tag: 49, GET) unregistering (last)
+2014-05-01 19:21:50,595-0500 INFO  ReadBuffer RB-LR-Handler(tag: 49, GET) de-allocating 1 buffers
+2014-05-01 19:21:50,637-0500 INFO  RequestHandler Handler(tag: 50, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,638-0500 INFO  RequestHandler Handler(tag: 51, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,638-0500 INFO  GetFileHandler Handler(tag: 52, GET) request complete; src=file://localhost//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:50,638-0500 INFO  GetFileHandler Handler(tag: 52, GET) reader: LR-Handler(tag: 52, GET)
+2014-05-01 19:21:50,639-0500 INFO  GetFileHandler Handler(tag: 52, GET) sending length: 6261, 680812857
+2014-05-01 19:21:50,639-0500 INFO  ReadBuffer RB-LR-Handler(tag: 52, GET) will ask for 1 buffers for a size of 6261
+2014-05-01 19:21:50,639-0500 INFO  ReadBuffer RB-LR-Handler(tag: 52, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:50,639-0500 INFO  LocalIOProvider LR-Handler(tag: 52, GET) rbuf: RB-LR-Handler(tag: 52, GET)
+2014-05-01 19:21:50,639-0500 INFO  GetFileHandler Handler(tag: 52, GET) unregistering (last)
+2014-05-01 19:21:50,639-0500 INFO  ReadBuffer RB-LR-Handler(tag: 52, GET) de-allocating 1 buffers
+2014-05-01 19:21:50,676-0500 DEBUG Cpu Stageout workerid=000000
+2014-05-01 19:21:50,676-0500 INFO  RequestHandler Handler(tag: 708, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,676-0500 INFO  RequestHandler Handler(tag: 31, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,677-0500 INFO  PutFileHandler Handler(tag: 709, PUT) source: /tmp/swiftwork/p4-run003/jobs/v/bash-v0vlb1ql/output/sim_4.out
+2014-05-01 19:21:50,677-0500 INFO  PutFileHandler Handler(tag: 709, PUT) destination: proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./output/sim_4.out
+2014-05-01 19:21:50,677-0500 INFO  PutFileCommand Sending Command(tag: 32, PUT) (t) on cpipe://1
+2014-05-01 19:21:50,677-0500 INFO  PutFileCommand Command(tag: 32, PUT) (t) sending data
+2014-05-01 19:21:50,677-0500 INFO  PutFileHandler Handler(tag: 709, PUT) -> 32
+2014-05-01 19:21:50,678-0500 INFO  PutFileHandler Handler(tag: 32, PUT) source: /tmp/swiftwork/p4-run003/jobs/v/bash-v0vlb1ql/output/sim_4.out
+2014-05-01 19:21:50,678-0500 INFO  PutFileHandler Writing to proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./output/sim_4.out data out : 
+[B@56d04114
+2014-05-01 19:21:50,678-0500 INFO  PutFileHandler Handler(tag: 32, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_4.out
+2014-05-01 19:21:50,678-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_4.out data out : 
+[B@1aef201d
+2014-05-01 19:21:50,678-0500 INFO  PutFileHandler Handler(tag: 32, PUT) Transfer done
+2014-05-01 19:21:50,678-0500 INFO  RequestHandler Handler(tag: 32, PUT) unregistering (send)
+2014-05-01 19:21:50,679-0500 INFO  PutFileHandler Handler(tag: 709, PUT) Transfer done
+2014-05-01 19:21:50,679-0500 INFO  RequestHandler Handler(tag: 709, PUT) unregistering (send)
+2014-05-01 19:21:50,679-0500 DEBUG Cpu Stageout workerid=000000
+2014-05-01 19:21:50,679-0500 INFO  RequestHandler Handler(tag: 710, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,679-0500 INFO  RequestHandler Handler(tag: 33, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,680-0500 INFO  PutFileHandler Handler(tag: 711, PUT) source: /tmp/swiftwork/p4-run003/jobs/v/bash-v0vlb1ql/output/sim_4.log
+2014-05-01 19:21:50,680-0500 INFO  PutFileHandler Handler(tag: 711, PUT) destination: proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./output/sim_4.log
+2014-05-01 19:21:50,680-0500 INFO  PutFileCommand Sending Command(tag: 34, PUT) (t) on cpipe://1
+2014-05-01 19:21:50,680-0500 INFO  PutFileCommand Command(tag: 34, PUT) (t) sending data
+2014-05-01 19:21:50,680-0500 INFO  PutFileHandler Handler(tag: 711, PUT) -> 34
+2014-05-01 19:21:50,680-0500 INFO  PutFileHandler Writing to proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./output/sim_4.log data out : 
+[B@342cc581
+2014-05-01 19:21:50,681-0500 INFO  PutFileHandler Handler(tag: 34, PUT) source: /tmp/swiftwork/p4-run003/jobs/v/bash-v0vlb1ql/output/sim_4.log
+2014-05-01 19:21:50,681-0500 INFO  PutFileHandler Handler(tag: 34, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_4.log
+2014-05-01 19:21:50,681-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_4.log data out : 
+[B@1ebd88ed
+2014-05-01 19:21:50,682-0500 INFO  PutFileHandler Handler(tag: 34, PUT) Transfer done
+2014-05-01 19:21:50,682-0500 INFO  RequestHandler Handler(tag: 34, PUT) unregistering (send)
+2014-05-01 19:21:50,682-0500 INFO  PutFileHandler Handler(tag: 711, PUT) Transfer done
+2014-05-01 19:21:50,682-0500 INFO  RequestHandler Handler(tag: 711, PUT) unregistering (send)
+2014-05-01 19:21:50,683-0500 DEBUG Cpu Completed
+2014-05-01 19:21:50,683-0500 INFO  Cpu 0501-2107480-000000:0 jobTerminated
+2014-05-01 19:21:50,683-0500 DEBUG Cpu ready for work: block=0501-2107480-000000 id=0
+2014-05-01 19:21:50,683-0500 DEBUG Cpu requesting work: block=0501-2107480-000000 id=0 Cpus sleeping: 1
+2014-05-01 19:21:50,683-0500 INFO  RequestHandler Handler(tag: 712, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,684-0500 DEBUG Cpu 0501-2107480-000000:0 sleeping
+2014-05-01 19:21:50,684-0500 INFO  LateBindingScheduler jobs queued: 0
+2014-05-01 19:21:50,684-0500 INFO  RequestHandler Handler(tag: 35, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,684-0500 DEBUG swift JOB_END jobid=bash-v0vlb1ql
+2014-05-01 19:21:50,684-0500 INFO  ProcessStageouts Collect list: []
+2014-05-01 19:21:50,684-0500 INFO  TRACE VARIABLE, line 24, thread R-5-4, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_4.out>
+2014-05-01 19:21:50,684-0500 INFO  TRACE VARIABLE, line 25, thread R-5-4, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_4.log>
+2014-05-01 19:21:50,684-0500 INFO  TRACE ASSIGN, line 28, thread R-5-4-3, sims[4] = <file://localhost/output/sim_4.out>
+2014-05-01 19:21:50,684-0500 INFO  swift END_SUCCESS thread=R-5-4-2 tr=bash
+2014-05-01 19:21:50,684-0500 DEBUG swift PROCEDURE_END line=3 thread=R-5-4-2 name=simulation
+2014-05-01 19:21:50,685-0500 INFO  SwiftFunction Cleaning simout:file = <FILE> - Closed
+2014-05-01 19:21:50,685-0500 INFO  SwiftFunction Cleaning simlog:file = <FILE> - Closed
+2014-05-01 19:21:50,685-0500 DEBUG swift FOREACH_IT_END line=23 thread=R-5-4
+2014-05-01 19:21:50,779-0500 DEBUG Cpu Stageout workerid=000000
+2014-05-01 19:21:50,779-0500 INFO  RequestHandler Handler(tag: 4586, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,779-0500 INFO  RequestHandler Handler(tag: 36, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,780-0500 INFO  PutFileHandler Handler(tag: 4587, PUT) source: /tmp/swiftwork/p4-run003/jobs/0/bash-01vlb1ql/output/sim_9.out
+2014-05-01 19:21:50,780-0500 INFO  PutFileHandler Handler(tag: 4587, PUT) destination: proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./output/sim_9.out
+2014-05-01 19:21:50,780-0500 INFO  PutFileCommand Sending Command(tag: 37, PUT) (t) on cpipe://1
+2014-05-01 19:21:50,780-0500 INFO  PutFileCommand Command(tag: 37, PUT) (t) sending data
+2014-05-01 19:21:50,780-0500 INFO  PutFileHandler Handler(tag: 4587, PUT) -> 37
+2014-05-01 19:21:50,780-0500 INFO  PutFileHandler Handler(tag: 37, PUT) source: /tmp/swiftwork/p4-run003/jobs/0/bash-01vlb1ql/output/sim_9.out
+2014-05-01 19:21:50,780-0500 INFO  PutFileHandler Writing to proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./output/sim_9.out data out : 
+[B@52de94b8
+2014-05-01 19:21:50,780-0500 INFO  PutFileHandler Handler(tag: 37, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_9.out
+2014-05-01 19:21:50,780-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_9.out data out : 
+[B@4df23618
+2014-05-01 19:21:50,781-0500 INFO  PutFileHandler Handler(tag: 37, PUT) Transfer done
+2014-05-01 19:21:50,781-0500 INFO  RequestHandler Handler(tag: 37, PUT) unregistering (send)
+2014-05-01 19:21:50,781-0500 INFO  PutFileHandler Handler(tag: 4587, PUT) Transfer done
+2014-05-01 19:21:50,781-0500 INFO  RequestHandler Handler(tag: 4587, PUT) unregistering (send)
+2014-05-01 19:21:50,781-0500 DEBUG Cpu Stageout workerid=000000
+2014-05-01 19:21:50,781-0500 INFO  RequestHandler Handler(tag: 4588, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,781-0500 INFO  RequestHandler Handler(tag: 38, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,782-0500 INFO  PutFileHandler Handler(tag: 4589, PUT) source: /tmp/swiftwork/p4-run003/jobs/0/bash-01vlb1ql/output/sim_9.log
+2014-05-01 19:21:50,782-0500 INFO  PutFileHandler Handler(tag: 4589, PUT) destination: proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./output/sim_9.log
+2014-05-01 19:21:50,782-0500 INFO  PutFileCommand Sending Command(tag: 39, PUT) (t) on cpipe://1
+2014-05-01 19:21:50,782-0500 INFO  PutFileCommand Command(tag: 39, PUT) (t) sending data
+2014-05-01 19:21:50,782-0500 INFO  PutFileHandler Handler(tag: 4589, PUT) -> 39
+2014-05-01 19:21:50,782-0500 INFO  PutFileHandler Handler(tag: 39, PUT) source: /tmp/swiftwork/p4-run003/jobs/0/bash-01vlb1ql/output/sim_9.log
+2014-05-01 19:21:50,782-0500 INFO  PutFileHandler Writing to proxy://u6a79638c-145ba4ef5a7--7ffe-u6a79638c-145ba4ef5a7--7fffS//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/./output/sim_9.log data out : 
+[B@3971832
+2014-05-01 19:21:50,782-0500 INFO  PutFileHandler Handler(tag: 39, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_9.log
+2014-05-01 19:21:50,782-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_9.log data out : 
+[B@76fe005b
+2014-05-01 19:21:50,782-0500 INFO  PutFileHandler Handler(tag: 39, PUT) Transfer done
+2014-05-01 19:21:50,783-0500 INFO  RequestHandler Handler(tag: 39, PUT) unregistering (send)
+2014-05-01 19:21:50,783-0500 INFO  PutFileHandler Handler(tag: 4589, PUT) Transfer done
+2014-05-01 19:21:50,783-0500 INFO  RequestHandler Handler(tag: 4589, PUT) unregistering (send)
+2014-05-01 19:21:50,784-0500 DEBUG Cpu Completed
+2014-05-01 19:21:50,784-0500 INFO  Cpu 0501-2107480-000001:0 jobTerminated
+2014-05-01 19:21:50,784-0500 DEBUG Cpu ready for work: block=0501-2107480-000001 id=0
+2014-05-01 19:21:50,784-0500 DEBUG Cpu requesting work: block=0501-2107480-000001 id=0 Cpus sleeping: 2
+2014-05-01 19:21:50,784-0500 INFO  RequestHandler Handler(tag: 4590, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,784-0500 DEBUG Cpu 0501-2107480-000001:0 sleeping
+2014-05-01 19:21:50,785-0500 INFO  LateBindingScheduler jobs queued: 0
+2014-05-01 19:21:50,785-0500 INFO  LateBindingScheduler jobs queued: 0
+2014-05-01 19:21:50,785-0500 INFO  RequestHandler Handler(tag: 40, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,785-0500 INFO  RequestHandler Handler(tag: 53, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,785-0500 DEBUG swift JOB_END jobid=bash-01vlb1ql
+2014-05-01 19:21:50,785-0500 DEBUG swift JOB_END jobid=bash-z0vlb1ql
+2014-05-01 19:21:50,785-0500 INFO  ProcessStageouts Collect list: []
+2014-05-01 19:21:50,785-0500 INFO  ProcessStageouts Collect list: []
+2014-05-01 19:21:50,785-0500 INFO  TRACE VARIABLE, line 24, thread R-5-9, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_9.out>
+2014-05-01 19:21:50,785-0500 INFO  TRACE ASSIGN, line 28, thread R-5-9-3, sims[9] = <file://localhost/output/sim_9.out>
+2014-05-01 19:21:50,785-0500 INFO  TRACE VARIABLE, line 25, thread R-5-9, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_9.log>
+2014-05-01 19:21:50,785-0500 INFO  TRACE VARIABLE, line 24, thread R-5-8, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_8.out>
+2014-05-01 19:21:50,786-0500 INFO  TRACE ASSIGN, line 28, thread R-5-8-3, sims[8] = <file://localhost/output/sim_8.out>
+2014-05-01 19:21:50,786-0500 INFO  TRACE VARIABLE, line 25, thread R-5-8, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_8.log>
+2014-05-01 19:21:50,786-0500 INFO  swift END_SUCCESS thread=R-5-9-2 tr=bash
+2014-05-01 19:21:50,786-0500 INFO  swift END_SUCCESS thread=R-5-8-2 tr=bash
+2014-05-01 19:21:50,786-0500 DEBUG swift PROCEDURE_END line=3 thread=R-5-9-2 name=simulation
+2014-05-01 19:21:50,786-0500 DEBUG swift PROCEDURE_END line=3 thread=R-5-8-2 name=simulation
+2014-05-01 19:21:50,786-0500 INFO  SwiftFunction Cleaning simout:file = <FILE> - Closed
+2014-05-01 19:21:50,786-0500 INFO  SwiftFunction Cleaning simlog:file = <FILE> - Closed
+2014-05-01 19:21:50,786-0500 INFO  RequestHandler Handler(tag: 54, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,786-0500 DEBUG swift FOREACH_IT_END line=23 thread=R-5-9
+2014-05-01 19:21:50,786-0500 INFO  SwiftFunction Cleaning simout:file = <FILE> - Closed
+2014-05-01 19:21:50,786-0500 INFO  SwiftFunction Cleaning simlog:file = <FILE> - Closed
+2014-05-01 19:21:50,786-0500 DEBUG swift FOREACH_IT_END line=23 thread=R-5-8
+2014-05-01 19:21:50,787-0500 INFO  LateBindingScheduler jobs queued: 0
+2014-05-01 19:21:50,787-0500 INFO  RequestHandler Handler(tag: 55, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,787-0500 DEBUG swift JOB_END jobid=bash-y0vlb1ql
+2014-05-01 19:21:50,787-0500 INFO  ProcessStageouts Collect list: []
+2014-05-01 19:21:50,787-0500 INFO  TRACE VARIABLE, line 24, thread R-5-0, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_0.out>
+2014-05-01 19:21:50,787-0500 INFO  TRACE ASSIGN, line 28, thread R-5-0-3, sims[0] = <file://localhost/output/sim_0.out>
+2014-05-01 19:21:50,787-0500 INFO  TRACE VARIABLE, line 25, thread R-5-0, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_0.log>
+2014-05-01 19:21:50,787-0500 INFO  RequestHandler Handler(tag: 56, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,787-0500 INFO  swift END_SUCCESS thread=R-5-0-2 tr=bash
+2014-05-01 19:21:50,787-0500 DEBUG swift PROCEDURE_END line=3 thread=R-5-0-2 name=simulation
+2014-05-01 19:21:50,788-0500 INFO  SwiftFunction Cleaning simout:file = <FILE> - Closed
+2014-05-01 19:21:50,788-0500 INFO  SwiftFunction Cleaning simlog:file = <FILE> - Closed
+2014-05-01 19:21:50,788-0500 DEBUG swift FOREACH_IT_END line=23 thread=R-5-0
+2014-05-01 19:21:50,788-0500 INFO  RequestHandler Handler(tag: 57, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:50,788-0500 INFO  GetFileHandler Handler(tag: 58, GET) request complete; src=file://localhost//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:50,788-0500 INFO  GetFileHandler Handler(tag: 58, GET) reader: LR-Handler(tag: 58, GET)
+2014-05-01 19:21:50,788-0500 INFO  GetFileHandler Handler(tag: 58, GET) sending length: 6261, 842408254
+2014-05-01 19:21:50,788-0500 INFO  ReadBuffer RB-LR-Handler(tag: 58, GET) will ask for 1 buffers for a size of 6261
+2014-05-01 19:21:50,788-0500 INFO  ReadBuffer RB-LR-Handler(tag: 58, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:50,788-0500 INFO  LocalIOProvider LR-Handler(tag: 58, GET) rbuf: RB-LR-Handler(tag: 58, GET)
+2014-05-01 19:21:50,788-0500 INFO  GetFileHandler Handler(tag: 58, GET) unregistering (last)
+2014-05-01 19:21:50,788-0500 INFO  ReadBuffer RB-LR-Handler(tag: 58, GET) de-allocating 1 buffers
+2014-05-01 19:21:50,918-0500 INFO  GetFileHandler Handler(tag: 59, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/simulate.sh
+2014-05-01 19:21:50,918-0500 INFO  GetFileHandler Handler(tag: 59, GET) reader: LR-Handler(tag: 59, GET)
+2014-05-01 19:21:50,918-0500 INFO  GetFileHandler Handler(tag: 59, GET) sending length: 3068, 1783490700
+2014-05-01 19:21:50,919-0500 INFO  ReadBuffer RB-LR-Handler(tag: 59, GET) will ask for 1 buffers for a size of 3068
+2014-05-01 19:21:50,919-0500 INFO  ReadBuffer RB-LR-Handler(tag: 59, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:50,919-0500 INFO  LocalIOProvider LR-Handler(tag: 59, GET) rbuf: RB-LR-Handler(tag: 59, GET)
+2014-05-01 19:21:50,919-0500 INFO  GetFileHandler Handler(tag: 59, GET) unregistering (last)
+2014-05-01 19:21:50,919-0500 INFO  ReadBuffer RB-LR-Handler(tag: 59, GET) de-allocating 1 buffers
+2014-05-01 19:21:50,920-0500 INFO  GetFileHandler Handler(tag: 60, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/simulate.sh
+2014-05-01 19:21:50,920-0500 INFO  GetFileHandler Handler(tag: 60, GET) reader: LR-Handler(tag: 60, GET)
+2014-05-01 19:21:50,920-0500 INFO  GetFileHandler Handler(tag: 60, GET) sending length: 3068, 1064542616
+2014-05-01 19:21:50,920-0500 INFO  ReadBuffer RB-LR-Handler(tag: 60, GET) will ask for 1 buffers for a size of 3068
+2014-05-01 19:21:50,920-0500 INFO  ReadBuffer RB-LR-Handler(tag: 60, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:50,920-0500 INFO  LocalIOProvider LR-Handler(tag: 60, GET) rbuf: RB-LR-Handler(tag: 60, GET)
+2014-05-01 19:21:50,920-0500 INFO  GetFileHandler Handler(tag: 60, GET) unregistering (last)
+2014-05-01 19:21:50,920-0500 INFO  ReadBuffer RB-LR-Handler(tag: 60, GET) de-allocating 1 buffers
+2014-05-01 19:21:50,958-0500 INFO  RuntimeStats$ProgressTicker   Stage in:3  Finished successfully:7
+2014-05-01 19:21:50,958-0500 INFO  RuntimeStats$ProgressTicker HeapMax: 954466304, CrtHeap: 156893184, UsedHeap: 54172464
+2014-05-01 19:21:51,144-0500 INFO  GetFileHandler Handler(tag: 61, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/simulate.sh
+2014-05-01 19:21:51,145-0500 INFO  GetFileHandler Handler(tag: 61, GET) reader: LR-Handler(tag: 61, GET)
+2014-05-01 19:21:51,145-0500 INFO  GetFileHandler Handler(tag: 61, GET) sending length: 3068, 1361168964
+2014-05-01 19:21:51,145-0500 INFO  ReadBuffer RB-LR-Handler(tag: 61, GET) will ask for 1 buffers for a size of 3068
+2014-05-01 19:21:51,145-0500 INFO  ReadBuffer RB-LR-Handler(tag: 61, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:51,145-0500 INFO  LocalIOProvider LR-Handler(tag: 61, GET) rbuf: RB-LR-Handler(tag: 61, GET)
+2014-05-01 19:21:51,145-0500 INFO  GetFileHandler Handler(tag: 61, GET) unregistering (last)
+2014-05-01 19:21:51,146-0500 INFO  ReadBuffer RB-LR-Handler(tag: 61, GET) de-allocating 1 buffers
+2014-05-01 19:21:51,147-0500 INFO  RequestHandler Handler(tag: 62, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:51,198-0500 INFO  RequestHandler Handler(tag: 63, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:51,396-0500 INFO  RequestHandler Handler(tag: 64, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:51,959-0500 INFO  RuntimeStats$ProgressTicker   Active:3  Finished successfully:7
+2014-05-01 19:21:51,959-0500 INFO  RuntimeStats$ProgressTicker HeapMax: 954466304, CrtHeap: 156893184, UsedHeap: 54172544
+2014-05-01 19:21:52,131-0500 INFO  RequestHandler Handler(tag: 65, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:52,132-0500 INFO  PutFileHandler Handler(tag: 66, PUT) source: /home/yadu/work/p4-run003/jobs/1/bash-11vlb1ql/output/sim_3.out
+2014-05-01 19:21:52,132-0500 INFO  PutFileHandler Handler(tag: 66, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_3.out
+2014-05-01 19:21:52,132-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_3.out data out : 
+[B@7da343cc
+2014-05-01 19:21:52,132-0500 INFO  PutFileHandler Handler(tag: 66, PUT) Transfer done
+2014-05-01 19:21:52,132-0500 INFO  RequestHandler Handler(tag: 66, PUT) unregistering (send)
+2014-05-01 19:21:52,132-0500 INFO  RequestHandler Handler(tag: 67, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:52,132-0500 INFO  PutFileHandler Handler(tag: 68, PUT) source: /home/yadu/work/p4-run003/jobs/1/bash-11vlb1ql/output/sim_3.log
+2014-05-01 19:21:52,132-0500 INFO  PutFileHandler Handler(tag: 68, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_3.log
+2014-05-01 19:21:52,185-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_3.log data out : 
+[B@411dba55
+2014-05-01 19:21:52,185-0500 INFO  PutFileHandler Handler(tag: 68, PUT) Transfer done
+2014-05-01 19:21:52,185-0500 INFO  RequestHandler Handler(tag: 68, PUT) unregistering (send)
+2014-05-01 19:21:52,206-0500 INFO  RequestHandler Handler(tag: 69, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:52,206-0500 INFO  PutFileHandler Handler(tag: 70, PUT) source: /home/yadu/work/p4-run003/jobs/x/bash-x0vlb1ql/output/sim_2.log
+2014-05-01 19:21:52,206-0500 INFO  PutFileHandler Handler(tag: 70, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_2.log
+2014-05-01 19:21:52,206-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_2.log data out : 
+[B@6f5aca3b
+2014-05-01 19:21:52,206-0500 INFO  PutFileHandler Handler(tag: 70, PUT) Transfer done
+2014-05-01 19:21:52,206-0500 INFO  RequestHandler Handler(tag: 70, PUT) unregistering (send)
+2014-05-01 19:21:52,299-0500 INFO  RequestHandler Handler(tag: 71, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:52,299-0500 INFO  PutFileHandler Handler(tag: 72, PUT) source: /home/yadu/work/p4-run003/jobs/x/bash-x0vlb1ql/output/sim_2.out
+2014-05-01 19:21:52,299-0500 INFO  PutFileHandler Handler(tag: 72, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_2.out
+2014-05-01 19:21:52,299-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_2.out data out : 
+[B@6825f1db
+2014-05-01 19:21:52,299-0500 INFO  PutFileHandler Handler(tag: 72, PUT) Transfer done
+2014-05-01 19:21:52,299-0500 INFO  RequestHandler Handler(tag: 72, PUT) unregistering (send)
+2014-05-01 19:21:52,332-0500 INFO  LateBindingScheduler jobs queued: 0
+2014-05-01 19:21:52,332-0500 INFO  RequestHandler Handler(tag: 73, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:52,333-0500 DEBUG swift JOB_END jobid=bash-11vlb1ql
+2014-05-01 19:21:52,333-0500 INFO  ProcessStageouts Collect list: []
+2014-05-01 19:21:52,333-0500 INFO  TRACE VARIABLE, line 24, thread R-5-3, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_3.out>
+2014-05-01 19:21:52,333-0500 INFO  TRACE VARIABLE, line 25, thread R-5-3, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_3.log>
+2014-05-01 19:21:52,333-0500 INFO  TRACE ASSIGN, line 28, thread R-5-3x2, sims[3] = <file://localhost/output/sim_3.out>
+2014-05-01 19:21:52,333-0500 INFO  swift END_SUCCESS thread=R-5-3-2 tr=bash
+2014-05-01 19:21:52,333-0500 DEBUG swift PROCEDURE_END line=3 thread=R-5-3-2 name=simulation
+2014-05-01 19:21:52,333-0500 INFO  SwiftFunction Cleaning simout:file = <FILE> - Closed
+2014-05-01 19:21:52,333-0500 INFO  SwiftFunction Cleaning simlog:file = <FILE> - Closed
+2014-05-01 19:21:52,333-0500 INFO  RequestHandler Handler(tag: 74, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:52,333-0500 DEBUG swift FOREACH_IT_END line=23 thread=R-5-3
+2014-05-01 19:21:52,333-0500 INFO  PutFileHandler Handler(tag: 75, PUT) source: /home/yadu/work/p4-run003/jobs/4/bash-41vlb1ql/output/sim_1.out
+2014-05-01 19:21:52,333-0500 INFO  PutFileHandler Handler(tag: 75, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_1.out
+2014-05-01 19:21:52,333-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_1.out data out : 
+[B@2b2b7313
+2014-05-01 19:21:52,333-0500 INFO  PutFileHandler Handler(tag: 75, PUT) Transfer done
+2014-05-01 19:21:52,334-0500 INFO  RequestHandler Handler(tag: 75, PUT) unregistering (send)
+2014-05-01 19:21:52,334-0500 INFO  RequestHandler Handler(tag: 76, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:52,334-0500 INFO  PutFileHandler Handler(tag: 77, PUT) source: /home/yadu/work/p4-run003/jobs/4/bash-41vlb1ql/output/sim_1.log
+2014-05-01 19:21:52,334-0500 INFO  PutFileHandler Handler(tag: 77, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_1.log
+2014-05-01 19:21:52,354-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_1.log data out : 
+[B@4c58d7d3
+2014-05-01 19:21:52,354-0500 INFO  PutFileHandler Handler(tag: 77, PUT) Transfer done
+2014-05-01 19:21:52,354-0500 INFO  RequestHandler Handler(tag: 77, PUT) unregistering (send)
+2014-05-01 19:21:52,496-0500 INFO  LateBindingScheduler jobs queued: 0
+2014-05-01 19:21:52,496-0500 INFO  RequestHandler Handler(tag: 78, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:52,496-0500 DEBUG swift JOB_END jobid=bash-x0vlb1ql
+2014-05-01 19:21:52,496-0500 INFO  ProcessStageouts Collect list: []
+2014-05-01 19:21:52,496-0500 INFO  TRACE VARIABLE, line 24, thread R-5-2, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_2.out>
+2014-05-01 19:21:52,496-0500 INFO  TRACE VARIABLE, line 25, thread R-5-2, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_2.log>
+2014-05-01 19:21:52,496-0500 INFO  TRACE ASSIGN, line 28, thread R-5-2-3, sims[2] = <file://localhost/output/sim_2.out>
+2014-05-01 19:21:52,496-0500 INFO  swift END_SUCCESS thread=R-5-2x2 tr=bash
+2014-05-01 19:21:52,496-0500 DEBUG swift PROCEDURE_END line=3 thread=R-5-2x2 name=simulation
+2014-05-01 19:21:52,496-0500 INFO  SwiftFunction Cleaning simout:file = <FILE> - Closed
+2014-05-01 19:21:52,496-0500 INFO  SwiftFunction Cleaning simlog:file = <FILE> - Closed
+2014-05-01 19:21:52,496-0500 DEBUG swift FOREACH_IT_END line=23 thread=R-5-2
+2014-05-01 19:21:52,550-0500 INFO  LateBindingScheduler jobs queued: 0
+2014-05-01 19:21:52,550-0500 INFO  RequestHandler Handler(tag: 79, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:52,550-0500 DEBUG swift JOB_END jobid=bash-41vlb1ql
+2014-05-01 19:21:52,550-0500 INFO  ProcessStageouts Collect list: []
+2014-05-01 19:21:52,550-0500 INFO  TRACE VARIABLE, line 24, thread R-5-1, simout INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_1.out>
+2014-05-01 19:21:52,550-0500 INFO  TRACE ASSIGN, line 28, thread R-5-1-3, sims[1] = <file://localhost/output/sim_1.out>
+2014-05-01 19:21:52,550-0500 INFO  TRACE VARIABLE, line 25, thread R-5-1, simlog INITIALIZED <SingleFileMapper; , file = file://localhost/output/sim_1.log>
+2014-05-01 19:21:52,550-0500 INFO  swift END_SUCCESS thread=R-5-1-2 tr=bash
+2014-05-01 19:21:52,550-0500 INFO  TRACE VARIABLE, line 21, thread R, sims CLOSE write ref count is zero
+2014-05-01 19:21:52,550-0500 DEBUG swift PROCEDURE_END line=3 thread=R-5-1-2 name=simulation
+2014-05-01 19:21:52,550-0500 INFO  SwiftFunction Cleaning simout:file = <FILE> - Closed
+2014-05-01 19:21:52,550-0500 INFO  SwiftFunction Cleaning simlog:file = <FILE> - Closed
+2014-05-01 19:21:52,550-0500 DEBUG swift FOREACH_IT_END line=23 thread=R-5-1
+2014-05-01 19:21:52,558-0500 DEBUG swift THREAD_ASSOCIATION jobid=bash-51vlb1ql thread=R-6 host=cloud replicationGroup=null
+2014-05-01 19:21:52,558-0500 DEBUG swift JOB_START jobid=bash-51vlb1ql tr=bash arguments=[stats.sh, output/sim_0.out, output/sim_1.out, output/sim_2.out, output/sim_3.out, output/sim_4.out, output/sim_5.out, output/sim_6.out, output/sim_7.out, output/sim_8.out, output/sim_9.out] tmpdir=p4-run003/jobs/5/bash-51vlb1ql host=cloud
+2014-05-01 19:21:52,808-0500 INFO  RequestHandler Handler(tag: 80, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:52,809-0500 INFO  RequestHandler Handler(tag: 81, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:52,810-0500 INFO  RequestHandler Handler(tag: 82, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:52,811-0500 INFO  GetFileHandler Handler(tag: 83, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_4.out
+2014-05-01 19:21:52,811-0500 INFO  GetFileHandler Handler(tag: 83, GET) reader: LR-Handler(tag: 83, GET)
+2014-05-01 19:21:52,811-0500 INFO  GetFileHandler Handler(tag: 83, GET) sending length: 45, 853998650
+2014-05-01 19:21:52,811-0500 INFO  ReadBuffer RB-LR-Handler(tag: 83, GET) will ask for 1 buffers for a size of 45
+2014-05-01 19:21:52,811-0500 INFO  ReadBuffer RB-LR-Handler(tag: 83, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:52,811-0500 INFO  LocalIOProvider LR-Handler(tag: 83, GET) rbuf: RB-LR-Handler(tag: 83, GET)
+2014-05-01 19:21:52,811-0500 INFO  GetFileHandler Handler(tag: 83, GET) unregistering (last)
+2014-05-01 19:21:52,812-0500 INFO  ReadBuffer RB-LR-Handler(tag: 83, GET) de-allocating 1 buffers
+2014-05-01 19:21:52,959-0500 INFO  RuntimeStats$ProgressTicker   Stage in:1  Finished successfully:10
+2014-05-01 19:21:52,960-0500 INFO  RuntimeStats$ProgressTicker HeapMax: 954466304, CrtHeap: 156893184, UsedHeap: 54172624
+2014-05-01 19:21:53,075-0500 INFO  GetFileHandler Handler(tag: 84, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_8.out
+2014-05-01 19:21:53,076-0500 INFO  GetFileHandler Handler(tag: 84, GET) reader: LR-Handler(tag: 84, GET)
+2014-05-01 19:21:53,076-0500 INFO  GetFileHandler Handler(tag: 84, GET) sending length: 45, 1104283353
+2014-05-01 19:21:53,076-0500 INFO  ReadBuffer RB-LR-Handler(tag: 84, GET) will ask for 1 buffers for a size of 45
+2014-05-01 19:21:53,076-0500 INFO  ReadBuffer RB-LR-Handler(tag: 84, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:53,076-0500 INFO  LocalIOProvider LR-Handler(tag: 84, GET) rbuf: RB-LR-Handler(tag: 84, GET)
+2014-05-01 19:21:53,076-0500 INFO  GetFileHandler Handler(tag: 84, GET) unregistering (last)
+2014-05-01 19:21:53,077-0500 INFO  ReadBuffer RB-LR-Handler(tag: 84, GET) de-allocating 1 buffers
+2014-05-01 19:21:53,330-0500 INFO  GetFileHandler Handler(tag: 85, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_3.out
+2014-05-01 19:21:53,330-0500 INFO  GetFileHandler Handler(tag: 85, GET) reader: LR-Handler(tag: 85, GET)
+2014-05-01 19:21:53,330-0500 INFO  GetFileHandler Handler(tag: 85, GET) sending length: 45, 640073113
+2014-05-01 19:21:53,330-0500 INFO  ReadBuffer RB-LR-Handler(tag: 85, GET) will ask for 1 buffers for a size of 45
+2014-05-01 19:21:53,331-0500 INFO  ReadBuffer RB-LR-Handler(tag: 85, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:53,331-0500 INFO  LocalIOProvider LR-Handler(tag: 85, GET) rbuf: RB-LR-Handler(tag: 85, GET)
+2014-05-01 19:21:53,331-0500 INFO  GetFileHandler Handler(tag: 85, GET) unregistering (last)
+2014-05-01 19:21:53,331-0500 INFO  ReadBuffer RB-LR-Handler(tag: 85, GET) de-allocating 1 buffers
+2014-05-01 19:21:53,586-0500 INFO  GetFileHandler Handler(tag: 86, GET) request complete; src=file://localhost//home/yadu/src/swift-trunk/cog/modules/swift/dist/swift-svn/libexec/_swiftwrap.staging
+2014-05-01 19:21:53,586-0500 INFO  GetFileHandler Handler(tag: 86, GET) reader: LR-Handler(tag: 86, GET)
+2014-05-01 19:21:53,586-0500 INFO  GetFileHandler Handler(tag: 86, GET) sending length: 6261, 1542114155
+2014-05-01 19:21:53,586-0500 INFO  ReadBuffer RB-LR-Handler(tag: 86, GET) will ask for 1 buffers for a size of 6261
+2014-05-01 19:21:53,586-0500 INFO  ReadBuffer RB-LR-Handler(tag: 86, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:53,586-0500 INFO  LocalIOProvider LR-Handler(tag: 86, GET) rbuf: RB-LR-Handler(tag: 86, GET)
+2014-05-01 19:21:53,587-0500 INFO  GetFileHandler Handler(tag: 86, GET) unregistering (last)
+2014-05-01 19:21:53,587-0500 INFO  ReadBuffer RB-LR-Handler(tag: 86, GET) de-allocating 1 buffers
+2014-05-01 19:21:53,886-0500 INFO  GetFileHandler Handler(tag: 87, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_2.out
+2014-05-01 19:21:53,887-0500 INFO  GetFileHandler Handler(tag: 87, GET) reader: LR-Handler(tag: 87, GET)
+2014-05-01 19:21:53,887-0500 INFO  GetFileHandler Handler(tag: 87, GET) sending length: 45, 286800144
+2014-05-01 19:21:53,887-0500 INFO  ReadBuffer RB-LR-Handler(tag: 87, GET) will ask for 1 buffers for a size of 45
+2014-05-01 19:21:53,887-0500 INFO  ReadBuffer RB-LR-Handler(tag: 87, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:53,887-0500 INFO  LocalIOProvider LR-Handler(tag: 87, GET) rbuf: RB-LR-Handler(tag: 87, GET)
+2014-05-01 19:21:53,887-0500 INFO  GetFileHandler Handler(tag: 87, GET) unregistering (last)
+2014-05-01 19:21:53,888-0500 INFO  ReadBuffer RB-LR-Handler(tag: 87, GET) de-allocating 1 buffers
+2014-05-01 19:21:54,136-0500 INFO  GetFileHandler Handler(tag: 88, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_5.out
+2014-05-01 19:21:54,136-0500 INFO  GetFileHandler Handler(tag: 88, GET) reader: LR-Handler(tag: 88, GET)
+2014-05-01 19:21:54,136-0500 INFO  GetFileHandler Handler(tag: 88, GET) sending length: 45, 876801080
+2014-05-01 19:21:54,136-0500 INFO  ReadBuffer RB-LR-Handler(tag: 88, GET) will ask for 1 buffers for a size of 45
+2014-05-01 19:21:54,136-0500 INFO  ReadBuffer RB-LR-Handler(tag: 88, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:54,136-0500 INFO  LocalIOProvider LR-Handler(tag: 88, GET) rbuf: RB-LR-Handler(tag: 88, GET)
+2014-05-01 19:21:54,137-0500 INFO  GetFileHandler Handler(tag: 88, GET) unregistering (last)
+2014-05-01 19:21:54,137-0500 INFO  ReadBuffer RB-LR-Handler(tag: 88, GET) de-allocating 1 buffers
+2014-05-01 19:21:54,396-0500 INFO  GetFileHandler Handler(tag: 89, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/stats.sh
+2014-05-01 19:21:54,396-0500 INFO  GetFileHandler Handler(tag: 89, GET) reader: LR-Handler(tag: 89, GET)
+2014-05-01 19:21:54,396-0500 INFO  GetFileHandler Handler(tag: 89, GET) sending length: 345, 325572217
+2014-05-01 19:21:54,397-0500 INFO  ReadBuffer RB-LR-Handler(tag: 89, GET) will ask for 1 buffers for a size of 345
+2014-05-01 19:21:54,397-0500 INFO  ReadBuffer RB-LR-Handler(tag: 89, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:54,397-0500 INFO  LocalIOProvider LR-Handler(tag: 89, GET) rbuf: RB-LR-Handler(tag: 89, GET)
+2014-05-01 19:21:54,397-0500 INFO  GetFileHandler Handler(tag: 89, GET) unregistering (last)
+2014-05-01 19:21:54,398-0500 INFO  ReadBuffer RB-LR-Handler(tag: 89, GET) de-allocating 1 buffers
+2014-05-01 19:21:54,661-0500 INFO  GetFileHandler Handler(tag: 90, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_7.out
+2014-05-01 19:21:54,661-0500 INFO  GetFileHandler Handler(tag: 90, GET) reader: LR-Handler(tag: 90, GET)
+2014-05-01 19:21:54,661-0500 INFO  GetFileHandler Handler(tag: 90, GET) sending length: 45, 2145044955
+2014-05-01 19:21:54,661-0500 INFO  ReadBuffer RB-LR-Handler(tag: 90, GET) will ask for 1 buffers for a size of 45
+2014-05-01 19:21:54,661-0500 INFO  ReadBuffer RB-LR-Handler(tag: 90, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:54,661-0500 INFO  LocalIOProvider LR-Handler(tag: 90, GET) rbuf: RB-LR-Handler(tag: 90, GET)
+2014-05-01 19:21:54,661-0500 INFO  GetFileHandler Handler(tag: 90, GET) unregistering (last)
+2014-05-01 19:21:54,661-0500 INFO  ReadBuffer RB-LR-Handler(tag: 90, GET) de-allocating 1 buffers
+2014-05-01 19:21:54,913-0500 INFO  GetFileHandler Handler(tag: 91, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_1.out
+2014-05-01 19:21:54,913-0500 INFO  GetFileHandler Handler(tag: 91, GET) reader: LR-Handler(tag: 91, GET)
+2014-05-01 19:21:54,913-0500 INFO  GetFileHandler Handler(tag: 91, GET) sending length: 45, 2113070601
+2014-05-01 19:21:54,913-0500 INFO  ReadBuffer RB-LR-Handler(tag: 91, GET) will ask for 1 buffers for a size of 45
+2014-05-01 19:21:54,913-0500 INFO  ReadBuffer RB-LR-Handler(tag: 91, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:54,913-0500 INFO  LocalIOProvider LR-Handler(tag: 91, GET) rbuf: RB-LR-Handler(tag: 91, GET)
+2014-05-01 19:21:54,913-0500 INFO  GetFileHandler Handler(tag: 91, GET) unregistering (last)
+2014-05-01 19:21:54,913-0500 INFO  ReadBuffer RB-LR-Handler(tag: 91, GET) de-allocating 1 buffers
+2014-05-01 19:21:55,175-0500 INFO  GetFileHandler Handler(tag: 92, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_9.out
+2014-05-01 19:21:55,175-0500 INFO  GetFileHandler Handler(tag: 92, GET) reader: LR-Handler(tag: 92, GET)
+2014-05-01 19:21:55,175-0500 INFO  GetFileHandler Handler(tag: 92, GET) sending length: 45, 1958960935
+2014-05-01 19:21:55,175-0500 INFO  ReadBuffer RB-LR-Handler(tag: 92, GET) will ask for 1 buffers for a size of 45
+2014-05-01 19:21:55,175-0500 INFO  ReadBuffer RB-LR-Handler(tag: 92, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:55,175-0500 INFO  LocalIOProvider LR-Handler(tag: 92, GET) rbuf: RB-LR-Handler(tag: 92, GET)
+2014-05-01 19:21:55,175-0500 INFO  GetFileHandler Handler(tag: 92, GET) unregistering (last)
+2014-05-01 19:21:55,175-0500 INFO  ReadBuffer RB-LR-Handler(tag: 92, GET) de-allocating 1 buffers
+2014-05-01 19:21:55,423-0500 INFO  GetFileHandler Handler(tag: 93, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_6.out
+2014-05-01 19:21:55,423-0500 INFO  GetFileHandler Handler(tag: 93, GET) reader: LR-Handler(tag: 93, GET)
+2014-05-01 19:21:55,423-0500 INFO  GetFileHandler Handler(tag: 93, GET) sending length: 45, 807700996
+2014-05-01 19:21:55,423-0500 INFO  ReadBuffer RB-LR-Handler(tag: 93, GET) will ask for 1 buffers for a size of 45
+2014-05-01 19:21:55,423-0500 INFO  ReadBuffer RB-LR-Handler(tag: 93, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:55,423-0500 INFO  LocalIOProvider LR-Handler(tag: 93, GET) rbuf: RB-LR-Handler(tag: 93, GET)
+2014-05-01 19:21:55,423-0500 INFO  GetFileHandler Handler(tag: 93, GET) unregistering (last)
+2014-05-01 19:21:55,423-0500 INFO  ReadBuffer RB-LR-Handler(tag: 93, GET) de-allocating 1 buffers
+2014-05-01 19:21:55,688-0500 INFO  GetFileHandler Handler(tag: 94, GET) request complete; src=file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/sim_0.out
+2014-05-01 19:21:55,688-0500 INFO  GetFileHandler Handler(tag: 94, GET) reader: LR-Handler(tag: 94, GET)
+2014-05-01 19:21:55,688-0500 INFO  GetFileHandler Handler(tag: 94, GET) sending length: 45, 1890962768
+2014-05-01 19:21:55,688-0500 INFO  ReadBuffer RB-LR-Handler(tag: 94, GET) will ask for 1 buffers for a size of 45
+2014-05-01 19:21:55,689-0500 INFO  ReadBuffer RB-LR-Handler(tag: 94, GET) actual allocated buffers 1(0 queued)
+2014-05-01 19:21:55,689-0500 INFO  LocalIOProvider LR-Handler(tag: 94, GET) rbuf: RB-LR-Handler(tag: 94, GET)
+2014-05-01 19:21:55,689-0500 INFO  GetFileHandler Handler(tag: 94, GET) unregistering (last)
+2014-05-01 19:21:55,689-0500 INFO  ReadBuffer RB-LR-Handler(tag: 94, GET) de-allocating 1 buffers
+2014-05-01 19:21:55,908-0500 INFO  RequestHandler Handler(tag: 95, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:55,909-0500 INFO  RequestHandler Handler(tag: 96, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:55,909-0500 INFO  PutFileHandler Handler(tag: 97, PUT) source: /home/yadu/work/p4-run003/jobs/5/bash-51vlb1ql/output/average.log
+2014-05-01 19:21:55,909-0500 INFO  PutFileHandler Handler(tag: 97, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/average.log
+2014-05-01 19:21:55,909-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/average.log data out : 
+[B@59250601
+2014-05-01 19:21:55,909-0500 INFO  PutFileHandler Handler(tag: 97, PUT) Transfer done
+2014-05-01 19:21:55,909-0500 INFO  RequestHandler Handler(tag: 97, PUT) unregistering (send)
+2014-05-01 19:21:55,932-0500 INFO  RequestHandler Handler(tag: 98, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:55,932-0500 INFO  PutFileHandler Handler(tag: 99, PUT) source: /home/yadu/work/p4-run003/jobs/5/bash-51vlb1ql/output/average.out
+2014-05-01 19:21:55,933-0500 INFO  PutFileHandler Handler(tag: 99, PUT) destination: file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/average.out
+2014-05-01 19:21:55,933-0500 INFO  PutFileHandler Writing to file://localhost//home/yadu/src/swift-on-cloud/swift-cloud-tutorial/part04/output/average.out data out : 
+[B@5e7d72a9
+2014-05-01 19:21:55,933-0500 INFO  PutFileHandler Handler(tag: 99, PUT) Transfer done
+2014-05-01 19:21:55,933-0500 INFO  RequestHandler Handler(tag: 99, PUT) unregistering (send)
+2014-05-01 19:21:55,960-0500 INFO  RuntimeStats$ProgressTicker   Stage out:1  Finished successfully:10
+2014-05-01 19:21:55,960-0500 INFO  RuntimeStats$ProgressTicker HeapMax: 954466304, CrtHeap: 156893184, UsedHeap: 54608760
+2014-05-01 19:21:56,113-0500 INFO  LateBindingScheduler jobs queued: 0
+2014-05-01 19:21:56,113-0500 INFO  RequestHandler Handler(tag: 100, JOBSTATUS) unregistering (send)
+2014-05-01 19:21:56,113-0500 DEBUG swift JOB_END jobid=bash-51vlb1ql
+2014-05-01 19:21:56,113-0500 INFO  ProcessStageouts Collect list: []
+2014-05-01 19:21:56,113-0500 INFO  TRACE VARIABLE, line 30, thread R, stats_out INITIALIZED <SingleFileMapper; , file = file://localhost/output/average.out>
+2014-05-01 19:21:56,113-0500 INFO  TRACE VARIABLE, line 31, thread R, stats_log INITIALIZED <SingleFileMapper; , file = file://localhost/output/average.log>
+2014-05-01 19:21:56,113-0500 INFO  swift END_SUCCESS thread=R-6 tr=bash
+2014-05-01 19:21:56,114-0500 DEBUG swift PROCEDURE_END line=8 thread=R-6 name=analyze
+2014-05-01 19:21:56,114-0500 INFO  RuntimeStats$ProgressTicker   Finished successfully:11
+2014-05-01 19:21:56,114-0500 INFO  RuntimeStats$ProgressTicker HeapMax: 954466304, CrtHeap: 156893184, UsedHeap: 54608760
+2014-05-01 19:21:56,119-0500 DEBUG swift Starting cleanups
+2014-05-01 19:21:56,120-0500 INFO  swift START cleanups=[]
+2014-05-01 19:21:56,120-0500 DEBUG swift Ending cleanups
+2014-05-01 19:21:56,120-0500 INFO  SwiftFunction Cleaning simulate_script:file = <FILE> - Closed
+2014-05-01 19:21:56,120-0500 INFO  SwiftFunction Cleaning stats_script:file = <FILE> - Closed
+2014-05-01 19:21:56,120-0500 INFO  SwiftFunction Cleaning stats_log:file = <FILE> - Closed
+2014-05-01 19:21:56,120-0500 INFO  SwiftFunction Cleaning sims:file[int] - Closed
+2014-05-01 19:21:56,120-0500 INFO  AbstractFileMapper Cleaning file file://localhost/output/sim_0.out
+2014-05-01 19:21:56,120-0500 INFO  AbstractFileMapper Cleaning file file://localhost/output/sim_1.out
+2014-05-01 19:21:56,120-0500 INFO  AbstractFileMapper Cleaning file file://localhost/output/sim_2.out
+2014-05-01 19:21:56,120-0500 INFO  AbstractFileMapper Cleaning file file://localhost/output/sim_3.out
+2014-05-01 19:21:56,120-0500 INFO  AbstractFileMapper Cleaning file file://localhost/output/sim_4.out
+2014-05-01 19:21:56,120-0500 INFO  AbstractFileMapper Cleaning file file://localhost/output/sim_5.out
+2014-05-01 19:21:56,120-0500 INFO  AbstractFileMapper Cleaning file file://localhost/output/sim_6.out
+2014-05-01 19:21:56,120-0500 INFO  AbstractFileMapper Cleaning file file://localhost/output/sim_7.out
+2014-05-01 19:21:56,120-0500 INFO  AbstractFileMapper Cleaning file file://localhost/output/sim_8.out
+2014-05-01 19:21:56,120-0500 INFO  AbstractFileMapper Cleaning file file://localhost/output/sim_9.out
+2014-05-01 19:21:56,120-0500 INFO  SwiftFunction Cleaning stats_out:file = <FILE> - Closed
+2014-05-01 19:21:56,121-0500 INFO  Loader Swift finished with no errors
+2014-05-01 19:21:56,122-0500 INFO  ServiceManager Cleaning up...
+2014-05-01 19:21:56,122-0500 INFO  ServiceManager Shutting down service at https://127.0.1.1:39914
+2014-05-01 19:21:56,122-0500 INFO  RequestHandler Handler(tag: 5, SHUTDOWNSERVICE) unregistering (send)
+2014-05-01 19:21:56,223-0500 INFO  RequestHandler Handler(tag: 41, UNREGISTER) unregistering (send)
+2014-05-01 19:21:56,225-0500 INFO  BlockQueueProcessor Shutting down blocks
+2014-05-01 19:21:56,225-0500 INFO  Block Shutting down block Block 0501-2107480-000000 (1x3600.000s)
+2014-05-01 19:21:56,225-0500 INFO  RemoteLogHandler BLOCK_SHUTDOWN id=0501-2107480-000000
+2014-05-01 19:21:56,225-0500 INFO  RequestHandler Handler(tag: 42, RLOG) unregistering (send)
+2014-05-01 19:21:56,225-0500 INFO  Block Adding short shutdown watchdog: count = 1, workers = 1, now = true
+2014-05-01 19:21:56,225-0500 INFO  Block Average utilization: 99.9%
+2014-05-01 19:21:56,226-0500 INFO  Block Shutting down block Block 0501-2107480-000001 (1x3600.000s)
+2014-05-01 19:21:56,226-0500 INFO  RemoteLogHandler BLOCK_UTILIZATION id=0501-2107480-000000, u=99.9
+2014-05-01 19:21:56,226-0500 INFO  RequestHandler Handler(tag: 43, RLOG) unregistering (send)
+2014-05-01 19:21:56,226-0500 INFO  Block Adding short shutdown watchdog: count = 1, workers = 1, now = true
+2014-05-01 19:21:56,226-0500 INFO  Block Average utilization: 99.9%
+2014-05-01 19:21:56,226-0500 INFO  RemoteLogHandler BLOCK_SHUTDOWN id=0501-2107480-000001
+2014-05-01 19:21:56,226-0500 INFO  CoasterService Shutdown sequence completed
+2014-05-01 19:21:56,226-0500 INFO  RequestHandler Handler(tag: 44, RLOG) unregistering (send)
+2014-05-01 19:21:56,226-0500 INFO  Node Node [borgmachine] 0 shut down successfully
+2014-05-01 19:21:56,226-0500 INFO  RemoteLogHandler BLOCK_UTILIZATION id=0501-2107480-000001, u=99.9
+2014-05-01 19:21:56,226-0500 INFO  AbstractTCPChannel 0501-2107480-000000-000000: Channel shut down
+2014-05-01 19:21:56,226-0500 INFO  RequestHandler Handler(tag: 45, RLOG) unregistering (send)
+2014-05-01 19:21:56,226-0500 INFO  MetaChannel MetaChannel [context: worker-1, boundTo: TCPChannel [type: server, contact: 0501-2107480-000000-000000]] binding to NullChannel
+2014-05-01 19:21:56,226-0500 INFO  AbstractStreamCoasterChannel Using threaded sender for TCPChannel [type: server, contact: 0501-2107480-000000-000000]
+2014-05-01 19:21:56,227-0500 INFO  MetaChannel MetaChannel [context: worker-1, boundTo: TCPChannel [type: server, contact: 0501-2107480-000000-000000]] binding to NullChannel
+2014-05-01 19:21:56,227-0500 INFO  AbstractTCPChannel 0501-2107480-000000-000000: Channel terminated
+2014-05-01 19:21:56,227-0500 INFO  RemoteLogHandler WORKER_SHUTDOWN blockid=0501-2107480-000000
+2014-05-01 19:21:56,227-0500 INFO  Node Node [borgmachine] 0 shut down successfully
+2014-05-01 19:21:56,227-0500 INFO  RequestHandler Handler(tag: 46, RLOG) unregistering (send)
+2014-05-01 19:21:56,227-0500 INFO  AbstractTCPChannel 0501-2107480-000001-000000: Channel shut down
+2014-05-01 19:21:56,227-0500 INFO  MetaChannel MetaChannel [context: worker-2, boundTo: TCPChannel [type: server, contact: 0501-2107480-000001-000000]] binding to NullChannel
+2014-05-01 19:21:56,227-0500 INFO  MetaChannel MetaChannel [context: worker-2, boundTo: TCPChannel [type: server, contact: 0501-2107480-000001-000000]] binding to NullChannel
+2014-05-01 19:21:56,227-0500 INFO  AbstractTCPChannel 0501-2107480-000001-000000: Channel terminated
+2014-05-01 19:21:56,227-0500 INFO  RemoteLogHandler WORKER_SHUTDOWN blockid=0501-2107480-000001
+2014-05-01 19:21:56,227-0500 INFO  RequestHandler Handler(tag: 47, RLOG) unregistering (send)

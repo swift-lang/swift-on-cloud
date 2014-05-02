@@ -1,0 +1,46 @@
+
+Called as: simulate.sh: --timesteps 1 --range 100 --nvalues 5
+
+Start time: Fri May  2 00:21:50 UTC 2014
+Running as user: uid=0(root) gid=0(root) groups=0(root)
+Running on node: swift-worker-3
+Node IP address: 10.240.185.113 
+
+Simulation parameters:
+
+bias=0
+biasfile=none
+initseed=none
+log=yes
+paramfile=none
+range=100
+scale=1
+seedfile=none
+timesteps=1
+output width=8
+
+Environment:
+
+BOOT_IMAGE=/boot/vmlinuz-3.2.0-4-amd64
+COLUMNS=80
+CONSOLE=/dev/console
+EXEC=/bin/bash
+HOME=/
+INIT_VERSION=sysvinit-2.88
+LANG=C
+LINES=24
+ORIGEXEC=bash
+PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/bin:/usr/bin
+PREVLEVEL=N
+PWD=/home/yadu/work/p4-run003/jobs/3/bash-31vlb1ql
+RUNLEVEL=2
+SHELL=/bin/sh
+SHLVL=4
+SWIFT_JOB_SLOT=0
+SWIFT_WORKER_PID=2570
+TERM=linux
+_=/usr/bin/printenv
+init=/sbin/init
+previous=N
+rootmnt=/root
+runlevel=2

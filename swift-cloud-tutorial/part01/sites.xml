@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.ci.uchicago.edu/swift/SwiftSites">
+   <pool handle="localhost">
+      <execution provider="local" />
+      <profile namespace="karajan" key="jobThrottle">0</profile>
+      <profile namespace="karajan" key="initialScore">10000</profile>
+      <filesystem provider="local"/>
+      <workdirectory>.swift/tmp</workdirectory>
+      <profile namespace="swift" key="stagingMethod">local</profile>
+   </pool>
+</config>

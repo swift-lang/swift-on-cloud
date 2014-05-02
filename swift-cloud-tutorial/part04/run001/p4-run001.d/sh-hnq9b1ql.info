@@ -1,0 +1,182 @@
+checking for paramfile
+no paramfile: using command line arguments
+Progress  2014-05-02 00:13:09.635632828+0000  LOG_START
+
+_____________________________________________________________________________
+
+        Wrapper (_swiftwrap.staging)
+_____________________________________________________________________________
+
+sh -out output/sim_7.out -err output/sim_7.log -i -d output -if simulate.sh -of output/sim_7.out|output/sim_7.log -cf -cdmfile -status provider -a simulate.sh --timesteps 1 --range 100 --nvalues 5
+PWD=/home/yadu/work/p4-run001/jobs/h/sh-hnq9b1ql
+EXEC=/bin/sh
+STDIN=
+STDOUT=output/sim_7.out
+STDERR=output/sim_7.log
+DIRS=output
+INF=simulate.sh
+OUTF=output/sim_7.out|output/sim_7.log
+COLLECT=
+ARGS=simulate.sh --timesteps 1 --range 100 --nvalues 5
+ARGC=7
+Progress  2014-05-02 00:13:09.639287951+0000  CREATE_INPUTDIR
+Created output directory: output
+Progress  2014-05-02 00:13:09.640992453+0000  EXECUTE
+Application /bin/sh failed with an exit code of 2
+
+_____________________________________________________________________________
+
+        uname -a
+_____________________________________________________________________________
+
+Linux swift-worker-4 3.2.0-4-amd64 #1 SMP Debian 3.2.54-2 x86_64 GNU/Linux
+
+_____________________________________________________________________________
+
+        id
+_____________________________________________________________________________
+
+uid=0(root) gid=0(root) groups=0(root)
+
+_____________________________________________________________________________
+
+        env
+_____________________________________________________________________________
+
+EXEC=/bin/sh
+CONSOLE=/dev/console
+SHELL=/bin/sh
+TERM=linux
+rootmnt=/root
+INIT_VERSION=sysvinit-2.88
+init=/sbin/init
+ORIGEXEC=sh
+COLUMNS=80
+PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/bin:/usr/bin
+RUNLEVEL=2
+runlevel=2
+PWD=/home/yadu/work/p4-run001/jobs/h/sh-hnq9b1ql
+LANG=C
+previous=N
+PREVLEVEL=N
+LINES=24
+SHLVL=3
+HOME=/
+BOOT_IMAGE=/boot/vmlinuz-3.2.0-4-amd64
+SWIFT_WORKER_PID=2033
+SWIFT_JOB_SLOT=0
+_=/usr/bin/env
+
+_____________________________________________________________________________
+
+        df
+_____________________________________________________________________________
+
+Filesystem                                             1K-blocks   Used Available Use% Mounted on
+rootfs                                                  10319160 811648   8983328   9% /
+udev                                                       10240      0     10240   0% /dev
+tmpfs                                                      61136    108     61028   1% /run
+/dev/disk/by-uuid/60e0093c-7134-4daf-8a37-b266a6305485  10319160 811648   8983328   9% /
+tmpfs                                                       5120      0      5120   0% /run/lock
+tmpfs                                                     122260      0    122260   0% /run/shm
+
+_____________________________________________________________________________
+
+        /proc/cpuinfo
+_____________________________________________________________________________
+
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 45
+model name	: Intel(R) Xeon(R) CPU @ 2.60GHz
+stepping	: 7
+microcode	: 0x1
+cpu MHz		: 2599.998
+cache size	: 20480 KB
+physical id	: 1
+siblings	: 1
+core id		: 7
+cpu cores	: 1
+apicid		: 47
+initial apicid	: 47
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss syscall nx pdpe1gb rdtscp lm constant_tsc up nopl xtopology pni pclmulqdq ssse3 cx16 sse4_1 sse4_2 x2apic popcnt aes hypervisor lahf_lm xsaveopt
+bogomips	: 5199.99
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 46 bits physical, 48 bits virtual
+power management:
+
+
+_____________________________________________________________________________
+
+        /proc/meminfo
+_____________________________________________________________________________
+
+MemTotal:         611324 kB
+MemFree:          514448 kB
+Buffers:            5040 kB
+Cached:            28500 kB
+SwapCached:            0 kB
+Active:            40596 kB
+Inactive:          19420 kB
+Active(anon):      28424 kB
+Inactive(anon):       72 kB
+Active(file):      12172 kB
+Inactive(file):    19348 kB
+Unevictable:        2296 kB
+Mlocked:            2296 kB
+SwapTotal:             0 kB
+SwapFree:              0 kB
+Dirty:                16 kB
+Writeback:             0 kB
+AnonPages:         28784 kB
+Mapped:             8112 kB
+Shmem:               108 kB
+Slab:              21812 kB
+SReclaimable:       3380 kB
+SUnreclaim:        18432 kB
+KernelStack:         432 kB
+PageTables:         1392 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:      305660 kB
+Committed_AS:      65176 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:        4944 kB
+VmallocChunk:   34359733423 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:         0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:       34808 kB
+DirectMap2M:      593920 kB
+DirectMap1G:           0 kB
+
+_____________________________________________________________________________
+
+        command line
+_____________________________________________________________________________
+
+-e sh -out output/sim_7.out -err output/sim_7.log -i -d output -if simulate.sh -of output/sim_7.out output/sim_7.log -cf -cdmfile -status provider -a simulate.sh --timesteps 1 --range 100 --nvalues 5
+
+_____________________________________________________________________________
+
+        stdout
+_____________________________________________________________________________
+
+
+_____________________________________________________________________________
+
+        stderr
+_____________________________________________________________________________
+
+simulate.sh: 116: simulate.sh: Syntax error: Bad for loop variable

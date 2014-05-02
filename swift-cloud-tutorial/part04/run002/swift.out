@@ -1,0 +1,63 @@
+Swift trunk swift-r7752 (swift modified locally) cog-r3890 (cog modified locally)
+RunID: run002
+Warning: The @ syntax for function invocation is deprecated
+Progress: Thu, 01 May 2014 19:16:28-0500
+Progress: Thu, 01 May 2014 19:16:29-0500  Stage in:4  Submitted:5  Active:1
+Progress: Thu, 01 May 2014 19:16:30-0500  Submitted:5  Active:5
+Progress: Thu, 01 May 2014 19:16:31-0500  Stage in:1  Submitting:1  Submitted:7  Active:1
+Progress: Thu, 01 May 2014 19:16:32-0500  Submitted:5  Active:5
+Progress: Thu, 01 May 2014 19:16:33-0500  Stage in:2  Submitted:3  Active:3  Stage out:1  Failed but can retry:1
+Progress: Thu, 01 May 2014 19:16:34-0500  Submitted:2  Active:8
+
+Execution failed:
+Exception in sh:
+    Arguments: [simulate.sh, --timesteps, 1, --range, 100, --nvalues, 5]
+    Host: local1
+    Directory: p4-run002/jobs/n/sh-nxeeb1ql
+	exception @ swift-int-staging.k, line: 186
+Caused by: Application /bin/sh failed with an exit code of 2
+	exception @ swift-int-staging.k, line: 182
+Caused by: Job failed with and exit code of 2
+org.globus.cog.abstraction.impl.common.execution.JobException: Job failed with and exit code of 2 (exit code: 2)
+	at org.globus.cog.abstraction.coaster.service.local.JobStatusHandler.requestComplete(JobStatusHandler.java:40)
+	at org.globus.cog.coaster.handlers.RequestHandler.receiveCompleted(RequestHandler.java:88)
+	at org.globus.cog.coaster.channels.AbstractCoasterChannel.handleRequest(AbstractCoasterChannel.java:527)
+	at org.globus.cog.coaster.channels.AbstractStreamCoasterChannel.stepNIO(AbstractStreamCoasterChannel.java:238)
+	at org.globus.cog.coaster.channels.NIOMultiplexer.loop(NIOMultiplexer.java:97)
+	at org.globus.cog.coaster.channels.NIOMultiplexer.run(NIOMultiplexer.java:56)
+
+Caused by: org.globus.cog.abstraction.impl.common.execution.JobException: Job failed with and exit code of 2
+org.globus.cog.abstraction.impl.common.execution.JobException: Job failed with and exit code of 2 (exit code: 2)
+	at org.globus.cog.abstraction.coaster.service.local.JobStatusHandler.requestComplete(JobStatusHandler.java:40)
+	at org.globus.cog.coaster.handlers.RequestHandler.receiveCompleted(RequestHandler.java:88)
+	at org.globus.cog.coaster.channels.AbstractCoasterChannel.handleRequest(AbstractCoasterChannel.java:527)
+	at org.globus.cog.coaster.channels.AbstractStreamCoasterChannel.stepNIO(AbstractStreamCoasterChannel.java:238)
+	at org.globus.cog.coaster.channels.NIOMultiplexer.loop(NIOMultiplexer.java:97)
+	at org.globus.cog.coaster.channels.NIOMultiplexer.run(NIOMultiplexer.java:56)
+ (exit code: 2)
+	k:assign @ swift.k, line: 194
+Caused by: Exception in sh:
+    Arguments: [simulate.sh, --timesteps, 1, --range, 100, --nvalues, 5]
+    Host: local1
+    Directory: p4-run002/jobs/n/sh-nxeeb1ql
+	exception @ swift-int-staging.k, line: 186
+Caused by: Application /bin/sh failed with an exit code of 2
+	exception @ swift-int-staging.k, line: 182
+Caused by: Job failed with and exit code of 2
+org.globus.cog.abstraction.impl.common.execution.JobException: Job failed with and exit code of 2 (exit code: 2)
+	at org.globus.cog.abstraction.coaster.service.local.JobStatusHandler.requestComplete(JobStatusHandler.java:40)
+	at org.globus.cog.coaster.handlers.RequestHandler.receiveCompleted(RequestHandler.java:88)
+	at org.globus.cog.coaster.channels.AbstractCoasterChannel.handleRequest(AbstractCoasterChannel.java:527)
+	at org.globus.cog.coaster.channels.AbstractStreamCoasterChannel.stepNIO(AbstractStreamCoasterChannel.java:238)
+	at org.globus.cog.coaster.channels.NIOMultiplexer.loop(NIOMultiplexer.java:97)
+	at org.globus.cog.coaster.channels.NIOMultiplexer.run(NIOMultiplexer.java:56)
+
+Caused by: org.globus.cog.abstraction.impl.common.execution.JobException: Job failed with and exit code of 2
+org.globus.cog.abstraction.impl.common.execution.JobException: Job failed with and exit code of 2 (exit code: 2)
+	at org.globus.cog.abstraction.coaster.service.local.JobStatusHandler.requestComplete(JobStatusHandler.java:40)
+	at org.globus.cog.coaster.handlers.RequestHandler.receiveCompleted(RequestHandler.java:88)
+	at org.globus.cog.coaster.channels.AbstractCoasterChannel.handleRequest(AbstractCoasterChannel.java:527)
+	at org.globus.cog.coaster.channels.AbstractStreamCoasterChannel.stepNIO(AbstractStreamCoasterChannel.java:238)
+	at org.globus.cog.coaster.channels.NIOMultiplexer.loop(NIOMultiplexer.java:97)
+	at org.globus.cog.coaster.channels.NIOMultiplexer.run(NIOMultiplexer.java:56)
+ (exit code: 2)
