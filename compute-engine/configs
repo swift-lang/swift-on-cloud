@@ -6,7 +6,7 @@ GCE_ZONE="us-central1-b"
 WORKER_MACHINE_TYPE="f1-micro"
 WORKER_IMAGE="projects/mystic-pagoda-551/global/images/swift-worker-v001"
 # Define the number of worker's needed
-GCE_WORKER_COUNT=4
+GCE_WORKER_COUNT=1000
 
 HEADNODE_MACHINE_TYPE="f1-micro"
 HEADNODE_IMAGE="projects/mystic-pagoda-551/global/images/swift-headnode"
