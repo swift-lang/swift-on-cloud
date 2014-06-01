@@ -2,7 +2,7 @@ type file;
 
 app (file o) simulation (int sim_steps, int sim_range, int sim_values)
 {
-  simulate "--timesteps" sim_steps "--range" sim_range "--nvalues" sim_values stdout=@filename(o);
+  simulate "--timesteps" sim_steps "--range" sim_range "--nvalues" sim_values stdout=filename(o);
 }
 
 app (file o) analyze (file s[])
@@ -18,7 +18,7 @@ int values = @toInt(@arg("values","5"));
 file sims[];
 
 foreach i in [0:nsim-1] {
-  file simout <single_file_mapper; file=@strcat("output/sim_",i,".out")>;
+  file simout <single_file_mapper; file=strcat("output/sim_",i,".out")>;
   simout = simulation(steps,range,values);
   sims[i] = simout;
 }
