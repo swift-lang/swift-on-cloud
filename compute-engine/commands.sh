@@ -1,6 +1,7 @@
 #!/bin/bash
 
 LOG=Setup_$$.log
+DEPOT_PREFIX="gs://swift-worker"
 
 start_worker ()
 {
@@ -126,6 +127,48 @@ stop_headnode()
     gcutil --project=$GCE_PROJECTID deleteinstance "headnode" --delete_boot_pd --force
 }
 
+add_image()
+{
+    gcutil --project=$GCE_PROJECTID addimage $1 $2
+}
+
+setup_images()
+{
+    echo "Checking images"
+    IFS=$'\n\r'; image_list=($(gcutil --project=$GCE_PROJECTID listimages | grep -o "swift-[^\ ]*"))
+    #echo ${image_list[*]}
+    if [[ $HEADNODE_IMAGE == $DEPOT_PREFIX* ]]
+    then
+        HEADNODE_IMAGE_ID="swift-headnode-image-$(echo ${HEADNODE_IMAGE%.image.tar.gz} | tail -c 6)"
+        echo ${image_list[*]} | grep -o $HEADNODE_IMAGE_ID &> /dev/null
+        if [[ "$?" == "0" ]]
+        then # The image is already added to the project
+            echo "$HEADNODE_IMAGE_ID present"
+        else # The image is not present and needs to be added
+            echo "Adding image $HEADNODE_IMAGE_ID"
+            add_image $HEADNODE_IMAGE_ID $HEADNODE_IMAGE
+        fi
+    else
+        echo "Not from swift-worker"
+    fi
+
+    if [[ $WORKER_IMAGE == $DEPOT_PREFIX* ]]
+    then
+        WORKER_IMAGE_ID="swift-worker-image-$(echo ${WORKER_IMAGE%.image.tar.gz} | tail -c 6)"
+        echo ${image_list[*]} | grep -o $WORKER_IMAGE_ID &> /dev/null
+        if [[ "$?" == "0" ]]
+        then # The image is already added to the project
+            echo "$WORKER_IMAGE_ID present"
+        else # The image is not present and needs to be added
+            echo "Adding image $WORKER_IMAGE_ID"
+            add_image $WORKER_IMAGE_ID $WORKER_IMAGE
+        fi
+    else
+        echo "Not from $DEPOT_PREFIX"
+    fi
+
+}
+
 setup_firewall()
 {
     echo "Checking for swift firewall rules"
@@ -174,6 +217,7 @@ EOF
 start_headnode()
 {
     setup_firewall
+    setup_images
     headnode_detail=$(gcutil --project=$GCE_PROJECTID listinstances | grep "headnode")
     if [[ "$?" == "0" ]]
     then

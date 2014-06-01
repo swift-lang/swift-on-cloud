@@ -4,9 +4,13 @@ GCE_ZONE="us-central1-b"
 
 # Micro sized VM's are the cheapest that GCE provides
 WORKER_MACHINE_TYPE="f1-micro"
-WORKER_IMAGE="projects/mystic-pagoda-551/global/images/swift-worker-v001"
+WORKER_IMAGE="gs://swift-worker/f3bffd36e4584040596ee317e26d127950b32aff.image.tar.gz"
+
+
+#WORKER_IMAGE="projects/mystic-pagoda-551/global/images/swift-worker-v001"
 # Define the number of worker's needed
 GCE_WORKER_COUNT=4
 
 HEADNODE_MACHINE_TYPE="f1-micro"
-HEADNODE_IMAGE="projects/mystic-pagoda-551/global/images/swift-headnode"
+HEADNODE_IMAGE="gs://swift-worker/826d503b8a8e1841dd88f2fae66fa8a628a122a2.image.tar.gz"
+#HEADNODE_IMAGE="projects/mystic-pagoda-551/global/images/swift-headnode"
