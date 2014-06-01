@@ -1,1 +1,1 @@
-../app/stats.sh
+../app/stats

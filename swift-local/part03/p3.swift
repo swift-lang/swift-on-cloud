@@ -7,13 +7,13 @@ app (file o) simulation (int sim_steps, int sim_range, int sim_values)
 
 app (file o) analyze (file s[])
 {
-  stats @filenames(s) stdout=@filename(o);
+  stats filenames(s) stdout=filename(o);
 }
 
-int nsim   = @toInt(@arg("nsim","10"));
-int steps  = @toInt(@arg("steps","1"));
-int range  = @toInt(@arg("range","100"));
-int values = @toInt(@arg("values","5"));
+int nsim   = toInt(arg("nsim","10"));
+int steps  = toInt(arg("steps","1"));
+int range  = toInt(arg("range","100"));
+int values = toInt(arg("values","5"));
 
 file sims[];
 
