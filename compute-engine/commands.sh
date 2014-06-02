@@ -11,9 +11,14 @@ start_worker ()
         echo "No ID provided to name worker instance"
         return
     fi
+
+    if [[ -z $WORKER_IMAGE_ID ]]
+    then
+        setup_images
+    fi
     gcutil --project=$GCE_PROJECTID \
         addinstance swift-worker-$ID \
-        --image=$WORKER_IMAGE \
+        --image=$WORKER_IMAGE_ID \
         --zone=$GCE_ZONE \
         --machine_type=$WORKER_MACHINE_TYPE \
         --auto_delete_boot_disk \
@@ -82,6 +87,7 @@ stop_n_workers()
 # This script ensures that only the specified number of workers are active
 start_n_workers ()
 {
+    setup_images;
     COUNT=$1
     CURRENT=1
     out=$(gcutil --project=$GCE_PROJECTID listinstances | grep "swift-worker")
@@ -107,6 +113,7 @@ start_n_workers ()
 
 start_n_more ()
 {
+    setup_images
     ACTIVE=$(gcutil --project=$GCE_PROJECTID listinstances | grep worker | wc -l)
     MORE=$1
     for i in $(seq $(($ACTIVE+1)) 1 $(($ACTIVE+$MORE)) )
@@ -229,7 +236,7 @@ start_headnode()
     fi
     gcutil --project=$GCE_PROJECTID \
         addinstance headnode \
-        --image=$HEADNODE_IMAGE \
+        --image=$HEADNODE_IMAGE_ID \
         --zone=$GCE_ZONE \
         --auto_delete_boot_disk \
         --machine_type=$HEADNODE_MACHINE_TYPE \
