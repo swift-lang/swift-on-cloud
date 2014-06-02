@@ -1,1 +1,1 @@
-../app/simulate.sh
+../app/simulate
