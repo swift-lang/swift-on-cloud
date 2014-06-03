@@ -2,7 +2,7 @@ Swift Tutorial for running on localhost
 =======================================
 
 This tutorial is viewable at:
-<TODO: FIX LINK> #http://swiftlang.org/tutorials/cloud
+<TODO: FIX LINK> #http://swiftlang.org/tutorials/localhost
 
 
 Introduction: Why Parallel Scripting?
@@ -257,15 +257,14 @@ To run this script, run the following command:
 -----
 $ cd part01
 $ swift p1.swift
-Swift 0.94.1 RC2 swift-r6895 cog-r3765
-
-RunID: 20130827-1413-oa6fdib2
-Progress:  time: Tue, 27 Aug 2013 14:13:33 -0500
-Final status: Tue, 27 Aug 2013 14:13:33 -0500  Finished successfully:1
-$ cat sim.out 
+Swift 0.95 Branch SVN swift-r7903 cog-r3908
+RunID: run001
+Progress: Tue, 03 Jun 2014 15:01:28-0500
+Final status:Tue, 03 Jun 2014 15:01:29-0500  Finished successfully:1
+$ cat sim.out
       84
 $ swift p1.swift
-$ cat sim.out 
+$ cat sim.out
       36
 -----
 
@@ -277,11 +276,11 @@ which is located in the tutorial PATH:
 $ cleanup
 ------
 
-NOTE: You'll also find two Swift configuration files in each `partNN`
+NOTE: You'll also find a Swift configuration files in each `partNN`
 directory of this tutorial.  These specify the environment-specific
-details of where to find application programs (file `apps`) and where
-to run them (file `sites.xml`).  These files will be explained in more
-detail in parts 4-6, and can be ignored for now.
+details of where to find application programs and where to run them .
+These files will be explained in more detail in parts 4-6, and can
+be ignored for now.
 
 ////
 It defines
@@ -289,9 +288,9 @@ things like the work directory, the scheduler to use, and how to
 control parallelism. The sites.xml file below will tell Swift to run
 on the local machine only, and run just 1 task at a time.
 
-.sites.xml
+.swift.properties
 -----
-sys::[cat ../part01/sites.xml]
+sys::[cat ../part01/swift.properties]
 -----
 
  In this case, it
@@ -300,11 +299,6 @@ declaration of the function `simulation`, at line NNN) is located in the file
 simulate.sh and (since the path `simulate.sh` is specified with no
 directory components) Swift expects that the `simulate.sh` executable
 will be available in your $PATH.
-
-.apps
------
-sys::[cat ../part01/apps]
------
 
 ////
 
@@ -327,12 +321,12 @@ example of naming the output files of an ensemble run. In this case, the output 
 
 In part 2, we also update the apps file. Instead of using shell script (simulate.sh), we use
 the equivalent python version (simulate.py). The new apps file now looks like this:
-
+<TODO Confirm if we need to show simulate.py instead>
 -----
 sys::[cat ../part02/apps]
 -----
 
-Swift does not need to know anything about the language an application is written in. The application 
+Swift does not need to know anything about the language an application is written in. The application
 can be written in Perl, Python, Java, Fortran, or any other language.
 
 To run the script and view the output:
