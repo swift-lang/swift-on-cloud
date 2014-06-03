@@ -2,7 +2,7 @@ Swift Tutorial for running on localhost
 =======================================
 
 This tutorial is viewable at:
-#http://swiftlang.org/tutorials/cloud
+<TODO: FIX LINK> #http://swiftlang.org/tutorials/cloud
 
 
 Introduction: Why Parallel Scripting?
@@ -31,9 +31,9 @@ with Swift scripts.
 
 Swift installation
 ------------------
-1. Download the file from http://swiftlang.org/packages/swift-0.94.1-RC2.tar.gz
-2. Extract by running "tar xfz swift-0.94.1-RC2.tar.gz"
-3. Add to PATH by running "export PATH=$PATH:/path/to/swift-0.94.1-RC2/bin"
+1. Download the file from http://swiftlang.org/packages/swift-0.95.tar.gz             <TODO : FIX LINK>
+2. Extract by running "tar xfz swift-0.94.1-RC2.tar.gz"                               <TODO : FIX Ref>
+3. Add to PATH by running "export PATH=$PATH:/path/to/swift-0.94.1-RC2/bin"           <TODO : Fix >
 
 Swift tutorial installation
 ---------------------------
@@ -45,33 +45,13 @@ Run the following commands to extract these tutorial scripts.
 
 -----
 $ cd $HOME
-$ wget http://swiftlang.org/tutorials/cloud/swift-cloud-tutorial.tar.gz
-$ tar xvfz swift-cloud-tutorial.tgz
-$ cd swift-cloud-tutorial
+$ wget http://swiftlang.org/tutorials/cloud/swift-cloud-tutorial.tar.gz              <TODO : Fix link>
+$ tar xvfz swift-cloud-tutorial.tgz                                                  <TODO : Fix ref>
+$ cd swift-cloud-tutorial                                                            <TODO : Fix ref>
 -----
 
-Next, edit the file scs/coaster-service.conf. There are three lines you will
-need to edit.
-
-WORKER_LOCATION defines the path that will be used for copying files to the remote
-node. Usually you can set this to your home directory on the worker node.
+Run the tutorial setup script
 -----
-export WORKER_LOCATION=/home/ubuntu
-----
-
-Set WORKER_HOSTS to be the list of space separated IP addresses that will be used
-as workers.
------
-export WORKER_HOSTS="10.1.2.10 10.1.2.11"
------
-
-Set WORKER_USERNAME to be the username to use on the worker nodes.
------
-export WORKER_USERNAME=ubuntu
------
-
-Next, run the tutorial setup script
------ 
 $ source setup.sh   # You must run this with "source" !
 -----
 
@@ -82,7 +62,7 @@ If you later want to get the most recent version of this tutorial from
 the Swift Subversion repository, do:
 
 -----
-$ svn co https://svn.ci.uchicago.edu/svn/vdl2/SwiftTutorials/swift-cloud-tutorial
+$ svn co https://svn.ci.uchicago.edu/svn/vdl2/SwiftTutorials/swift-cloud-tutorial  <TODO: Fix link>
 -----
 
 This will create a directory called "swift-cloud-tutorial" which contains all of the
@@ -415,10 +395,10 @@ the `swift` command line in a Swift script using `@arg()` which
 accepts a keyword-style argument and its default value:
 
 -----
-int nsim   = @toInt(@arg("nsim","10"));
-int steps  = @toInt(@arg("steps","1"));
-int range  = @toInt(@arg("range","100"));
-int values = @toInt(@arg("values","5"));
+int nsim   = toInt(arg("nsim","10"));
+int steps  = toInt(arg("steps","1"));
+int range  = toInt(arg("range","100"));
+int values = toInt(arg("values","5"));
 -----
 
 Now we can specify that more runs should be performed and that each should run for more timesteps, and produce more that one value each, within a specified range, using command line arguments placed after the Swift script name in the form `-parameterName=value`:
