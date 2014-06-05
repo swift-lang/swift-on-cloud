@@ -155,7 +155,7 @@ sys     0m0.006s
 -----
 
 stats.sh
-~~~~~~
+~~~~~~~~
 
 The stats.sh script serves as a trivial model of an "analysis"
 program. It reads N files each containing M integers and simply prints
@@ -177,8 +177,8 @@ $ stats.sh f* 2>log
 -----
 
 
-Basic of the Swift language with local execution
-------------------------------------------------
+Basics of the Swift language with local execution
+-------------------------------------------------
 
 A Summary of Swift in a nutshell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
