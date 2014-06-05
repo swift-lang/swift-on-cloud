@@ -769,7 +769,7 @@ asciidoc.install(2);
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph"><p>This tutorial is viewable at:
-&lt;TODO: FIX LINK&gt; #http://swiftlang.org/tutorials/localhost</p></div>
+<a href="http://swiftlang.org/tutorials/localhost/tutorial.html">http://swiftlang.org/tutorials/localhost/tutorial.html</a></p></div>
 </div>
 </div>
 <div class="sect1">
@@ -803,17 +803,17 @@ with Swift scripts.</p></div>
 <div class="olist arabic"><ol class="arabic">
 <li>
 <p>
-Download the file from <a href="http://swiftlang.org/packages/swift-0.95.tar.gz">http://swiftlang.org/packages/swift-0.95.tar.gz</a>             &lt;TODO : FIX LINK&gt;
+Download the file from <a href="http://swiftlang.org/packages/swift-0.95-RC6.tar.gz">http://swiftlang.org/packages/swift-0.95-RC6.tar.gz</a>
 </p>
 </li>
 <li>
 <p>
-Extract by running "tar xfz swift-0.94.1-RC2.tar.gz"                               &lt;TODO : FIX Ref&gt;
+Extract by running "tar xfz swift-0.95-RC6.tar.gz"
 </p>
 </li>
 <li>
 <p>
-Add to PATH by running "export PATH=$PATH:/path/to/swift-0.94.1-RC2/bin"           &lt;TODO : Fix &gt;
+Add to PATH by running "export PATH=$PATH:/path/to/swift-0.95-RC6/bin"
 </p>
 </li>
 </ol></div>
@@ -829,9 +829,9 @@ the IP addresses you will be using.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><code>$ cd $HOME
-$ wget http://swiftlang.org/tutorials/cloud/swift-cloud-tutorial.tar.gz              &lt;TODO : Fix link&gt;
-$ tar xvfz swift-cloud-tutorial.tgz                                                  &lt;TODO : Fix ref&gt;
-$ cd swift-cloud-tutorial                                                            &lt;TODO : Fix ref&gt;</code></pre>
+$ wget http://swiftlang.org/tutorials/cloud/swift-localhost-tutorial.tar.gz &lt;TODO: Create link&gt;
+$ tar xvfz swift-localhost-tutorial.tar.gz
+$ cd swift-localhost-tutorial</code></pre>
 </div></div>
 <div class="paragraph"><p>Run the tutorial setup script</p></div>
 <div class="listingblock">
@@ -844,9 +844,9 @@ $ cd swift-cloud-tutorial                                                       
 the Swift Subversion repository, do:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><code>$ svn co https://svn.ci.uchicago.edu/svn/vdl2/SwiftTutorials/swift-cloud-tutorial  &lt;TODO: Fix link&gt;</code></pre>
+<pre><code>$ svn co https://svn.ci.uchicago.edu/svn/vdl2/SwiftTutorials/swift-localhost-tutorial  &lt;TODO: Fix link&gt;</code></pre>
 </div></div>
-<div class="paragraph"><p>This will create a directory called "swift-cloud-tutorial" which contains all of the
+<div class="paragraph"><p>This will create a directory called "swift-localhost-tutorial" which contains all of the
 files used in this tutorial.</p></div>
 </div>
 </div>
@@ -1064,11 +1064,10 @@ f = simulation();</code></pre>
 <div class="content">
 <pre><code>$ cd part01
 $ swift p1.swift
-Swift 0.94.1 RC2 swift-r6895 cog-r3765
-
-RunID: 20130827-1413-oa6fdib2
-Progress:  time: Tue, 27 Aug 2013 14:13:33 -0500
-Final status: Tue, 27 Aug 2013 14:13:33 -0500  Finished successfully:1
+Swift 0.95 Branch SVN swift-r7903 cog-r3908
+RunID: run001
+Progress: Tue, 03 Jun 2014 15:01:28-0500
+Final status:Tue, 03 Jun 2014 15:01:29-0500  Finished successfully:1
 $ cat sim.out
       84
 $ swift p1.swift
@@ -1087,11 +1086,11 @@ which is located in the tutorial PATH:</p></div>
 <td class="icon">
 <img src="./images/icons/note.png" alt="Note" />
 </td>
-<td class="content">You&#8217;ll also find two Swift configuration files in each <code>partNN</code>
+<td class="content">You&#8217;ll also find a Swift configuration files in each <code>partNN</code>
 directory of this tutorial.  These specify the environment-specific
-details of where to find application programs (file <code>apps</code>) and where
-to run them (file <code>sites.xml</code>).  These files will be explained in more
-detail in parts 4-6, and can be ignored for now.</td>
+details of where to find application programs and where to run them .
+These files will be explained in more detail in parts 4-6, and can
+be ignored for now.</td>
 </tr></table>
 </div>
 </div>
@@ -1122,11 +1121,25 @@ foreach i in [0:9] {
 <div class="paragraph"><p>The script also shows an
 example of naming the output files of an ensemble run. In this case, the output files will be named
 <code>output/sim_N.out</code>.</p></div>
-<div class="paragraph"><p>In part 2, we also update the apps file. Instead of using shell script (simulate.sh), we use
-the equivalent python version (simulate.py). The new apps file now looks like this:</p></div>
+<div class="paragraph"><p>In part 2, we also update the swift.properties file. Instead of using shell script (simulate.sh), we use
+the equivalent python version (simulate.py). The swift.properties file has the app definitions for simulate
+and stats for localhost pointing at simulate.py and stats.py.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><code></code></pre>
+<pre><code>site=localhost
+use.provider.staging=true
+execution.retries=2
+
+site.localhost {
+   taskWalltime=00:02:00
+   jobmanager=local
+   initialScore=10000
+   filesystem=local
+   workdir=/tmp/swiftwork
+}
+
+app.localhost.simulate=simulate.py
+app.localhost.stats=stats.py</code></pre>
 </div></div>
 <div class="paragraph"><p>Swift does not need to know anything about the language an application is written in. The application
 can be written in Perl, Python, Java, Fortran, or any other language.</p></div>
@@ -1209,7 +1222,7 @@ $ swift p3.swift</code></pre>
 <div class="content">
 <pre><code>app (file o) simulation (int sim_steps, int sim_range, int sim_values)
 {
-  simulate "--timesteps" sim_steps "--range" sim_range "--nvalues" sim_values stdout=@filename(o);
+  simulate "--timesteps" sim_steps "--range" sim_range "--nvalues" sim_values stdout=filename(o);
 }</code></pre>
 </div></div>
 <div class="paragraph"><p><code>p3.swift</code> also shows how to fetch application-specific values from
@@ -1226,13 +1239,15 @@ int values = toInt(arg("values","5"));</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre><code>$ swift p3.swift -nsim=3 -steps=10 -values=4 -range=1000000
-
-Swift 0.94.1 RC2 swift-r6895 cog-r3765
-
-RunID: 20130827-1439-s3vvo809
-Progress:  time: Tue, 27 Aug 2013 14:39:42 -0500
-Progress:  time: Tue, 27 Aug 2013 14:39:53 -0500  Active:2  Stage out:1
-Final status: Tue, 27 Aug 2013 14:39:53 -0500  Finished successfully:4
+Swift 0.95 Branch SVN swift-r7903 cog-r3908
+RunID: run001
+Progress: Tue, 03 Jun 2014 17:06:58-0500
+Progress: Tue, 03 Jun 2014 17:06:59-0500  Submitted:2  Active:1
+Progress: Tue, 03 Jun 2014 17:07:00-0500  Submitted:1  Active:2
+Progress: Tue, 03 Jun 2014 17:07:01-0500  Active:3
+Progress: Tue, 03 Jun 2014 17:07:09-0500  Active:2  Finished successfully:1
+Progress: Tue, 03 Jun 2014 17:07:10-0500  Active:1  Finished successfully:2
+Final status:Tue, 03 Jun 2014 17:07:11-0500  Finished successfully:4
 
 $ ls output/
 average.out  sim_0.out  sim_1.out  sim_2.out
@@ -1267,23 +1282,28 @@ output/sim_2.out
 <div class="listingblock">
 <div class="content">
 <pre><code>$ swift p3.swift -nsim=100 -steps=1
-Swift 0.94.1 RC2 swift-r6895 cog-r3765
-
-RunID: 20130827-1444-rq809ts6
-Progress:  time: Tue, 27 Aug 2013 14:44:55 -0500
-Progress:  time: Tue, 27 Aug 2013 14:44:56 -0500  Selecting site:79  Active:20  Stage out:1
-Progress:  time: Tue, 27 Aug 2013 14:44:58 -0500  Selecting site:58  Active:20  Stage out:1  Finished successfully:21
-Progress:  time: Tue, 27 Aug 2013 14:44:59 -0500  Selecting site:37  Active:20  Stage out:1  Finished successfully:42
-Progress:  time: Tue, 27 Aug 2013 14:45:00 -0500  Selecting site:16  Active:20  Stage out:1  Finished successfully:63
-Progress:  time: Tue, 27 Aug 2013 14:45:02 -0500  Active:15  Stage out:1  Finished successfully:84
-Progress:  time: Tue, 27 Aug 2013 14:45:03 -0500  Finished successfully:101
-Final status: Tue, 27 Aug 2013 14:45:03 -0500  Finished successfully:101</code></pre>
+Swift 0.95 Branch SVN swift-r7903 cog-r3908
+RunID: run002
+Progress: Tue, 03 Jun 2014 17:08:05-0500
+Progress: Tue, 03 Jun 2014 17:08:06-0500  Selecting site:79  Submitted:20  Active:1
+Progress: Tue, 03 Jun 2014 17:08:07-0500  Selecting site:78  Submitted:18  Active:3  Finished successfully:1
+Progress: Tue, 03 Jun 2014 17:08:08-0500  Selecting site:75  Submitted:17  Active:4  Finished successfully:4
+Progress: Tue, 03 Jun 2014 17:08:09-0500  Selecting site:71  Submitted:16  Active:5  Finished successfully:8
+Progress: Tue, 03 Jun 2014 17:08:11-0500  Selecting site:66  Submitted:15  Active:6  Finished successfully:13
+Progress: Tue, 03 Jun 2014 17:08:12-0500  Selecting site:60  Submitted:14  Active:7  Finished successfully:19
+Progress: Tue, 03 Jun 2014 17:08:13-0500  Selecting site:53  Submitted:13  Active:8  Finished successfully:26
+Progress: Tue, 03 Jun 2014 17:08:14-0500  Selecting site:45  Submitted:12  Active:9  Finished successfully:34
+Progress: Tue, 03 Jun 2014 17:08:15-0500  Selecting site:36  Submitted:11  Active:10  Finished successfully:43
+Progress: Tue, 03 Jun 2014 17:08:16-0500  Selecting site:26  Submitted:10  Active:11  Finished successfully:53
+Progress: Tue, 03 Jun 2014 17:08:17-0500  Selecting site:15  Active:21  Finished successfully:64
+Progress: Tue, 03 Jun 2014 17:08:18-0500  Active:16  Finished successfully:84
+Progress: Tue, 03 Jun 2014 17:08:19-0500  Active:11  Finished successfully:89
+Final status:Tue, 03 Jun 2014 17:08:19-0500  Finished successfully:101</code></pre>
 </div></div>
-<div class="paragraph"><p>We can see from Swift&#8217;s "progress" status that the tutorial&#8217;s default
-<code>sites.xml</code> parameters for local execution allow Swift to run up to 20
-application invocations concurrently on the login node. We&#8217;ll look at
-this in more detail in the next sections where we execute applications
-on the site&#8217;s compute nodes.</p></div>
+<div class="paragraph"><p>&lt;TODO: Check the following&gt;
+We can see from Swift&#8217;s "progress" status that the tutorial&#8217;s default
+<code>swift.properties</code> parameters for local execution allow Swift to run up to 20
+application invocations concurrently on the localhost.</p></div>
 </div>
 </div>
 </div>
@@ -1645,7 +1665,7 @@ populate WORKER_HOSTS with the IP addresses of all active instances you have run
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-06-03 14:00:28 CDT
+Last updated 2014-06-03 17:10:17 CDT
 </div>
 </div>
 </body>
