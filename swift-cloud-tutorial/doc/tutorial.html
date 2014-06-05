@@ -3,27 +3,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.4" />
+<meta name="generator" content="AsciiDoc 8.6.9" />
 <title>Swift Tutorial for Cloud and Ad hoc Resources</title>
 <style type="text/css">
-/* Sans-serif font. */
+/* Shared CSS for AsciiDoc xhtml11 and html5 backends */
+
+/* Default font. */
+body {
+  font-family: Georgia,serif;
+}
+
+/* Title font. */
 h1, h2, h3, h4, h5, h6,
 div.title, caption.title,
 thead, p.table.header,
-div#toctitle,
-span#author, span#revnumber, span#revdate, span#revremark,
-div#footer {
+#toctitle,
+#author, #revnumber, #revdate, #revremark,
+#footer {
   font-family: Arial,Helvetica,sans-serif;
-}
-
-/* Serif font. */
-div.sectionbody {
-  font-family: Georgia,"Times New Roman",Times,serif;
-}
-
-/* Monospace font. */
-tt {
-  font-size: inherit;
 }
 
 body {
@@ -48,11 +45,6 @@ strong {
   color: #083194;
 }
 
-tt {
-  font-size: inherit;
-  color: navy;
-}
-
 h1, h2, h3, h4, h5, h6 {
   color: #527bbd;
   margin-top: 1.2em;
@@ -71,6 +63,9 @@ h3 {
 }
 h3 + * {
   clear: left;
+}
+h5 {
+  font-size: 1.0em;
 }
 
 div.sectionbody {
@@ -92,41 +87,47 @@ ul, ol, li > p {
 ul > li     { color: #aaa; }
 ul > li > * { color: black; }
 
-pre {
+.monospaced, code, pre {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
   padding: 0;
   margin: 0;
 }
+pre {
+  white-space: pre-wrap;
+}
 
-span#author {
+#author {
   color: #527bbd;
   font-weight: bold;
   font-size: 1.1em;
 }
-span#email {
+#email {
 }
-span#revnumber, span#revdate, span#revremark {
+#revnumber, #revdate, #revremark {
 }
 
-div#footer {
+#footer {
   font-size: small;
   border-top: 2px solid silver;
   padding-top: 0.5em;
   margin-top: 4.0em;
 }
-div#footer-text {
+#footer-text {
   float: left;
   padding-bottom: 0.5em;
 }
-div#footer-badges {
+#footer-badges {
   float: right;
   padding-bottom: 0.5em;
 }
 
-div#preamble {
+#preamble {
   margin-top: 1.5em;
   margin-bottom: 1.5em;
 }
-div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
+div.imageblock, div.exampleblock, div.verseblock,
 div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
 div.admonitionblock {
   margin-top: 1.0em;
@@ -184,7 +185,7 @@ div.quoteblock, div.verseblock {
   margin-left: 1.0em;
   margin-right: 10%;
   border-left: 5px solid #f0f0f0;
-  color: #777777;
+  color: #888;
 }
 
 div.quoteblock > div.attribution {
@@ -224,7 +225,7 @@ div.exampleblock > div.content {
 }
 
 div.imageblock div.content { padding-left: 0; }
-span.image img { border-style: none; }
+span.image img { border-style: none; vertical-align: text-bottom; }
 a.image:visited { color: white; }
 
 dl {
@@ -267,35 +268,12 @@ div.compact div, div.compact div {
   margin-bottom: 0.1em;
 }
 
-div.tableblock > table {
-  border: 3px solid #527bbd;
-}
-thead, p.table.header {
-  font-weight: bold;
-  color: #527bbd;
-}
 tfoot {
   font-weight: bold;
 }
 td > div.verse {
   white-space: pre;
 }
-p.table {
-  margin-top: 0;
-}
-/* Because the table frame attribute is overriden by CSS in most browsers. */
-div.tableblock > table[frame="void"] {
-  border-style: none;
-}
-div.tableblock > table[frame="hsides"] {
-  border-left-style: none;
-  border-right-style: none;
-}
-div.tableblock > table[frame="vsides"] {
-  border-top-style: none;
-  border-bottom-style: none;
-}
-
 
 div.hdlist {
   margin-top: 0.8em;
@@ -362,14 +340,14 @@ div.colist td img {
 }
 
 @media print {
-  div#footer-badges { display: none; }
+  #footer-badges { display: none; }
 }
 
-div#toc {
+#toc {
   margin-bottom: 2.5em;
 }
 
-div#toctitle {
+#toctitle {
   color: #527bbd;
   font-size: 1.1em;
   font-weight: bold;
@@ -377,7 +355,7 @@ div#toctitle {
   margin-bottom: 0.1em;
 }
 
-div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+div.toclevel0, div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
   margin-top: 0;
   margin-bottom: 0;
 }
@@ -430,6 +408,133 @@ span.yellow-background { background: yellow; }
 
 span.big { font-size: 2em; }
 span.small { font-size: 0.6em; }
+
+span.underline { text-decoration: underline; }
+span.overline { text-decoration: overline; }
+span.line-through { text-decoration: line-through; }
+
+div.unbreakable { page-break-inside: avoid; }
+
+
+/*
+ * xhtml11 specific
+ *
+ * */
+
+div.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+/*
+ * html5 specific
+ *
+ * */
+
+table.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+thead, p.tableblock.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.tableblock {
+  margin-top: 0;
+}
+table.tableblock {
+  border-width: 3px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: #527bbd;
+  border-collapse: collapse;
+}
+th.tableblock, td.tableblock {
+  border-width: 1px;
+  padding: 4px;
+  border-style: solid;
+  border-color: #527bbd;
+}
+
+table.tableblock.frame-topbot {
+  border-left-style: hidden;
+  border-right-style: hidden;
+}
+table.tableblock.frame-sides {
+  border-top-style: hidden;
+  border-bottom-style: hidden;
+}
+table.tableblock.frame-none {
+  border-style: hidden;
+}
+
+th.tableblock.halign-left, td.tableblock.halign-left {
+  text-align: left;
+}
+th.tableblock.halign-center, td.tableblock.halign-center {
+  text-align: center;
+}
+th.tableblock.halign-right, td.tableblock.halign-right {
+  text-align: right;
+}
+
+th.tableblock.valign-top, td.tableblock.valign-top {
+  vertical-align: top;
+}
+th.tableblock.valign-middle, td.tableblock.valign-middle {
+  vertical-align: middle;
+}
+th.tableblock.valign-bottom, td.tableblock.valign-bottom {
+  vertical-align: bottom;
+}
+
+
+/*
+ * manpage specific
+ *
+ * */
+
+body.manpage h1 {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top: 2px solid silver;
+  border-bottom: 2px solid silver;
+}
+body.manpage h2 {
+  border-style: none;
+}
+body.manpage div.sectionbody {
+  margin-left: 3em;
+}
+
+@media print {
+  body.manpage div#toc { display: none; }
+}
+
+
 a:link { color:navy; }
 a:visited { color:navy; }
 
@@ -459,7 +564,6 @@ div.listingblock > div.content {
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
-window.onload = function(){asciidoc.footnotes(); asciidoc.toc(2);}
 var asciidoc = {  // Namespace.
 
 /////////////////////////////////////////////////////////////////////
@@ -501,7 +605,7 @@ toc: function (toclevels) {
 
   function tocEntries(el, toclevels) {
     var result = new Array;
-    var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');
     // Function that scans the DOM tree for header elements (the DOM2
     // nodeIterator API would be a better technique but not supported by all
     // browsers).
@@ -521,6 +625,25 @@ toc: function (toclevels) {
   }
 
   var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
   var entries = tocEntries(document.getElementById("content"), toclevels);
   for (var i = 0; i < entries.length; ++i) {
     var entry = entries[i];
@@ -548,24 +671,44 @@ toc: function (toclevels) {
  */
 
 footnotes: function () {
-  var cont = document.getElementById("content");
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
   var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
   var spans = cont.getElementsByTagName("span");
   var refs = {};
   var n = 0;
   for (i=0; i<spans.length; i++) {
     if (spans[i].className == "footnote") {
       n++;
-      // Use [\s\S] in place of . so multi-line matches work.
-      // Because JavaScript has no s (dotall) regex flag.
-      note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
       noteholder.innerHTML +=
         "<div class='footnote' id='_footnote_" + n + "'>" +
         "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
         n + "</a>. " + note + "</div>";
-      spans[i].innerHTML =
-        "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
-        "' title='View footnote' class='footnote'>" + n + "</a>]";
       var id =spans[i].getAttribute("id");
       if (id != null) refs["#"+id] = n;
     }
@@ -585,9 +728,32 @@ footnotes: function () {
       }
     }
   }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
 }
 
 }
+asciidoc.install(2);
 /*]]>*/
 </script>
 </head>
@@ -615,9 +781,9 @@ Swift scripts run many copies of ordinary programs concurrently, using
 statements like this:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>foreach protein in proteinList {
+<pre><code>foreach protein in proteinList {
   runBLAST(protein);
-}</tt></pre>
+}</code></pre>
 </div></div>
 <div class="paragraph"><p>Swift acts like a structured "shell" language. It runs programs
 concurrently as soon as their inputs are available, reducing the need
@@ -662,10 +828,10 @@ the IP addresses you will be using.</p></div>
 <div class="paragraph"><p>Run the following commands to extract these tutorial scripts.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ cd $HOME
+<pre><code>$ cd $HOME
 $ wget http://swiftlang.org/tutorials/cloud/swift-cloud-tutorial.tar.gz
 $ tar xvfz swift-cloud-tutorial.tgz
-$ cd swift-cloud-tutorial</tt></pre>
+$ cd swift-cloud-tutorial</code></pre>
 </div></div>
 <div class="paragraph"><p>Next, edit the file scs/coaster-service.conf. There are three lines you will
 need to edit.</p></div>
@@ -673,23 +839,23 @@ need to edit.</p></div>
 node. Usually you can set this to your home directory on the worker node.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>export WORKER_LOCATION=/home/ubuntu</tt></pre>
+<pre><code>export WORKER_LOCATION=/home/ubuntu</code></pre>
 </div></div>
 <div class="paragraph"><p>Set WORKER_HOSTS to be the list of space separated IP addresses that will be used
 as workers.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>export WORKER_HOSTS="10.1.2.10 10.1.2.11"</tt></pre>
+<pre><code>export WORKER_HOSTS="10.1.2.10 10.1.2.11"</code></pre>
 </div></div>
 <div class="paragraph"><p>Set WORKER_USERNAME to be the username to use on the worker nodes.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>export WORKER_USERNAME=ubuntu</tt></pre>
+<pre><code>export WORKER_USERNAME=ubuntu</code></pre>
 </div></div>
 <div class="paragraph"><p>Next, run the tutorial setup script</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ source setup.sh   # You must run this with "source" !</tt></pre>
+<pre><code>$ source setup.sh   # You must run this with "source" !</code></pre>
 </div></div>
 <div class="sect2">
 <h3 id="_to_check_out_the_tutorial_scripts_from_svn">To check out the tutorial scripts from SVN</h3>
@@ -697,7 +863,7 @@ as workers.</p></div>
 the Swift Subversion repository, do:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ svn co https://svn.ci.uchicago.edu/svn/vdl2/SwiftTutorials/swift-cloud-tutorial</tt></pre>
+<pre><code>$ svn co https://svn.ci.uchicago.edu/svn/vdl2/SwiftTutorials/swift-cloud-tutorial</code></pre>
 </div></div>
 <div class="paragraph"><p>This will create a directory called "swift-cloud-tutorial" which contains all of the
 files used in this tutorial.</p></div>
@@ -708,7 +874,7 @@ files used in this tutorial.</p></div>
 <h2 id="_simple_science_applications_for_the_workflow_tutorial">Simple "science applications" for the workflow tutorial</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>This tutorial is based on two intentionally trivial example programs,
-<tt>simulation.sh</tt> and <tt>stats.sh</tt>, (implemented as bash shell scripts)
+<code>simulation.sh</code> and <code>stats.sh</code>, (implemented as bash shell scripts)
 that serve as easy-to-understand proxies for real science
 applications. These "programs" behave as follows.</p></div>
 <div class="sect2">
@@ -719,7 +885,7 @@ set of one or more random integers in the range [0-2^62) as controlled
 by its command line arguments, which are:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ ./app/simulate.sh --help
+<pre><code>$ ./app/simulate.sh --help
 ./app/simulate.sh: usage:
     -b|--bias       offset bias: add this integer to all results [0]
     -B|--biasfile   file of integer biases to add to results [none]
@@ -731,16 +897,16 @@ by its command line arguments, which are:</p></div>
     -t|--timesteps  number of simulated "timesteps" in seconds (determines runtime) [1]
     -x|--scale      scale the results by this integer [1]
     -h|-?|?|--help  print this help
-$</tt></pre>
+$</code></pre>
 </div></div>
-<div class="paragraph"><p>All of thess arguments are optional, with default values indicated above as <tt>[n]</tt>.</p></div>
+<div class="paragraph"><p>All of thess arguments are optional, with default values indicated above as <code>[n]</code>.</p></div>
 <div class="paragraph"><p>With no arguments, simulate.sh prints 1 number in the range of
 1-100. Otherwise it generates n numbers of the form (R*scale)+bias
 where R is a random integer. By default it logs information about its
 execution environment to stderr.  Here&#8217;s some examples of its usage:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ simulate.sh 2&gt;log
+<pre><code>$ simulate.sh 2&gt;log
        5
 $ head -4 log
 
@@ -768,7 +934,7 @@ $ time simulate.sh -n 2 -r 1000 -x 1000 -t 3 2&gt;log
   320000
 real    0m3.012s
 user    0m0.005s
-sys     0m0.006s</tt></pre>
+sys     0m0.006s</code></pre>
 </div></div>
 </div>
 <div class="sect2">
@@ -779,7 +945,7 @@ the\ average of all those numbers to stdout. Similarly to simulate.sh
 it logs environmental information to the stderr.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ ls f*
+<pre><code>$ ls f*
 f1  f2  f3  f4
 
 $ cat f*
@@ -789,7 +955,7 @@ $ cat f*
 75
 
 $ stats.sh f* 2&gt;log
-50</tt></pre>
+50</code></pre>
 </div></div>
 </div>
 </div>
@@ -802,18 +968,18 @@ $ stats.sh f* 2&gt;log
 <div class="ulist"><ul>
 <li>
 <p>
-Swift scripts are text files ending in <tt>.swift</tt> The <tt>swift</tt> command
-runs on any host, and executes these scripts. <tt>swift</tt> is a Java
+Swift scripts are text files ending in <code>.swift</code> The <code>swift</code> command
+runs on any host, and executes these scripts. <code>swift</code> is a Java
 application, which you can install almost anywhere.  On Linux, just
-unpack the distribution <tt>tar</tt> file and add its <tt>bin/</tt> directory to
-your <tt>PATH</tt>.
+unpack the distribution <code>tar</code> file and add its <code>bin/</code> directory to
+your <code>PATH</code>.
 </p>
 </li>
 <li>
 <p>
 Swift scripts run ordinary applications, just like shell scripts
 do. Swift makes it easy to run these applications on parallel and
-remote computers (from laptops to supercomputers). If you can <tt>ssh</tt> to
+remote computers (from laptops to supercomputers). If you can <code>ssh</code> to
 the system, Swift can likely run applications there.
 </p>
 </li>
@@ -828,10 +994,10 @@ data.
 </li>
 <li>
 <p>
-The Swift language has 5 main data types: <tt>boolean</tt>, <tt>int</tt>,
-<tt>string</tt>, <tt>float</tt>, and <tt>file</tt>. Collections of these are dynamic,
+The Swift language has 5 main data types: <code>boolean</code>, <code>int</code>,
+<code>string</code>, <code>float</code>, and <code>file</code>. Collections of these are dynamic,
 sparse arrays of arbitrary dimension and structures of scalars and/or
-arrays defined by the <tt>type</tt> declaration.
+arrays defined by the <code>type</code> declaration.
 </p>
 </li>
 <li>
@@ -851,7 +1017,7 @@ workflow scripts simple and easy to write and understand.
 <li>
 <p>
 Swift lets you define functions to "wrap" application programs, and
-to cleanly structure more complex scripts. Swift <tt>app</tt> functions take
+to cleanly structure more complex scripts. Swift <code>app</code> functions take
 files and parameters as inputs and return files as outputs.
 </p>
 </li>
@@ -859,13 +1025,13 @@ files and parameters as inputs and return files as outputs.
 <p>
 A compact set of built-in functions for string and file
 manipulation, type conversions, high level IO, etc. is provided.
-Swift&#8217;s equivalent of <tt>printf()</tt> is <tt>tracef()</tt>, with limited and
+Swift&#8217;s equivalent of <code>printf()</code> is <code>tracef()</code>, with limited and
 slightly different format codes.
 </p>
 </li>
 <li>
 <p>
-Swift&#8217;s <tt>foreach {}</tt> statement is the main parallel workhorse of the
+Swift&#8217;s <code>foreach {}</code> statement is the main parallel workhorse of the
 language, and executes all iterations of the loop concurrently. The
 actual number of parallel tasks executed is based on available
 resources and settable "throttles".
@@ -881,7 +1047,7 @@ and settings.
 </li>
 <li>
 <p>
-Swift also has <tt>if</tt> and <tt>switch</tt> statements for conditional
+Swift also has <code>if</code> and <code>switch</code> statements for conditional
 execution. These are seldom needed in simple workflows but they enable
 very dynamic workflow patterns to be specified.
 </p>
@@ -902,7 +1068,7 @@ single random number. It writes the number to a file.</p></div>
 <div class="listingblock">
 <div class="title">p1.swift</div>
 <div class="content">
-<pre><tt>type file;
+<pre><code>type file;
 
 app (file o) simulation ()
 {
@@ -910,12 +1076,12 @@ app (file o) simulation ()
 }
 
 file f &lt;"sim.out"&gt;;
-f = simulation();</tt></pre>
+f = simulation();</code></pre>
 </div></div>
 <div class="paragraph"><p>To run this script, run the following command:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ cd part01
+<pre><code>$ cd part01
 $ swift p1.swift
 Swift 0.94.1 RC2 swift-r6895 cog-r3765
 
@@ -926,31 +1092,31 @@ $ cat sim.out
       84
 $ swift p1.swift
 $ cat sim.out
-      36</tt></pre>
+      36</code></pre>
 </div></div>
 <div class="paragraph"><p>To cleanup the directory and remove all outputs (including the log
 files and directories that Swift generates), run the cleanup script
 which is located in the tutorial PATH:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ cleanup</tt></pre>
+<pre><code>$ cleanup</code></pre>
 </div></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
 <img src="./images/icons/note.png" alt="Note" />
 </td>
-<td class="content">You&#8217;ll also find two Swift configuration files in each <tt>partNN</tt>
+<td class="content">You&#8217;ll also find two Swift configuration files in each <code>partNN</code>
 directory of this tutorial.  These specify the environment-specific
-details of where to find application programs (file <tt>apps</tt>) and where
-to run them (file <tt>sites.xml</tt>).  These files will be explained in more
+details of where to find application programs (file <code>apps</code>) and where
+to run them (file <code>sites.xml</code>).  These files will be explained in more
 detail in parts 4-6, and can be ignored for now.</td>
 </tr></table>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_part_2_running_an_ensemble_of_many_apps_in_parallel_with_a_foreach_loop">Part 2: Running an ensemble of many apps in parallel with a "foreach" loop</h3>
-<div class="paragraph"><p>The <tt>p2.swift</tt> script introduces the <tt>foreach</tt> parallel iteration
+<div class="paragraph"><p>The <code>p2.swift</code> script introduces the <code>foreach</code> parallel iteration
 construct to run many concurrent simulations.</p></div>
 <div class="imageblock" style="text-align:center;">
 <div class="content">
@@ -960,7 +1126,7 @@ construct to run many concurrent simulations.</p></div>
 <div class="listingblock">
 <div class="title">p2.swift</div>
 <div class="content">
-<pre><tt>type file;
+<pre><code>type file;
 
 app (file o) simulation ()
 {
@@ -970,23 +1136,23 @@ app (file o) simulation ()
 foreach i in [0:9] {
   file f &lt;single_file_mapper; file=@strcat("output/sim_",i,".out")&gt;;
   f = simulation();
-}</tt></pre>
+}</code></pre>
 </div></div>
 <div class="paragraph"><p>The script also shows an
 example of naming the output files of an ensemble run. In this case, the output files will be named
-<tt>output/sim_N.out</tt>.</p></div>
+<code>output/sim_N.out</code>.</p></div>
 <div class="paragraph"><p>In part 2, we also update the apps file. Instead of using shell script (simulate.sh), we use
 the equivalent python version (simulate.py). The new apps file now looks like this:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>localhost simulate simulate.py</tt></pre>
+<pre><code></code></pre>
 </div></div>
 <div class="paragraph"><p>Swift does not need to know anything about the language an application is written in. The application
 can be written in Perl, Python, Java, Fortran, or any other language.</p></div>
 <div class="paragraph"><p>To run the script and view the output:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ cd ../part02
+<pre><code>$ cd ../part02
 $ swift p2.swift
 $ ls output
 sim_0.out  sim_1.out  sim_2.out  sim_3.out  sim_4.out  sim_5.out  sim_6.out  sim_7.out  sim_8.out  sim_9.out
@@ -1003,7 +1169,7 @@ output/sim_1.out
 ::::::::::::::
 output/sim_9.out
 ::::::::::::::
-      82</tt></pre>
+      82</code></pre>
 </div></div>
 </div>
 <div class="sect2">
@@ -1012,8 +1178,8 @@ output/sim_9.out
 its typically necessary to gather and analyze their results with some
 kind of post-processing analysis program or script.  p3.swift
 introduces such a postprocessing step. In this case, the files created
-by all of the parallel runs of <tt>simulation.sh</tt> will be averaged by by
-the trivial "analysis application" <tt>stats.sh</tt>:</p></div>
+by all of the parallel runs of <code>simulation.sh</code> will be averaged by by
+the trivial "analysis application" <code>stats.sh</code>:</p></div>
 <div class="imageblock" style="text-align:center;">
 <div class="content">
 <img src="part03.png" alt="part03.png" />
@@ -1022,7 +1188,7 @@ the trivial "analysis application" <tt>stats.sh</tt>:</p></div>
 <div class="listingblock">
 <div class="title">p3.swift</div>
 <div class="content">
-<pre><tt>type file;
+<pre><code>type file;
 
 app (file o) simulation (int sim_steps, int sim_range, int sim_values)
 {
@@ -1048,37 +1214,37 @@ foreach i in [0:nsim-1] {
 }
 
 file stats&lt;"output/average.out"&gt;;
-stats = analyze(sims);</tt></pre>
+stats = analyze(sims);</code></pre>
 </div></div>
 <div class="paragraph"><p>To run:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ cd part03
-$ swift p3.swift</tt></pre>
+<pre><code>$ cd part03
+$ swift p3.swift</code></pre>
 </div></div>
-<div class="paragraph"><p>Note that in <tt>p3.swift</tt> we expose more of the capabilities of the
-<tt>simulate.sh</tt> application to the <tt>simulation()</tt> app function:</p></div>
+<div class="paragraph"><p>Note that in <code>p3.swift</code> we expose more of the capabilities of the
+<code>simulate.sh</code> application to the <code>simulation()</code> app function:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>app (file o) simulation (int sim_steps, int sim_range, int sim_values)
+<pre><code>app (file o) simulation (int sim_steps, int sim_range, int sim_values)
 {
   simulate "--timesteps" sim_steps "--range" sim_range "--nvalues" sim_values stdout=@filename(o);
-}</tt></pre>
+}</code></pre>
 </div></div>
-<div class="paragraph"><p><tt>p3.swift</tt> also shows how to fetch application-specific values from
-the <tt>swift</tt> command line in a Swift script using <tt>@arg()</tt> which
+<div class="paragraph"><p><code>p3.swift</code> also shows how to fetch application-specific values from
+the <code>swift</code> command line in a Swift script using <code>@arg()</code> which
 accepts a keyword-style argument and its default value:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>int nsim   = @toInt(@arg("nsim","10"));
+<pre><code>int nsim   = @toInt(@arg("nsim","10"));
 int steps  = @toInt(@arg("steps","1"));
 int range  = @toInt(@arg("range","100"));
-int values = @toInt(@arg("values","5"));</tt></pre>
+int values = @toInt(@arg("values","5"));</code></pre>
 </div></div>
-<div class="paragraph"><p>Now we can specify that more runs should be performed and that each should run for more timesteps, and produce more that one value each, within a specified range, using command line arguments placed after the Swift script name in the form <tt>-parameterName=value</tt>:</p></div>
+<div class="paragraph"><p>Now we can specify that more runs should be performed and that each should run for more timesteps, and produce more that one value each, within a specified range, using command line arguments placed after the Swift script name in the form <code>-parameterName=value</code>:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ swift p3.swift -nsim=3 -steps=10 -values=4 -range=1000000
+<pre><code>$ swift p3.swift -nsim=3 -steps=10 -values=4 -range=1000000
 
 Swift 0.94.1 RC2 swift-r6895 cog-r3765
 
@@ -1114,12 +1280,12 @@ output/sim_2.out
   201806
   213540
   527576
-  944233</tt></pre>
+  944233</code></pre>
 </div></div>
-<div class="paragraph"><p>Now try running (<tt>-nsim=</tt>) 100 simulations of (<tt>-steps=</tt>) 1 second each:</p></div>
+<div class="paragraph"><p>Now try running (<code>-nsim=</code>) 100 simulations of (<code>-steps=</code>) 1 second each:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ swift p3.swift -nsim=100 -steps=1
+<pre><code>$ swift p3.swift -nsim=100 -steps=1
 Swift 0.94.1 RC2 swift-r6895 cog-r3765
 
 RunID: 20130827-1444-rq809ts6
@@ -1130,10 +1296,10 @@ Progress:  time: Tue, 27 Aug 2013 14:44:59 -0500  Selecting site:37  Active:20  
 Progress:  time: Tue, 27 Aug 2013 14:45:00 -0500  Selecting site:16  Active:20  Stage out:1  Finished successfully:63
 Progress:  time: Tue, 27 Aug 2013 14:45:02 -0500  Active:15  Stage out:1  Finished successfully:84
 Progress:  time: Tue, 27 Aug 2013 14:45:03 -0500  Finished successfully:101
-Final status: Tue, 27 Aug 2013 14:45:03 -0500  Finished successfully:101</tt></pre>
+Final status: Tue, 27 Aug 2013 14:45:03 -0500  Finished successfully:101</code></pre>
 </div></div>
 <div class="paragraph"><p>We can see from Swift&#8217;s "progress" status that the tutorial&#8217;s default
-<tt>sites.xml</tt> parameters for local execution allow Swift to run up to 20
+<code>sites.xml</code> parameters for local execution allow Swift to run up to 20
 application invocations concurrently on the login node. We&#8217;ll look at
 this in more detail in the next sections where we execute applications
 on the site&#8217;s compute nodes.</p></div>
@@ -1145,18 +1311,18 @@ on the site&#8217;s compute nodes.</p></div>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_part_4_running_a_parallel_ensemble_on_compute_nodes">Part 4: Running a parallel ensemble on compute nodes</h3>
-<div class="paragraph"><p><tt>p4.swift</tt> will run our mock "simulation"
+<div class="paragraph"><p><code>p4.swift</code> will run our mock "simulation"
 applications on compute nodes.  The script is similar to as
-<tt>p3.swift</tt>, but specifies that each simulation app invocation should
+<code>p3.swift</code>, but specifies that each simulation app invocation should
 additionally return the log file which the application writes to
-<tt>stderr</tt>.</p></div>
-<div class="paragraph"><p>Now when you run <tt>swift p4.swift</tt> you&#8217;ll see that two types output
-files will placed in the <tt>output/</tt> directory: <tt>sim_N.out</tt> and
-<tt>sim_N.log</tt>.  The log files provide data on the runtime environment of
+<code>stderr</code>.</p></div>
+<div class="paragraph"><p>Now when you run <code>swift p4.swift</code> you&#8217;ll see that two types output
+files will placed in the <code>output/</code> directory: <code>sim_N.out</code> and
+<code>sim_N.log</code>.  The log files provide data on the runtime environment of
 each app invocation. For example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ cat output/sim_0.log
+<pre><code>$ cat output/sim_0.log
 
 Called as: simulate.sh: --timesteps 1 --range 100 --nvalues 5
 
@@ -1184,73 +1350,7 @@ EDITOR=vim
 HOME=/homes/davidk
 JAVA_HOME=/nfs/proj-davidk/jdk1.7.0_01
 LANG=C
-....</tt></pre>
-</div></div>
-<div class="paragraph"><p>To tell Swift to run the apps on compute nodes, we specify in the
-<tt>apps</tt> file that the apps should be executed on the <tt>cloud</tt> site
-(instead of the <tt>localhost</tt> site).  We can specify the location of
-each app in the third field of the <tt>apps</tt> file, with either an
-absolute pathname or the name of an executable to be located in
-<tt>PATH</tt>). Here we use the latter form:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>$ cat apps
-cloud simulate simulate.sh
-cloud stats    stats.sh</tt></pre>
-</div></div>
-<div class="paragraph"><p>You can experiment, for example, with an alternate version of stats.sh by specfying that app&#8217;s location explicitly:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>$ cat apps
-cloud simulate simulate.sh
-cloud stats    /home/users/p01532/bin/my-alt-stats.sh</tt></pre>
-</div></div>
-<div class="paragraph"><p>We can see that when we run many apps requesting a larger set of nodes (6), we are indeed running on the compute nodes:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>$ swift p4.swift -nsim=1000 -steps=1
-Swift 0.94.1 RC2 swift-r6895 cog-r3765
-
-RunID: 20130827-1638-t23ax37a
-Progress:  time: Tue, 27 Aug 2013 16:38:11 -0500
-Progress:  time: Tue, 27 Aug 2013 16:38:12 -0500  Initializing:966
-Progress:  time: Tue, 27 Aug 2013 16:38:13 -0500  Selecting site:499  Submitting:500  Submitted:1
-Progress:  time: Tue, 27 Aug 2013 16:38:14 -0500  Selecting site:499  Stage in:1  Submitted:500
-Progress:  time: Tue, 27 Aug 2013 16:38:16 -0500  Selecting site:499  Submitted:405  Active:95  Stage out:1
-Progress:  time: Tue, 27 Aug 2013 16:38:17 -0500  Selecting site:430  Submitted:434  Active:66  Stage out:1  Finished successfully:69
-Progress:  time: Tue, 27 Aug 2013 16:38:18 -0500  Selecting site:388  Submitted:405  Active:95  Stage out:1  Finished successfully:111
-...
-Progress:  time: Tue, 27 Aug 2013 16:38:30 -0500  Stage in:1  Submitted:93  Active:94  Finished successfully:812
-Progress:  time: Tue, 27 Aug 2013 16:38:31 -0500  Submitted:55  Active:95  Stage out:1  Finished successfully:849
-Progress:  time: Tue, 27 Aug 2013 16:38:32 -0500  Active:78  Stage out:1  Finished successfully:921
-Progress:  time: Tue, 27 Aug 2013 16:38:34 -0500  Active:70  Stage out:1  Finished successfully:929
-Progress:  time: Tue, 27 Aug 2013 16:38:37 -0500  Stage in:1  Finished successfully:1000
-Progress:  time: Tue, 27 Aug 2013 16:38:38 -0500  Stage out:1  Finished successfully:1000
-Final status: Tue, 27 Aug 2013 16:38:38 -0500  Finished successfully:1001
-
-$ grep "on node:" output/*log | head
-output/sim_0.log:Running on node: nid00063
-output/sim_100.log:Running on node: nid00060
-output/sim_101.log:Running on node: nid00061
-output/sim_102.log:Running on node: nid00032
-output/sim_103.log:Running on node: nid00060
-output/sim_104.log:Running on node: nid00061
-output/sim_105.log:Running on node: nid00032
-output/sim_106.log:Running on node: nid00060
-output/sim_107.log:Running on node: nid00061
-output/sim_108.log:Running on node: nid00062
-
-$ grep "on node:" output/*log | awk '{print $4}' | sort | uniq -c
-    158 nid00032
-    156 nid00033
-    171 nid00060
-    178 nid00061
-    166 nid00062
-    171 nid00063
-$ hostname
-raven
-$ hostname -f
-nid00008</tt></pre>
+....</code></pre>
 </div></div>
 </div>
 <div class="sect2">
@@ -1260,7 +1360,7 @@ change to the command line arguments. The example below will run 1000 simulation
 with each simulation taking 5 seconds.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ swift p6.swift -steps=5 -nsim=1000</tt></pre>
+<pre><code>$ swift p6.swift -steps=5 -nsim=1000</code></pre>
 </div></div>
 </div>
 <div class="sect2">
@@ -1282,7 +1382,7 @@ file". This pattern is shown below, followed by the Swift script.</p></div>
 <div class="listingblock">
 <div class="title">p6.swift</div>
 <div class="content">
-<pre><tt>type file;
+<pre><code>type file;
 
 # app() functions for application programs to be called:
 
@@ -1338,29 +1438,29 @@ foreach i in [0:nsim-1] {
 
 file stats_out&lt;"output/average.out"&gt;;
 file stats_log&lt;"output/average.log"&gt;;
-(stats_out,stats_log) = analyze(sims, stats_script);</tt></pre>
+(stats_out,stats_log) = analyze(sims, stats_script);</code></pre>
 </div></div>
 <div class="paragraph"><p>Note that the workflow is based on data flow dependencies: each simulation depends on the seed value, calculated in this statement:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>seedfile = genseed(1);</tt></pre>
+<pre><code>seedfile = genseed(1);</code></pre>
 </div></div>
 <div class="paragraph"><p>and on the bias file, computed and then consumed in these two dependent statements:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>  biasfile = genbias(1000, 20, simulate_script);
-  (simout,simlog) = simulation(steps, range, biasfile, 1000000, values, simulate_script, seedfile);</tt></pre>
+<pre><code>  biasfile = genbias(1000, 20, simulate_script);
+  (simout,simlog) = simulation(steps, range, biasfile, 1000000, values, simulate_script, seedfile);</code></pre>
 </div></div>
 <div class="paragraph"><p>To run:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ cd ../part06
-$ swift p6.swift</tt></pre>
+<pre><code>$ cd ../part06
+$ swift p6.swift</code></pre>
 </div></div>
 <div class="paragraph"><p>The default parameters result in the following execution log:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ swift p6.swift
+<pre><code>$ swift p6.swift
 Swift 0.94.1 RC2 swift-r6895 cog-r3765
 
 RunID: 20130827-1917-jvs4gqm5
@@ -1371,12 +1471,12 @@ Progress:  time: Tue, 27 Aug 2013 19:17:56 -0500
 Progress:  time: Tue, 27 Aug 2013 19:17:57 -0500  Stage in:1  Submitted:10
 Generated seed=382537
 Progress:  time: Tue, 27 Aug 2013 19:17:59 -0500  Active:9  Stage out:1  Finished successfully:11
-Final status: Tue, 27 Aug 2013 19:18:00 -0500  Finished successfully:22</tt></pre>
+Final status: Tue, 27 Aug 2013 19:18:00 -0500  Finished successfully:22</code></pre>
 </div></div>
 <div class="paragraph"><p>which produces the following output:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ ls -lrt output
+<pre><code>$ ls -lrt output
 total 264
 -rw-r--r-- 1 p01532 61532     9 Aug 27 19:17 seed.dat
 -rw-r--r-- 1 p01532 61532   180 Aug 27 19:17 bias_9.dat
@@ -1410,12 +1510,12 @@ total 264
 -rw-r--r-- 1 p01532 61532    90 Aug 27 19:18 sim_0.out
 -rw-r--r-- 1 p01532 61532 14897 Aug 27 19:18 sim_0.log
 -rw-r--r-- 1 p01532 61532     9 Aug 27 19:18 average.out
--rw-r--r-- 1 p01532 61532 14675 Aug 27 19:18 average.log</tt></pre>
+-rw-r--r-- 1 p01532 61532 14675 Aug 27 19:18 average.log</code></pre>
 </div></div>
 <div class="paragraph"><p>Each sim_N.out file is the sum of its bias file plus newly "simulated" random output scaled by 1,000,000:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>$ cat output/bias_0.dat
+<pre><code>$ cat output/bias_0.dat
      302
      489
       81
@@ -1447,7 +1547,7 @@ $ cat output/sim_0.out
 35000839
 22000258
 49000506
-75000310</tt></pre>
+75000310</code></pre>
 </div></div>
 <div class="paragraph"><p>We produce 20 values in each bias file. Simulations of less than that
 number of values ignore the unneeded number, while simualtions of more
@@ -1489,7 +1589,7 @@ populate WORKER_HOSTS with the IP addresses of all active instances you have run
 </ol></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>export WORKER_HOSTS=$( nova list | grep ACTIVE | sed -e 's/^.*private=//' -e 's/ .*//' |sed ':a;N;$!ba;s/\n/ /g' )</tt></pre>
+<pre><code>export WORKER_HOSTS=$( nova list | grep ACTIVE | sed -e 's/^.*private=//' -e 's/ .*//' |sed ':a;N;$!ba;s/\n/ /g' )</code></pre>
 </div></div>
 </div>
 </div>
@@ -1498,7 +1598,7 @@ populate WORKER_HOSTS with the IP addresses of all active instances you have run
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2013-10-22 14:58:15 CDT
+Last updated 2014-06-05 05:57:13 CDT
 </div>
 </div>
 </body>

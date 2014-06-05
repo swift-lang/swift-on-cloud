@@ -2,7 +2,7 @@ Swift Tutorial for running on localhost
 =======================================
 
 This tutorial is viewable at:
-http://swiftlang.org/tutorials/localhost/tutorial.html
+http://swift-lang.org/tutorials/localhost/tutorial.html
 
 
 Introduction: Why Parallel Scripting?
@@ -45,7 +45,7 @@ Run the following commands to extract these tutorial scripts.
 
 -----
 $ cd $HOME
-$ wget http://swiftlang.org/tutorials/cloud/swift-localhost-tutorial.tar.gz <TODO: Create link>
+$ wget http://swiftlang.org/tutorials/localhost/swift-localhost-tutorial.tar.gz
 $ tar xvfz swift-localhost-tutorial.tar.gz
 $ cd swift-localhost-tutorial
 -----
@@ -387,7 +387,7 @@ app (file o) simulation (int sim_steps, int sim_range, int sim_values)
 -----
 
 `p3.swift` also shows how to fetch application-specific values from
-the `swift` command line in a Swift script using `@arg()` which
+the `swift` command line in a Swift script using `arg()` which
 accepts a keyword-style argument and its default value:
 
 -----
@@ -464,28 +464,14 @@ Progress: Tue, 03 Jun 2014 17:08:19-0500  Active:11  Finished successfully:89
 Final status:Tue, 03 Jun 2014 17:08:19-0500  Finished successfully:101
 -----
 
-<TODO: Check the following>
-We can see from Swift's "progress" status that the tutorial's default
-`swift.properties` parameters for local execution allow Swift to run up to 20
-application invocations concurrently on the localhost.
-
-Running applications on compute nodes with Swift
-------------------------------------------------
-
 Part 4: Running a parallel ensemble
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`p4.swift` will run our mock "simulation"
-applications on compute nodes.  The script is similar to as
-`p3.swift`, but specifies that each simulation app invocation should
-additionally return the log file which the application writes to
-`stderr`.
+`p4.swift` will run our mock "simulation" applications on compute nodes.  The script is similar to as
+`p3.swift`, but specifies that each simulation app invocation should additionally return the log file
+which the application writes to `stderr`.
 
-////
-
-FIXME: need to revise this figure: drop prog:
-
-, making the parallel portion of the script behave like this:
+FIXME: need to revise this figure: drop prog: , making the parallel portion of the script behave like this:
 
 image::part04.png[align="center"]
 
@@ -493,7 +479,7 @@ image::part04.png[align="center"]
 ----
 sys::[cat ../part04/p4.swift]
 ----
-////
+
 
 Now when you run `swift p4.swift` you'll see that two types output
 files will placed in the `output/` directory: `sim_N.out` and
@@ -532,6 +518,7 @@ LANG=C
 ....
 -----
 
+////
 To tell Swift to run the apps on compute nodes, we specify in the
 `apps` file that the apps should be executed on the `cloud` site
 (instead of the `localhost` site).  We can specify the location of
@@ -600,6 +587,8 @@ $ hostname -f
 nid00008
 -----
 
+////
+
 Performing larger Swift runs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -611,15 +600,10 @@ with each simulation taking 5 seconds.
 $ swift p6.swift -steps=5 -nsim=1000
 -----
 
-Part 5: Controlling the compute-node pools where applications run
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Part 5: Specifying more complex workflow patterns
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This section is under development.
-
-Part 6: Specifying more complex workflow patterns
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-p6.swift expands the workflow pattern of p4.swift to add additional
+p5.swift expands the workflow pattern of p4.swift to add additional
 stages to the workflow. Here, we generate a dynamic seed value that
 will be used by all of the simulations, and for each simulation, we
 run an pre-processing application to generate a unique "bias
@@ -627,9 +611,9 @@ file". This pattern is shown below, followed by the Swift script.
 
 image::part06.png[align="center"]
 
-.p6.swift
+.p5.swift
 ----
-sys::[cat ../part06/p6.swift]
+sys::[cat ../part05/p5.swift]
 ----
 
 Note that the workflow is based on data flow dependencies: each simulation depends on the seed value, calculated in this statement:
@@ -644,26 +628,28 @@ and on the bias file, computed and then consumed in these two dependent statemen
 
 To run:
 ----
-$ cd ../part06
-$ swift p6.swift
+$ cd ../part05
+$ swift p5.swift
 ----
 
 The default parameters result in the following execution log:
 
 -----
-$ swift p6.swift
-Swift 0.94.1 RC2 swift-r6895 cog-r3765
-
-RunID: 20130827-1917-jvs4gqm5
-Progress:  time: Tue, 27 Aug 2013 19:17:56 -0500
+$ swift p5.swift 
+Swift 0.95 Branch SVN swift-r7903 cog-r3908
+RunID: run001
+Progress: Thu, 05 Jun 2014 06:01:36-0500
 
 *** Script parameters: nsim=10 range=100 num values=10
 
-Progress:  time: Tue, 27 Aug 2013 19:17:57 -0500  Stage in:1  Submitted:10
-Generated seed=382537
-Progress:  time: Tue, 27 Aug 2013 19:17:59 -0500  Active:9  Stage out:1  Finished successfully:11
-Final status: Tue, 27 Aug 2013 19:18:00 -0500  Finished successfully:22
+Progress: Thu, 05 Jun 2014 06:01:37-0500  Submitted:8  Active:2  Finished successfully:11
+Progress: Thu, 05 Jun 2014 06:01:38-0500  Submitted:6  Active:2  Finished successfully:13
+Progress: Thu, 05 Jun 2014 06:01:39-0500  Submitted:4  Active:2  Finished successfully:15
+Progress: Thu, 05 Jun 2014 06:01:40-0500  Submitted:2  Active:2  Finished successfully:17
+Progress: Thu, 05 Jun 2014 06:01:41-0500  Active:2  Finished successfully:19
+Final status:Thu, 05 Jun 2014 06:01:41-0500  Finished successfully:22
 -----
+
 which produces the following output:
 -----
 $ ls -lrt output
@@ -749,6 +735,8 @@ bias values as is needed for each simulation.  As a further exercise,
 modify the script to generate a unique seed value for each simulation,
 which is a common practice in ensemble computations.
 
+
+////
 Tips for Specific Resources
 ---------------------------
 
@@ -763,3 +751,4 @@ populate WORKER_HOSTS with the IP addresses of all active instances you have run
 -----
 export WORKER_HOSTS=$( nova list | grep ACTIVE | sed -e 's/^.*private=//' -e 's/ .*//' |sed ':a;N;$!ba;s/\n/ /g' )
 -----
+////

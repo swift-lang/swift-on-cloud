@@ -550,6 +550,7 @@ LANG=C
 ....
 -----
 
+/////
 To tell Swift to run the apps on compute nodes, we specify in the
 `apps` file that the apps should be executed on the `cloud` site
 (instead of the `localhost` site).  We can specify the location of
@@ -617,7 +618,7 @@ raven
 $ hostname -f
 nid00008
 -----
-
+/////
 Performing larger Swift runs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

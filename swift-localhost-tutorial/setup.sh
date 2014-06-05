@@ -19,11 +19,11 @@ then
     export JAVA=/usr/local/bin/jdk1.7.0_51/bin
     export SWIFT=/usr/local/bin/swift-0.95/bin
     export PATH=$JAVA:$SWIFT:$PATH
-else # Running on local machine
-    for p in 03 04 05 06
-    do
-        cp swift.properties part${p}/swift.properties
-    done
+#else # Running on local machine
+#    for p in 03 04 05 06
+#    do
+#        cp swift.properties part${p}/swift.properties
+#    done
 fi
 
 echo Swift version is $(swift -version)
