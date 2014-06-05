@@ -791,10 +791,7 @@ for complex parallel programming.  Swift expresses your workflow in a
 portable fashion: The same script runs on multicore computers,
 clusters, clouds, grids, and supercomputers.</p></div>
 <div class="paragraph"><p>In this tutorial, you&#8217;ll be able to first try a few Swift examples
-(parts 1-3) on your local machine, to get a sense of the
-language. Then in parts 4-6 you&#8217;ll run similar workflows on cloud
-compute nodes, and see how more complex workflows can be expressed
-with Swift scripts.</p></div>
+on your local machine, to get a sense of the language.</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -1121,10 +1118,17 @@ foreach i in [0:9] {
 <div class="paragraph"><p>The script also shows an
 example of naming the output files of an ensemble run. In this case, the output files will be named
 <code>output/sim_N.out</code>.</p></div>
-<div class="paragraph"><p>In part 2, we also update the swift.properties file. The swift.properties file defines properties that
-control the parallelism involved in the swift execution. By setting the tasksPerWorker to the desired
-number of parallel application invocations it is possible to take advantage of multiple cores in the processor.
-tasksPerWorker is set to 2 and could be changed to the number of cores available on your machine.</p></div>
+<div class="paragraph"><p>In part 2, we update the swift.properties file.</p></div>
+<div class="paragraph"><p>Instead of using shell script (simulate is a link to simulate.sh), we use the equivalent
+python version (simulate.py). Swift does not need to know anything about the language an
+application is written in. The application can be written in Perl, Python, Java, Fortran,
+or any other language.</p></div>
+<div class="paragraph"><p>The swift.properties file also defines properties that control the parallelism involved
+in the swift execution. By setting the tasksPerWorker to the desired number of parallel
+application invocations it is possible to take advantage of multiple cores in the
+processor. The taskThrottle variable is used to limit number of tasks sent to
+workers for execution. Both tasksPerWorker and taskThrottle are set to 2 in the tutorial
+and could be set to the number of cores available on your machine.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><code>site=localhost
@@ -1132,18 +1136,18 @@ use.provider.staging=true
 execution.retries=2
 
 site.localhost {
-   taskWalltime=00:02:00
    jobmanager=local
-   initialScore=10000
    filesystem=local
+   initialscore=10000
+   taskWalltime=00:02:00
    workdir=/tmp/swiftwork
-   maxJobs=1
-   maxNodesPerJob=1
    tasksPerWorker=2
-}</code></pre>
+   taskThrottle=2
+}
+
+app.localhost.simulate=simulate.py
+app.localhost.stats=stats.py</code></pre>
 </div></div>
-<div class="paragraph"><p>Swift does not need to know anything about the language an application is written in. The application
-can be written in Perl, Python, Java, Fortran, or any other language.</p></div>
 <div class="paragraph"><p>To run the script and view the output:</p></div>
 <div class="listingblock">
 <div class="content">
@@ -1303,103 +1307,8 @@ Final status:Tue, 03 Jun 2014 17:08:19-0500  Finished successfully:101</code></p
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_part_4_running_a_parallel_ensemble">Part 4: Running a parallel ensemble</h3>
-<div class="paragraph"><p><code>p4.swift</code> will run our mock "simulation" applications on compute nodes.  The script is similar to as
-<code>p3.swift</code>, but specifies that each simulation app invocation should additionally return the log file
-which the application writes to <code>stderr</code>.</p></div>
-<div class="paragraph"><p>FIXME: need to revise this figure: drop prog: , making the parallel portion of the script behave like this:</p></div>
-<div class="imageblock" style="text-align:center;">
-<div class="content">
-<img src="part04.png" alt="part04.png" />
-</div>
-</div>
-<div class="listingblock">
-<div class="title">p4.swift</div>
-<div class="content">
-<pre><code>type file;
-
-app (file out, file log) simulation (int sim_steps, int sim_range, int sim_values, file sim_script)
-{
-    bash "simulate.sh" "--timesteps" sim_steps "--range" sim_range "--nvalues" sim_values stdout=@out stderr=@log;
-}
-
-app (file out, file log) analyze (file s[], file stat_script)
-{
-    bash "stats.sh" filenames(s) stdout=@out stderr=@log;
-}
-
-int nsim   = toInt(arg("nsim",   "10"));
-int steps  = toInt(arg("steps",  "1"));
-int range  = toInt(arg("range",  "100"));
-int values = toInt(arg("values", "5"));
-
-file simulate_script &lt;"simulate.sh"&gt;;
-file stats_script &lt;"stats.sh"&gt;;
-
-file sims[];
-
-foreach i in [0:nsim-1] {
-    file simout &lt;single_file_mapper; file=strcat("output/sim_",i,".out")&gt;;
-    file simlog &lt;single_file_mapper; file=strcat("output/sim_",i,".log")&gt;;
-    (simout,simlog) = simulation(steps,range,values,simulate_script);
-    sims[i] = simout;
-}
-
-
-file stats_out&lt;"output/average.out"&gt;;
-file stats_log&lt;"output/average.log"&gt;;
-(stats_out, stats_log) = analyze(sims, stats_script);</code></pre>
-</div></div>
-<div class="paragraph"><p>Now when you run <code>swift p4.swift</code> you&#8217;ll see that two types output
-files will placed in the <code>output/</code> directory: <code>sim_N.out</code> and
-<code>sim_N.log</code>.  The log files provide data on the runtime environment of
-each app invocation. For example:</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><code>$ cat output/sim_0.log
-
-Called as: simulate.sh: --timesteps 1 --range 100 --nvalues 5
-
-Start time: Tue Oct 22 14:54:11 CDT 2013
-Running as user: uid=5116(davidk) gid=311(collab) groups=311(collab),104(fuse),1349(swift),45053(swat)
-Running on node: stomp
-Node IP address: 140.221.9.237
-
-Simulation parameters:
-
-bias=0
-biasfile=none
-initseed=none
-log=yes
-paramfile=none
-range=100
-scale=1
-seedfile=none
-timesteps=1
-output width=8
-
-Environment:
-
-EDITOR=vim
-HOME=/homes/davidk
-JAVA_HOME=/nfs/proj-davidk/jdk1.7.0_01
-LANG=C
-....</code></pre>
-</div></div>
-</div>
-<div class="sect2">
-<h3 id="_performing_larger_swift_runs">Performing larger Swift runs</h3>
-<div class="paragraph"><p>To test with larger runs, there are two changes that are required. The first is a
-change to the command line arguments. The example below will run 1000 simulations
-with each simulation taking 5 seconds.</p></div>
-<div class="listingblock">
-<div class="content">
-<pre><code>$ swift p6.swift -steps=5 -nsim=1000</code></pre>
-</div></div>
-</div>
-<div class="sect2">
-<h3 id="_part_5_specifying_more_complex_workflow_patterns">Part 5: Specifying more complex workflow patterns</h3>
-<div class="paragraph"><p>p5.swift expands the workflow pattern of p4.swift to add additional
+<h3 id="_part_4_specifying_more_complex_workflow_patterns">Part 4: Specifying more complex workflow patterns</h3>
+<div class="paragraph"><p>p4.swift expands the workflow pattern of p3.swift to add additional
 stages to the workflow. Here, we generate a dynamic seed value that
 will be used by all of the simulations, and for each simulation, we
 run an pre-processing application to generate a unique "bias
@@ -1410,7 +1319,7 @@ file". This pattern is shown below, followed by the Swift script.</p></div>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">p5.swift</div>
+<div class="title">p4.swift</div>
 <div class="content">
 <pre><code>type file;
 
@@ -1484,13 +1393,13 @@ file stats_log&lt;"output/average.log"&gt;;
 <div class="paragraph"><p>To run:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><code>$ cd ../part05
-$ swift p5.swift</code></pre>
+<pre><code>$ cd ../part04
+$ swift p4.swift</code></pre>
 </div></div>
 <div class="paragraph"><p>The default parameters result in the following execution log:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><code>$ swift p5.swift
+<pre><code>$ swift p4.swift
 Swift 0.95 Branch SVN swift-r7903 cog-r3908
 RunID: run001
 Progress: Thu, 05 Jun 2014 06:01:36-0500
@@ -1588,13 +1497,23 @@ bias values as is needed for each simulation.  As a further exercise,
 modify the script to generate a unique seed value for each simulation,
 which is a common practice in ensemble computations.</p></div>
 </div>
+<div class="sect2">
+<h3 id="_performing_larger_swift_runs">Performing larger Swift runs</h3>
+<div class="paragraph"><p>To test with larger runs, provide suitable command line arguments.
+The example below will run 1000 simulations with each simulation
+taking 5 seconds.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>$ swift p4.swift -steps=5 -nsim=1000</code></pre>
+</div></div>
+</div>
 </div>
 </div>
 </div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-06-05 06:13:47 CDT
+Last updated 2014-06-05 15:44:07 CDT
 </div>
 </div>
 </body>
