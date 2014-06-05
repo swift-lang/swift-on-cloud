@@ -790,19 +790,28 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>gcloud auth login</tt></pre></div></div>
+<div class="paragraph"><p>Get the swift-on-cloud repository from git</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>git clone git@github<span style="color: #990000">.</span>com<span style="color: #990000">:</span>yadudoc/swift-on-cloud<span style="color: #990000">.</span>git
+cd swift-on-cloud/compute-engine</tt></pre></div></div>
 </div>
 <div class="sect3">
 <h4 id="_manage_you_cloud_resources">Manage you Cloud resources</h4>
-<div class="paragraph"><p>Update the file <strong>compute-engine/configs</strong> with the following information:</p></div>
+<div class="paragraph"><p>Update the file <strong>swift-on-cloud/compute-engine/configs</strong> in the cloned repository from the previous step,
+with the following information:</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-GCE_PROJECT : Name of project
+GCE_PROJECT : Name of project selected during the compute-engine sign up.
 </p>
 </li>
 <li>
 <p>
-GCE_PROJECTID : This is the unique ID for your project selected during sign up.
+GCE_PROJECTID : This is the unique ID for your project selected during compute-engine sign up.
 </p>
 </li>
 <li>
@@ -834,15 +843,49 @@ WORKER_MACHINE_TYPE, HEADNODE_MACHINE_TYPE: VM types for workers and headnode, c
 </li>
 <li>
 <p>
-GCE_WORKER_COUNT : Number of workers to start at setup
+GCE_WORKER_COUNT : Number of workers to start at setup (pick a number between 1 and 20)
 </p>
 </li>
 <li>
 <p>
-GCE_ZONE : GCE Region to use (Multiple regions are not supported now)
+GCE_ZONE : GCE Region to use (Multiple regions are not supported now). Choose between:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<em>us-central1-a</em> and <em>us-central1-b</em>   (with Sandy bridge processors)
+</p>
+</li>
+<li>
+<p>
+<em>europe-west1-a</em> and <em>europe-west1-b</em> (with Sandy bridge processors)
+</p>
+</li>
+<li>
+<p>
+<em>asia-east1-a</em> and <em>asia-east1-b</em>     (with Ivy bridge processors)
 </p>
 </li>
 </ul></div>
+</li>
+</ul></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">Read more about Compute-engine zones <a href="https://developers.google.com/compute/docs/zones">here</a></td>
+</tr></table>
+</div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">GCE_WORKER_COUNT directly affects the cost. If you require more than 22 nodes including the
+headnode, file a request to increase your resource quotas.</td>
+</tr></table>
+</div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -865,13 +908,21 @@ http://www.gnu.org/software/src-highlite -->
 <span style="font-style: italic"><span style="color: #9A1900"># Alternatively, you could connect to the headnode by issuing "connect headnode" command</span></span>
 <span style="font-style: italic"><span style="color: #9A1900"># and run on the headnode of the cluster you create.</span></span>
 <span style="font-weight: bold"><span style="color: #0000FF">source</span></span> setup<span style="color: #990000">.</span>sh</tt></pre></div></div>
-<div class="paragraph"><p>Run a test swift script</p></div>
+</div>
+<div class="sect3">
+<h4 id="_run_the_tutorial_on_the_cloud">Run the tutorial on the cloud</h4>
+</div>
+<div class="sect3">
+<h4 id="_run_swift_from_the_headnode">Run swift from the headnode</h4>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.6
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt></tt></pre></div></div>
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900"># Connect to the Headnode</span></span>
+connect headnode
+<span style="font-style: italic"><span style="color: #9A1900">#</span></span>
+</tt></pre></div></div>
 <div class="paragraph"><p>To see resources use :</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.6
@@ -920,7 +971,7 @@ start_n_more <span style="color: #990000">&lt;</span>Number of nodes<span style=
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-05-02 11:06:14 CDT
+Last updated 2014-06-05 11:13:48 CDT
 </div>
 </div>
 </body>
