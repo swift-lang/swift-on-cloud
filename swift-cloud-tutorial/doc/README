@@ -1,8 +1,8 @@
 Swift Tutorial for Cloud and Ad hoc Resources
-=============================================
+---------------------------------------------
 
 This tutorial is viewable at:
-http://swiftlang.org/tutorials/cloud
+<TODO> http://swiftlang.org/tutorials/cloud <FIX>
 
 
 Introduction: Why Parallel Scripting?
@@ -31,18 +31,31 @@ with Swift scripts.
 
 Swift installation
 ------------------
-1. Download the file from http://swiftlang.org/packages/swift-0.94.1-RC2.tar.gz
-2. Extract by running "tar xfz swift-0.94.1-RC2.tar.gz"
-3. Add to PATH by running "export PATH=$PATH:/path/to/swift-0.94.1-RC2/bin"
+
+[source, bash]
+-----
+# Download the swift-0.95 package
+wget http://swiftlang.org/packages/swift-0.95-RC6.tar.gz
+# Extract package
+tar xfz swift-0.95-RC6.tar.gz
+# Add swift to the PATH environment variable
+export PATH=$PATH:/path/to/swift-0.95-RC6/bin
+-----
 
 Swift tutorial installation
 ---------------------------
 If you are running on cloud resources, please start your instances now.
+
+////
+TODO : The user at no point should have to deal with IPs on the cloud
+With ad-hoc the user is providing the resources, so asking for IPs is
+resonable
+
 For both ad hoc and cloud resources, you will need to collect a list of
 the IP addresses you will be using.
+////
 
 Run the following commands to extract these tutorial scripts.
-
 -----
 $ cd $HOME
 $ wget http://swiftlang.org/tutorials/cloud/swift-cloud-tutorial.tar.gz
