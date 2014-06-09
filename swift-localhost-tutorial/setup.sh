@@ -4,6 +4,13 @@ if [ ${BASH_VERSINFO[0]} -gt 2 -a "${BASH_SOURCE[0]}" = "${0}" ] ; then
   exit 1
 fi
 
+if [ -f $HOME/.swift/swift.properties ]; then
+    echo "WARNING: Found swift.properties config file in $HOME/.swift/swift.properties"
+    echo "Recommend removing the $HOME/.swift/swift.properties as older config file may"
+    echo "result in unknown behavior"
+fi
+
+
 # Setting scripts folder to the PATH env var.
 TUTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -19,11 +26,6 @@ then
     export JAVA=/usr/local/bin/jdk1.7.0_51/bin
     export SWIFT=/usr/local/bin/swift-0.95/bin
     export PATH=$JAVA:$SWIFT:$PATH
-#else # Running on local machine
-#    for p in 03 04 05 06
-#    do
-#        cp swift.properties part${p}/swift.properties
-#    done
 fi
 
 echo Swift version is $(swift -version)
