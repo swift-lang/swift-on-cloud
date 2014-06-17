@@ -13,10 +13,12 @@ ordinary application programs on distributed parallel resources.
 Swift scripts run many copies of ordinary programs concurrently, using
 statements like this:
 -----
-foreach protein in proteinList {
-  runBLAST(protein);
+file out[];
+foreach param,i in paramList {
+  out[i] = simulate(param);
 }
 -----
+    
 Swift acts like a structured "shell" language. It runs programs
 concurrently as soon as their inputs are available, reducing the need
 for complex parallel programming.  Swift expresses your workflow in a

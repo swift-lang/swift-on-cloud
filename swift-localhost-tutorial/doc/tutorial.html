@@ -781,8 +781,9 @@ Swift scripts run many copies of ordinary programs concurrently, using
 statements like this:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><code>foreach protein in proteinList {
-  runBLAST(protein);
+<pre><code>file out[];
+foreach param,i in paramList {
+  out[i] = simulate(param);
 }</code></pre>
 </div></div>
 <div class="paragraph"><p>Swift acts like a structured "shell" language. It runs programs
@@ -1510,7 +1511,7 @@ taking 5 seconds.</p></div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-06-09 11:47:48 CDT
+Last updated 2014-06-09 17:28:17 CDT
 </div>
 </div>
 </body>

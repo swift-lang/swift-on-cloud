@@ -44,63 +44,28 @@ export PATH=$PATH:/path/to/swift-0.95-RC6/bin
 
 Swift tutorial installation
 ---------------------------
-If you are running on cloud resources, please start your instances now.
 
-////
-TODO : The user at no point should have to deal with IPs on the cloud
-With ad-hoc the user is providing the resources, so asking for IPs is
-resonable
+Get the swift-on-cloud repository:
 
-For both ad hoc and cloud resources, you will need to collect a list of
-the IP addresses you will be using.
-////
-
-Run the following commands to extract these tutorial scripts.
------
-$ cd $HOME
-$ wget http://swiftlang.org/tutorials/cloud/swift-cloud-tutorial.tar.gz
-$ tar xvfz swift-cloud-tutorial.tgz
-$ cd swift-cloud-tutorial
------
-
-Next, edit the file scs/coaster-service.conf. There are three lines you will
-need to edit.
-
-WORKER_LOCATION defines the path that will be used for copying files to the remote
-node. Usually you can set this to your home directory on the worker node.
------
-export WORKER_LOCATION=/home/ubuntu
+----
+# Clone the repository from github
+git clone git@github.com:yadudoc/swift-on-cloud.git
+cd swift-on-cloud
 ----
 
-Set WORKER_HOSTS to be the list of space separated IP addresses that will be used
-as workers.
------
-export WORKER_HOSTS="10.1.2.10 10.1.2.11"
------
+Or, download the zip file from github and unpack.
+----
+# Download
+wget https://github.com/yadudoc/swift-on-cloud/archive/master.zip
+unzip master.zip
+mv swift-on-cloud-master swift-on-cloud
+cd swift-on-cloud
+----
 
-Set WORKER_USERNAME to be the username to use on the worker nodes.
------
-export WORKER_USERNAME=ubuntu
------
-
-Next, run the tutorial setup script
------ 
-$ source setup.sh   # You must run this with "source" !
------
-
-To check out the tutorial scripts from SVN
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you later want to get the most recent version of this tutorial from
-the Swift Subversion repository, do:
-
------
-$ svn co https://svn.ci.uchicago.edu/svn/vdl2/SwiftTutorials/swift-cloud-tutorial
------
-
-This will create a directory called "swift-cloud-tutorial" which contains all of the
-files used in this tutorial.
-
+To run the tutorial on Google Compute Engine (GCE), follow the instructions here:
+https://github.com/yadudoc/swift-on-cloud/tree/master/compute-engine
+or, follow instructions for GCE, in the compute-engine folder of the swift-on-cloud
+repository.
 
 Simple "science applications" for the workflow tutorial
 -------------------------------------------------------
