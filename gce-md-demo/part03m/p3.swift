@@ -17,9 +17,9 @@ type file;
     md 3 50 30000 50  .0001  .005  "0.03 1.0 0.2 0.05 50.0 0.1" 2.5 2.0
 */
 
-app (file o) simulation (string npart, string steps, string mass)
+app (file o) simulation (string npart, string steps, string mass, file md)
 {
-  sh "-c" strjoin(["md","3",npart,steps,">/dev/null; cat md.dat"]," ") stdout=filename(o);
+  sh "-c" strjoin(["chmod a+x ./md; ./md","3",npart,steps,">/dev/null; cat md.dat"]," ") stdout=filename(o);
 }
 
 app (file o) analyze (file s[])
@@ -33,10 +33,11 @@ string steps  = arg("steps","1000");
 string mass   = arg("mass",".0001");
 
 file sims[];
+file md <"md">;
 
 foreach i in [0:nsim-1] {
   file simout <single_file_mapper; file=strcat("output/sim_",i,".out")>;
-  simout = simulation(npart,steps,mass);
+  simout = simulation(npart,steps,mass, md);
   sims[i] = simout;
 }
 
