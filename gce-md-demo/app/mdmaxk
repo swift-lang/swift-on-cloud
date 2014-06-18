@@ -1,0 +1,38 @@
+#! /bin/sh
+
+log() {
+  printf "\nCalled as: $0: $cmdargs\n\n"
+  printf "Start time: "; /bin/date
+  printf "Running as user: "; /usr/bin/id
+  printf "Running on node: "; /bin/hostname
+  printf "Node IP address: "; /bin/hostname -I
+  printf "\nEnvironment:\n\n"
+  printenv | sort
+}
+
+nfiles=$1
+shift
+
+gawk '
+
+BEGIN { maxKe = 0.0; LASTFILE="";}
+
+{
+  if ( $1 == "Step" ) next;
+  if ( (LASTFILE != "") && (FILENAME != LASTFILE)) {
+     printf("%s %f\n", LASTFILE, maxKe )
+     maxKe = 0.0;
+  }
+  Ke = $3 + 0.0;
+  if ( Ke > maxKe ) maxKe = Ke;
+  LASTFILE=FILENAME
+}
+
+#END { printf("max Ke for %s is %f\n", LASTFILE, maxKe ) }
+ END { printf("%s %f\n", LASTFILE, maxKe ) }
+
+
+
+' $* | sort -n -k2 | tail -$nfiles | awk '{print $1}'
+
+# log 1>&2

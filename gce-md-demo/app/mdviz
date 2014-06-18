@@ -1,0 +1,29 @@
+#! /bin/sh
+
+mdout=$1
+vzout=$2
+shift 2
+
+md "$@" >& md.out     # Run the MD command
+
+cat <<EOF >c-ray-cmds
+# walls
+s	0 -1000 2		99		0.2 0.2 0.2			0.0	0.0
+
+# lights
+l	-50 100 -50
+
+# camera
+#	position	FOV		target
+c	0 6 -17		45		0 -1 0
+EOF
+
+for t in md??.trj; do
+  cat $t c-ray-cmds | c-ray >$t.ppm
+  convert $t.ppm $t.png 
+done
+
+convert -delay 20 md??.trj.png t.gif
+
+mv md.dat $mdout
+mv t.gif  $vzout

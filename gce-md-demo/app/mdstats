@@ -1,0 +1,23 @@
+#! /bin/sh
+
+log() {
+  printf "\nCalled as: $0: $cmdargs\n\n"
+  printf "Start time: "; /bin/date
+  printf "Running as user: "; /usr/bin/id
+  printf "Running on node: "; /bin/hostname
+  printf "Node IP address: "; /bin/hostname -I
+  printf "\nEnvironment:\n\n"
+  printenv | sort
+}
+
+awk '
+
+{
+  sum2 += $2
+  sum3 += $3
+  sum4 += $4
+}
+
+END { printf("%f %f %f\n", sum2/NR, sum3/NR, sum4/NR) }
+' $*
+log 1>&2
