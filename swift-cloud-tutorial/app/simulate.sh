@@ -1,5 +1,6 @@
 #! /bin/bash
 
+sleep 20
 printparams()
 {
   printf "\nSimulation parameters:\n\n"
