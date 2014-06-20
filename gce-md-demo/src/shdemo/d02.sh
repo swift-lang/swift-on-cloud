@@ -1,7 +1,7 @@
 #! /bin/sh
 
-cr=../c-ray-1.1
-md=../mdlite
+cr=../c-ray
+md=../md
 
 $md/md 3 50 30000
 
