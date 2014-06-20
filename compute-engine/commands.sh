@@ -27,6 +27,7 @@ CENTRAL="173.255.112.20"
 WORKERPORT="50005"
 #Ping timeout
 PTIMEOUT=4
+sudo apt-get install imagemagick
 worker_loop ()
 {
     while :
@@ -196,9 +197,16 @@ generate_swiftproperties()
     EXTERNAL_IP=$(gcutil --project=$GCE_PROJECTID listinstances | grep headnode | awk '{ print $10 }')
     SERVICE_PORT=50010
     cat <<EOF > swift.properties
-site=cloud,local1
+site=cloud,local
 use.provider.staging=true
 execution.retries=2
+
+site.local {
+   jobmanager=local
+   initialScore=10000
+   filesystem=local
+   workdir=/tmp/swiftwork
+}
 
 site.cloud {
    taskWalltime=04:00:00
@@ -210,12 +218,6 @@ site.cloud {
    workdir=/home/$USER/work
 }
 
-site.local1 {
-   jobmanager=local
-   initialScore=10000
-   filesystem=local
-   workdir=/tmp/swiftwork
-}
 EOF
 
 

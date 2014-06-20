@@ -20,7 +20,7 @@ then
     export SWIFT=/usr/local/bin/swift-0.95/bin
     export PATH=$JAVA:$SWIFT:$PATH
 else # Running on local machine
-    for p in 01 02 03 04 05 06
+    for p in 04 05 06
     do
         cp ../compute-engine/swift.properties part${p}/swift.properties
     done

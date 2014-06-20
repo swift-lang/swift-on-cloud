@@ -2,7 +2,7 @@ type file;
 
 app (file o) simulation ()
 {
-  simulate stdout=@filename(o);
+  simulate stdout=filename(o);
 }
 
 file f <"sim.out">;

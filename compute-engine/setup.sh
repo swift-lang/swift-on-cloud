@@ -46,7 +46,7 @@ install_gcloud_sdk()
     # n(o) to collection of user data
     # 4 to select minimal installation
     # Y to update bashrc/profile
-    # Y to add bash completion support
+    # Y to add baupsh completion support
     ./google-cloud-sdk/install.sh  <<EOF
 n
 4

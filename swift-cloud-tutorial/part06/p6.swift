@@ -22,15 +22,15 @@ app (file out, file log) simulation (int timesteps, int sim_range,
 
 app (file out, file log) analyze (file s[], file stat_script)
 {
-  sh "stats.sh" @filenames(s) stdout=@out stderr=@log;
+  sh "stats.sh" filenames(s) stdout=@out stderr=@log;
 }
 
 # Command line arguments
 
-int  nsim  = @toInt(@arg("nsim",   "10"));  # number of simulation programs to run
-int  steps = @toInt(@arg("steps",  "1"));   # number of timesteps (seconds) per simulation
-int  range = @toInt(@arg("range",  "100")); # range of the generated random numbers
-int  values = @toInt(@arg("values", "10"));  # number of values generated per simulation
+int  nsim  = toInt(arg("nsim",   "10"));  # number of simulation programs to run
+int  steps = toInt(arg("steps",  "1"));   # number of timesteps (seconds) per simulation
+int  range = toInt(arg("range",  "100")); # range of the generated random numbers
+int  values = toInt(arg("values", "10"));  # number of values generated per simulation
 
 # Main script and data
 
@@ -44,9 +44,9 @@ seedfile = genseed(1,simulate_script);
 file sims[];                      # Array of files to hold each simulation output
 
 foreach i in [0:nsim-1] {
-  file biasfile <single_file_mapper; file=@strcat("output/bias_",i,".dat")>;
-  file simout   <single_file_mapper; file=@strcat("output/sim_",i,".out")>;
-  file simlog   <single_file_mapper; file=@strcat("output/sim_",i,".log")>;
+  file biasfile <single_file_mapper; file=strcat("output/bias_",i,".dat")>;
+  file simout   <single_file_mapper; file=strcat("output/sim_",i,".out")>;
+  file simlog   <single_file_mapper; file=strcat("output/sim_",i,".log")>;
   biasfile = genbias(1000, 20, simulate_script);
   (simout,simlog) = simulation(steps, range, biasfile, 1000000, values, simulate_script, seedfile);
   sims[i] = simout;
