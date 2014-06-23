@@ -132,6 +132,7 @@ log "Project id    : $GCE_PROJECTID"
 log "GCE_Workers   : $GCE_WORKER_COUNT"
 source commands.sh
 
+check_project
 start_headnode
 start_n_workers $GCE_WORKER_COUNT
 

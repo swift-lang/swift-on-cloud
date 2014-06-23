@@ -3,6 +3,19 @@
 LOG=Setup_$$.log
 DEPOT_PREFIX="gs://swift-worker"
 
+
+check_project ()
+{
+    RESULT=$(gcutil listinstances --project=$GCE_PROJECTID 2>&1)
+    if [[ $? != 0 ]]
+    then
+        echo "$RESULT"
+        echo "Troubleshooting :"
+        echo "1. Check the GCE_PROJECTID specified in your config file "
+        echo "2. If you added billing recently wait for your project to become active"
+    fi
+}
+
 start_worker ()
 {
     ID=$1;
