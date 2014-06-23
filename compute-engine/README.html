@@ -1,9 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
-    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.9" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="generator" content="AsciiDoc 8.6.9">
 <title></title>
 <style type="text/css">
 /* Shared CSS for AsciiDoc xhtml11 and html5 backends */
@@ -535,6 +534,40 @@ body.manpage div.sectionbody {
 }
 
 
+@media screen {
+  body {
+    max-width: 50em; /* approximately 80 characters wide */
+    margin-left: 16em;
+  }
+
+  #toc {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 13em;
+    padding: 0.5em;
+    padding-bottom: 1.5em;
+    margin: 0;
+    overflow: auto;
+    border-right: 3px solid #f8f8f8;
+    background-color: white;
+  }
+
+  #toc .toclevel1 {
+    margin-top: 0.5em;
+  }
+
+  #toc .toclevel2 {
+    margin-top: 0.25em;
+    display: list-item;
+    color: #aaaaaa;
+  }
+
+  #toctitle {
+    margin-top: 0.5em;
+  }
+}
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
@@ -727,12 +760,16 @@ install: function(toclevels) {
 }
 
 }
-asciidoc.install();
+asciidoc.install(2);
 /*]]>*/
 </script>
 </head>
 <body class="article">
 <div id="header">
+<div id="toc">
+  <div id="toctitle">Table of Contents</div>
+  <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
+</div>
 </div>
 <div id="content">
 <div class="sect1">
@@ -765,7 +802,7 @@ Enter billing information.
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<div class="title">Note</div>
+<img src="./images/icons/note.png" alt="Note">
 </td>
 <td class="content">You should sign into your google account. Once the billing info is set, you might need
     to wait a few minutes. Please note the project-name and project-id in the config file in
@@ -872,7 +909,7 @@ GCE_ZONE : GCE Region to use (Multiple regions are not supported now). Choose be
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<div class="title">Note</div>
+<img src="./images/icons/note.png" alt="Note">
 </td>
 <td class="content">Read more about Compute-engine zones <a href="https://developers.google.com/compute/docs/zones">here</a></td>
 </tr></table>
@@ -880,7 +917,7 @@ GCE_ZONE : GCE Region to use (Multiple regions are not supported now). Choose be
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<div class="title">Note</div>
+<img src="./images/icons/note.png" alt="Note">
 </td>
 <td class="content">GCE_WORKER_COUNT directly affects the cost. If you require more than 22 nodes including the
 headnode, file a request to increase your resource quotas.</td>
@@ -889,31 +926,70 @@ headnode, file a request to increase your resource quotas.</td>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<div class="title">Warning</div>
+<img src="./images/icons/warning.png" alt="Warning">
 </td>
-<td class="content">Do <strong>NOT</strong> change the images for the worker and headnode. If you use other images,
-the swift components will not be present and that will result in the cluster not
-functioning properly.</td>
+<td class="content">Do <strong>NOT</strong> change the images for the worker and headnode to point at images which have not
+been explicitly setup with swift.</td>
 </tr></table>
 </div>
-<div class="paragraph"><p>Start your setup:</p></div>
+</div>
+<div class="sect3">
+<h4 id="_start_your_cloud_setup">Start your cloud setup!</h4>
+<div class="paragraph"><p>Once you finish editing the configs file with your preferences, start the cloud instances
+by sourcing the setup script.</p></div>
+<div class="paragraph"><p>The setup script will setup firewall rules, copy over the required images and start a headnode
+and the requested number of worker instances.</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.6
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="font-style: italic"><span style="color: #9A1900"># The setup.sh script must be sourced. It will start the headnode and the requested</span></span>
-<span style="font-style: italic"><span style="color: #9A1900"># number of worker nodes. A swift.properties file will be generated which can be</span></span>
-<span style="font-style: italic"><span style="color: #9A1900"># used by swift (0.95 and higher) to connect to the headnode started in the cloud.</span></span>
-<span style="font-style: italic"><span style="color: #9A1900"># Alternatively, you could connect to the headnode by issuing "connect headnode" command</span></span>
-<span style="font-style: italic"><span style="color: #9A1900"># and run on the headnode of the cluster you create.</span></span>
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900"># Must source the setup script.</span></span>
 <span style="font-weight: bold"><span style="color: #0000FF">source</span></span> setup<span style="color: #990000">.</span>sh</tt></pre></div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="./images/icons/note.png" alt="Note">
+</td>
+<td class="content">The setup script will ask for a passphrase when you run it for the first time. If you
+give a passphrase, it will be required when you attempt to connect to the cloud instances.</td>
+</tr></table>
+</div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="./images/icons/note.png" alt="Note">
+</td>
+<td class="content">The setup.sh script may not work on shells besides bash.</td>
+</tr></table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_run_swift_from_your_local_machine">Run swift from your local machine</h4>
+<div class="paragraph"><p>Now, once you&#8217;ve configured and started you cloud resources we can move on to trying the
+swift-cloud-tutorial. To run the cloud tutorial from your local machine :</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>cd swift-on-cloud/swift-cloud-tutorial
+<span style="font-weight: bold"><span style="color: #0000FF">source</span></span> setup<span style="color: #990000">.</span>sh</tt></pre></div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="./images/icons/note.png" alt="Note">
+</td>
+<td class="content">You must source the setup.sh script.</td>
+</tr></table>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_run_the_tutorial_on_the_cloud">Run the tutorial on the cloud</h4>
-</div>
-<div class="sect3">
-<h4 id="_run_swift_from_the_headnode">Run swift from the headnode</h4>
+<div class="paragraph"><p>Once your cloud resources have been configured and setup, you can run the swift-cloud-tutorial
+directly from the cloud. The cloud resources created include a headnode, to which you would
+connect to, and the several nodes in worker roles which would do computations in parallel.</p></div>
+<div class="paragraph"><p>To run the tutorial, first connect to the headnode:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.6
 by Lorenzo Bettini
@@ -921,8 +997,19 @@ http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt><span style="font-style: italic"><span style="color: #9A1900"># Connect to the Headnode</span></span>
 connect headnode
-<span style="font-style: italic"><span style="color: #9A1900">#</span></span>
+<span style="font-style: italic"><span style="color: #9A1900"># This will have you logged in to the headnode on the cloud</span></span>
 </tt></pre></div></div>
+</div>
+<div class="sect3">
+<h4 id="_miscellanious_operations_supported">Miscellanious operations supported:</h4>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900"># Connect to the Headnode</span></span>
+connect headnode
+<span style="font-style: italic"><span style="color: #9A1900">#</span></span></tt></pre></div></div>
 <div class="paragraph"><p>To see resources use :</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.6
@@ -940,7 +1027,9 @@ http://www.gnu.org/software/src-highlite -->
 <span style="font-style: italic"><span style="color: #9A1900"># If resource_name is omitted, connect will try to connect to the</span></span>
 <span style="font-style: italic"><span style="color: #9A1900"># headnode</span></span>
 connect <span style="color: #990000">&lt;</span>resource_name<span style="color: #990000">&gt;</span></tt></pre></div></div>
-<div class="paragraph"><p>To stop all resources use:</p></div>
+<div class="paragraph"><p>To stop all resources use from your local machine. Please wait for a couple of minutes
+for the command to finish. Confirm that all resources have been removed using
+list_resources.  :</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.6
 by Lorenzo Bettini
@@ -948,7 +1037,9 @@ http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt><span style="font-style: italic"><span style="color: #9A1900"># This will delete the headnode as well as all workers.</span></span>
 <span style="font-style: italic"><span style="color: #9A1900"># This command will take a few minutes to execute</span></span>
-dissolve</tt></pre></div></div>
+dissolve
+<span style="font-style: italic"><span style="color: #9A1900"># Use list_resources to check if any resources still linger</span></span>
+list_resource</tt></pre></div></div>
 <div class="paragraph"><p>To add more worker nodes use:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.6
@@ -968,10 +1059,10 @@ start_n_more <span style="color: #990000">&lt;</span>Number of nodes<span style=
 </div>
 </div>
 </div>
-<div id="footnotes"><hr /></div>
+<div id="footnotes"><hr></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-06-05 11:13:48 CDT
+Last updated 2014-06-23 15:51:26 CDT
 </div>
 </div>
 </body>

@@ -23,11 +23,12 @@ start_worker ()
         --machine_type=$WORKER_MACHINE_TYPE \
         --auto_delete_boot_disk \
         --metadata=startup-script:'#!/bin/bash
-CENTRAL="173.255.112.20"
+CENTRAL="188.99.9.9"
 WORKERPORT="50005"
 #Ping timeout
 PTIMEOUT=4
-sudo apt-get install imagemagick
+apt-get update
+apt-get install -y imagemagick
 worker_loop ()
 {
     while :
@@ -55,7 +56,7 @@ worker_loop ()
     done
 }
 worker_loop &
-EOF'
+'
 }
 
 check_keys ()
@@ -263,14 +264,14 @@ coaster_loop ()
 }
 
 coaster_loop &
-EOF'
+'
     generate_swiftproperties
 }
 
 
 list_resources()
 {
-    gcutil --project=$GCE_PROJECTID listinstances | grep worker | awk '{print $2}'
+    gcutil --project=$GCE_PROJECTID listinstances # | grep worker | awk '{print $2}'
 }
 
 dissolve()

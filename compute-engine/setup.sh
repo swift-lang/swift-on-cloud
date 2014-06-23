@@ -98,8 +98,15 @@ setup_GCE ()
 
 }
 
+
+# Check if we are running bash
+if [ ! -n "$BASH_VERSION" ]
+then
+ log WARNING: please source the setup.sh script from bash.
+ log WARNING: Setup is not tested outside bash. Unexpected behavior is likely.
+ 
 # ensure that this script is being sourced
-if [ ${BASH_VERSINFO[0]} -gt 2 -a "${BASH_SOURCE[0]}" = "${0}" ]
+elif [ ${BASH_VERSINFO[0]} -gt 2 -a "${BASH_SOURCE[0]}" = "${0}" ]
 then
   log ERROR: script ${BASH_SOURCE[0]} must be executed as: source ${BASH_SOURCE[0]}
   exit 1
@@ -108,15 +115,22 @@ fi
 rm -rf $LOG &> /dev/null
 log "Running setup on system $(uname -a)"
 
+# Check for essential components
+which gcloud &> /dev/null
+[[ "$?" != "0" ]] && echo "ERROR: gcloud could not be found in system PATH" && return -1
+
+which gcutil &> /dev/null
+[[ "$?" != "0" ]] && echo "ERROR: gcutil could not be found in system PATH" && return -1
+
 # Load the configs file
 source configs
 echo "Attempting updates"
 gcloud components update
+
 log "Project name  : $GCE_PROJECT"
 log "Project id    : $GCE_PROJECTID"
 log "GCE_Workers   : $GCE_WORKER_COUNT"
 source commands.sh
-
 
 start_headnode
 start_n_workers $GCE_WORKER_COUNT

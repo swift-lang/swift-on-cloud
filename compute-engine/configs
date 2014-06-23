@@ -1,5 +1,9 @@
-GCE_PROJECT="swift-ninja"
-GCE_PROJECTID="swift-ninja"
+#GCE_PROJECT="swift-ninja"
+#GCE_PROJECTID="swift-ninja"
+
+GCE_PROJECT="My Project 3"
+GCE_PROJECTID="mystic-pagoda-551"
+
 GCE_ZONE="us-central1-a"
 
 # Micro sized VM's are the cheapest that GCE provides
