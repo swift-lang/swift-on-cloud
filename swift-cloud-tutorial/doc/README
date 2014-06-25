@@ -1,9 +1,9 @@
-Swift Tutorial for Cloud and Ad hoc Resources
----------------------------------------------
+Swift Tutorial for the Cloud
+----------------------------
 
-This tutorial is viewable at:
+//// This tutorial is viewable at:
 <TODO> http://swiftlang.org/tutorials/cloud <FIX>
-
+////
 
 Introduction: Why Parallel Scripting?
 ------------------------------------
@@ -29,8 +29,14 @@ language. Then in parts 4-6 you'll run similar workflows on cloud
 compute nodes, and see how more complex workflows can be expressed
 with Swift scripts.
 
+Running the tutorial on you local machine
+-----------------------------------------
+
+If you are running the swift-cloud-tutorial on your local machine, ensure that
+you have swift-0.95-RC6 or greater installed.
+
 Swift installation
-------------------
+~~~~~~~~~~~~~~~~~~
 
 [source, bash]
 -----
@@ -42,18 +48,18 @@ tar xfz swift-0.95-RC6.tar.gz
 export PATH=$PATH:/path/to/swift-0.95-RC6/bin
 -----
 
-Swift tutorial installation
----------------------------
+Get the swift-on-cloud repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Get the swift-on-cloud repository:
-
+Clone the repository from github
+[source,bash]
 ----
-# Clone the repository from github
-git clone git@github.com:yadudoc/swift-on-cloud.git
+git clone https://github.com/yadudoc/swift-on-cloud.git
 cd swift-on-cloud
 ----
 
 Or, download the zip file from github and unpack.
+[source,bash]
 ----
 # Download
 wget https://github.com/yadudoc/swift-on-cloud/archive/master.zip
@@ -62,10 +68,15 @@ mv swift-on-cloud-master swift-on-cloud
 cd swift-on-cloud
 ----
 
+Run the swift-cloud-tutorial from the cloud
+-------------------------------------------
+
 To run the tutorial on Google Compute Engine (GCE), follow the instructions here:
 https://github.com/yadudoc/swift-on-cloud/tree/master/compute-engine
 or, follow instructions for GCE, in the compute-engine folder of the swift-on-cloud
-repository.
+repository. Once your instances are running, connect to the headnode. Everthing
+that you require for the swift-cloud-tutorial is already set up for you on the headnode.
+
 
 Simple "science applications" for the workflow tutorial
 -------------------------------------------------------
