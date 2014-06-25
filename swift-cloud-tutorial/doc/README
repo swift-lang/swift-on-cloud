@@ -59,6 +59,7 @@ cd swift-on-cloud
 ----
 
 Or, download the zip file from github and unpack.
+[source,bash]
 ----
 # Download
 wget https://github.com/yadudoc/swift-on-cloud/archive/master.zip
