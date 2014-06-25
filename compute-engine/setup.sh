@@ -13,31 +13,6 @@ log ()
     fi
 }
 
-install_gce_client()
-{
-    which pip &> LOG
-    if [[ "$?" == "0" ]]
-    then
-        pip install --upgrade google-api-python-client
-        if [[ "$?" == "0" ]]
-        then
-            log "pip install client success"
-            return
-        fi
-    fi
-    which easy_install
-    if [[ "$?" == "0" ]]
-    then
-        easy_install --upgrade google-api-python-client
-        if [[ "$?" == "0" ]]
-        then
-            log "easy_install client success"
-            return
-        fi
-    fi
-    log "Installing python-client failed"
-}
-
 install_gcloud_sdk()
 {
     wget https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.zip
@@ -57,7 +32,7 @@ Y
 EOF
 }
 
-setup_GCE ()
+setup_GCE_SDK ()
 {
 
     # Installation
@@ -115,6 +90,9 @@ fi
 rm -rf $LOG &> /dev/null
 log "Running setup on system $(uname -a)"
 
+setup_GCE_SDK
+return 0
+
 # Check for essential components
 which gcloud &> /dev/null
 [[ "$?" != "0" ]] && echo "ERROR: gcloud could not be found in system PATH" && return -1
@@ -135,6 +113,3 @@ source commands.sh
 check_project
 start_headnode
 start_n_workers $GCE_WORKER_COUNT
-
-
-

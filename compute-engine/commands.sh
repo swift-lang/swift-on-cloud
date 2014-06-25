@@ -84,7 +84,12 @@ stop_workers()
 {
     echo "Stopping all instances"
     INSTANCES=$(gcutil --project=$GCE_PROJECTID listinstances | grep worker | awk '{print $2}')
-    gcutil --project=$GCE_PROJECTID deleteinstance $INSTANCES --delete_boot_pd --force
+    if [ -z $INSTANCES ]
+    then
+        echo "No workers to stop!"
+    else
+        gcutil --project=$GCE_PROJECTID deleteinstance $INSTANCES --delete_boot_pd --force
+    fi
 }
 
 
@@ -94,7 +99,12 @@ stop_n_workers()
     [[ ! -z "$1" ]] && COUNT=$1
     echo "Stopping $COUNT instances"
     INSTANCES=$(gcutil --project=$GCE_PROJECTID listinstances | grep worker | awk '{print $2}' | tail -n $COUNT)
-    gcutil --project=$GCE_PROJECTID deleteinstance $INSTANCES --delete_boot_pd --force
+    if [ -z $INSTANCES ]
+    then
+        echo "No workers to stop!"
+    else
+        gcutil --project=$GCE_PROJECTID deleteinstance $INSTANCES --delete_boot_pd --force
+    fi
 }
 
 
@@ -146,7 +156,13 @@ start_n_more ()
 stop_headnode()
 {
     echo "Stopping headnode"
-    gcutil --project=$GCE_PROJECTID deleteinstance "headnode" --delete_boot_pd --force
+    HEADNODE=$(gcutil --project=$GCE_PROJECTID listinstances | grep headnode )
+    if [ -z $HEADNODE ]
+    then
+        echo "No headnode to stop!"
+    else
+        gcutil --project=$GCE_PROJECTID deleteinstance "headnode" --delete_boot_pd --force
+    fi
 }
 
 add_image()
@@ -264,7 +280,7 @@ SERVICEPORT="50010"
 #wget http://ci.uchicago.edu/~yadunandb/swift-0.95-package.tar.gz
 #tar -xvzf swift-0.95-package.tar.gz
 export JAVA=/usr/local/bin/jdk1.7.0_51/bin
-export SWIFT=/usr/local/bin/swift-0.95/bin
+export SWIFT=/usr/local/bin/swift-0.95-RC6/bin
 export PATH=$JAVA:$SWIFT:$PATH
 
 coaster_loop ()

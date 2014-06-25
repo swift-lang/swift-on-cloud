@@ -1,10 +1,8 @@
 #GCE_PROJECT="swift-ninja"
 #GCE_PROJECTID="swift-ninja"
+GCE_PROJECTID="mystic-pagoda-551"
 
-GCE_PROJECT="My Project 3"
-GCE_PROJECTID="mystic-pagoda-5asd51"
-
-GCE_ZONE="us-central1-a"
+GCE_ZONE="us-central1-b"
 
 # Micro sized VM's are the cheapest that GCE provides
 WORKER_MACHINE_TYPE="f1-micro"
@@ -14,5 +12,9 @@ WORKER_IMAGE="gs://swift-worker/f3bffd36e4584040596ee317e26d127950b32aff.image.t
 GCE_WORKER_COUNT=4
 
 HEADNODE_MACHINE_TYPE="f1-micro"
-HEADNODE_IMAGE="gs://swift-worker/826d503b8a8e1841dd88f2fae66fa8a628a122a2.image.tar.gz"
+# Swift-0.95-RC6
+HEADNODE_IMAGE="gs://swift-worker/87fe9cc2f24713c9947efeb27c352d783c56040a.image.tar.gz"
 
+
+# Swift-0.95
+# HEADNODE_IMAGE="gs://swift-worker/826d503b8a8e1841dd88f2fae66fa8a628a122a2.image.tar.gz"
