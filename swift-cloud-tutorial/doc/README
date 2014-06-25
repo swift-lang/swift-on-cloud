@@ -282,7 +282,7 @@ files and directories that Swift generates), run the cleanup script
 which is located in the tutorial PATH:
 
 [source,bash]
-----
+-----
 $ cleanup
 -----
 
