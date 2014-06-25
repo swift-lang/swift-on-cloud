@@ -6,7 +6,7 @@ Swift Tutorial for the Cloud
 ////
 
 Introduction: Why Parallel Scripting?
-------------------------------------
+-------------------------------------
 
 Swift is a simple scripting language for executing many instances of
 ordinary application programs on distributed parallel resources.
@@ -298,9 +298,9 @@ things like the work directory, the scheduler to use, and how to
 control parallelism. The sites.xml file below will tell Swift to run
 on the local machine only, and run just 1 task at a time.
 
-.sites.xml
+.swift.properties
 -----
-sys::[cat ../part01/sites.xml]
+sys::[cat ../part01/swift.properties]
 -----
 
  In this case, it
@@ -470,7 +470,7 @@ Final status: Tue, 27 Aug 2013 14:45:03 -0500  Finished successfully:101
 -----
 
 We can see from Swift's "progress" status that the tutorial's default
-`sites.xml` parameters for local execution allow Swift to run up to 20
+`swift.properties` parameters for local execution allow Swift to run up to 20
 application invocations concurrently on the login node. We'll look at
 this in more detail in the next sections where we execute applications
 on the site's compute nodes.
