@@ -70,8 +70,8 @@ cd swift-on-cloud
 Run the swift-cloud-tutorial from the cloud
 -------------------------------------------
 
-To run the tutorial on Google Compute Engine (GCE), follow the instructions here:
-https://github.com/yadudoc/swift-on-cloud/tree/master/compute-engine
+To run the tutorial on Google Compute Engine (GCE), follow the instructions here: +
+    https://github.com/yadudoc/swift-on-cloud/tree/master/compute-engine +
 or, follow instructions for GCE, in the compute-engine folder of the swift-on-cloud
 repository. Once your instances are running, connect to the headnode. Everthing
 that you require for the swift-cloud-tutorial is already set up for you on the headnode.
@@ -163,7 +163,7 @@ sys     0m0.006s
 -----
 
 stats.sh
-~~~~~~
+~~~~~~~~
 
 The stats.sh script serves as a trivial model of an "analysis"
 program. It reads N files each containing M integers and simply prints
@@ -281,9 +281,10 @@ To cleanup the directory and remove all outputs (including the log
 files and directories that Swift generates), run the cleanup script
 which is located in the tutorial PATH:
 
------
+[source,bash]
+----
 $ cleanup
-------
+-----
 
 NOTE: You'll also find two Swift configuration files in each `partNN`
 directory of this tutorial.  These specify the environment-specific
