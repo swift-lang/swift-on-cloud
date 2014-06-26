@@ -1,4 +1,4 @@
-#!/bin/bash
+#sw!/bin/bash
 
 LOG=Setup_$$.log
 DEPOT_PREFIX="gs://swift-worker"
@@ -264,7 +264,7 @@ SERVICEPORT="50010"
 #wget http://ci.uchicago.edu/~yadunandb/swift-0.95-package.tar.gz
 #tar -xvzf swift-0.95-package.tar.gz
 export JAVA=/usr/local/bin/jdk1.7.0_51/bin
-export SWIFT=/usr/local/bin/swift-0.95/bin
+export SWIFT=/usr/local/bin/swift-0.95-RC6/bin
 export PATH=$JAVA:$SWIFT:$PATH
 
 coaster_loop ()
