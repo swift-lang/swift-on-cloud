@@ -1,8 +1,5 @@
-#GCE_PROJECT="swift-ninja"
-#GCE_PROJECTID="swift-ninja"
-
-GCE_PROJECT="My Project 3"
-GCE_PROJECTID="mystic-pagoda-5asd51"
+GCE_PROJECT="swift-ninja"
+GCE_PROJECTID="swift-ninja"
 
 GCE_ZONE="us-central1-a"
 
@@ -11,8 +8,8 @@ WORKER_MACHINE_TYPE="f1-micro"
 WORKER_IMAGE="gs://swift-worker/f3bffd36e4584040596ee317e26d127950b32aff.image.tar.gz"
 
 # Define the number of worker's needed
-GCE_WORKER_COUNT=4
+GCE_WORKER_COUNT=1
 
 HEADNODE_MACHINE_TYPE="f1-micro"
-HEADNODE_IMAGE="gs://swift-worker/826d503b8a8e1841dd88f2fae66fa8a628a122a2.image.tar.gz"
+HEADNODE_IMAGE="gs://swift-worker/87fe9cc2f24713c9947efeb27c352d783c56040a.image.tar.gz"
 
