@@ -12,4 +12,4 @@ GCE_WORKER_COUNT=4
 
 HEADNODE_MACHINE_TYPE="f1-micro"
 #HEADNODE_IMAGE="gs://swift-worker/87fe9cc2f24713c9947efeb27c352d783c56040a.image.tar.gz"
-HEADNODE_IMAGE="gs://swift-worker/7f3db660ad9f60c77c0150b63ccace76fbaf3a98.image.tar.gz
+HEADNODE_IMAGE="gs://swift-worker/7f3db660ad9f60c77c0150b63ccace76fbaf3a98.image.tar.gz"
