@@ -8,7 +8,7 @@ WORKER_MACHINE_TYPE="f1-micro"
 WORKER_IMAGE="gs://swift-worker/f3bffd36e4584040596ee317e26d127950b32aff.image.tar.gz"
 
 # Define the number of worker's needed
-GCE_WORKER_COUNT=4
+GCE_WORKER_COUNT=20
 
 HEADNODE_MACHINE_TYPE="f1-micro"
 HEADNODE_IMAGE="gs://swift-worker/dcb21ad545bfb321044d4e0d60656d1d066b483b.image.tar.gz"

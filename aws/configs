@@ -1,0 +1,17 @@
+AWS_CREDENTIALS_FILE=/home/yadu/.ssh/boto-test-credentials.csv
+AWS_KEYPAIR_NAME=boto-test-pair
+
+AWS_REGION=us-west-2
+
+# Ami for headnode
+# Clean Ubuntu 14.04 image
+# HEADNODE_IMAGE=ami-68c2a858
+# Amazon linux x86_64
+HEADNODE_IMAGE=ami-1b3b462b
+
+HEADNODE_MACHINE_TYPE=t1.micro
+
+SECURITY_GROUP=default
+
+# Ami for workers
+WORKER_IMAGE=todo
