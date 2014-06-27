@@ -395,19 +395,19 @@ Note that in `p3.swift` we expose more of the capabilities of the
 -----
 app (file o) simulation (int sim_steps, int sim_range, int sim_values)
 {
-  simulate "--timesteps" sim_steps "--range" sim_range "--nvalues" sim_values stdout=@filename(o);
+  simulate "--timesteps" sim_steps "--range" sim_range "--nvalues" sim_values stdout=filename(o);
 }
 -----
 
 `p3.swift` also shows how to fetch application-specific values from
-the `swift` command line in a Swift script using `@arg()` which
+the `swift` command line in a Swift script using `arg()` which
 accepts a keyword-style argument and its default value:
 
 -----
-int nsim   = @toInt(@arg("nsim","10"));
-int steps  = @toInt(@arg("steps","1"));
-int range  = @toInt(@arg("range","100"));
-int values = @toInt(@arg("values","5"));
+int nsim   = toInt(arg("nsim","10"));
+int steps  = toInt(arg("steps","1"));
+int range  = toInt(arg("range","100"));
+int values = toInt(arg("values","5"));
 -----
 
 Now we can specify that more runs should be performed and that each should run for more timesteps, and produce more that one value each, within a specified range, using command line arguments placed after the Swift script name in the form `-parameterName=value`:
