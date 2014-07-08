@@ -18,10 +18,8 @@ void snap ( int np, int nd, double pos[], double vel[], double f[],
   double acc[], double mass, double dt );
 
 double scale_factor = 2.5, scale_offset = -2.0;
-char *printinfo = "0.05 1.0 0.2 0.05 50.0 0.1";
-char *outfile = "md.dat";
-char *trjfile = "md.trj.tgz";
-
+char default_printinfo[100] = "0.05 1.0 0.2 0.05 50.0 0.1";
+char *printinfo = default_printinfo;
 
 /******************************************************************************/
 
@@ -43,7 +41,7 @@ int main ( int argc, char *argv[] )
 
   Usage:
 
-    md nd np step_num print_step_num dt mass printinfo scale_factor scale_offset seed outFile trajectoryFile
+    md nd np step_num print_step_num dt mass printinfo scale_factor scale_offset
     where
     * nd is the spatial dimension (2 or 3);
     * np is the number of particles (500, for instance);
@@ -53,8 +51,6 @@ int main ( int argc, char *argv[] )
     * mass is particle mass;
     * printinfo is a string to append to each particle coord
     * scale_offset and scale_factor are used to scale particle positions for logging/rendering (FIXME)
-    * seed sets the initial configuration
-    
 
   Licensing:
 
@@ -144,7 +140,7 @@ int main ( int argc, char *argv[] )
   }
   /*
 	Get any additional args (command-line only)
-	md nd np step_num [ step__print_num dt mass printinfo scale_factor scale_offset randomseed outfile trjfile ]
+	md nd np step_num [ step__print_num dt mass printinfo scale_factor scale_offset ]
   */
   if ( 4 < argc )
   {
@@ -170,34 +166,19 @@ int main ( int argc, char *argv[] )
   {
     scale_offset = atof ( argv[9] );
   }
-  if ( 10 < argc )
-  {
-    seed = atof ( argv[10] );
-  }
-  if ( 11 < argc )
-  {
-    outfile = argv[11];
-  }
-  if ( 12 < argc )
-  {
-    trjfile = argv[12];
-  }
 
 /*
   Report.
 */
   printf ( "\n" );
-  printf ( "  MD: Argument count: %d\n", argc );
   printf ( "  ND, the spatial dimension, is %d\n", nd );
   printf ( "  NP, the number of particles in the simulation, is %d\n", np );
   printf ( "  STEP_NUM, the number of time steps, is %d\n", step_num );
   printf ( "  STEP_PRINT_NUM, the number of snapshots to print, is %d\n", step_print_num );
   printf ( "  DT, the size of each time step, is %f\n", dt );
   printf ( "  MASS, the particle mass, is %f\n", mass );
-  printf ( "  PRINTINFO, the pass-through info to c-ray, is %s\n", printinfo );
   printf ( "  SCALE_FACTOR, the particle position scaling factor, is %f\n", scale_factor );
   printf ( "  SCALE_OFFSET, the particle position scaling offset, is %f\n", scale_offset );
-  printf ( "  SEED, the simulation randomization seed, is %d\n", seed );
 /*
   Allocate memory.
 */
@@ -244,7 +225,7 @@ int main ( int argc, char *argv[] )
   printf ( "                Energy P        Energy K       Relative Energy Error\n" );
   printf ( "\n" );
 
-  FILE *ofile = fopen(outfile,"w");
+  FILE *ofile = fopen("md.dat","w");
   fprintf (ofile, "      Step      Potential       Kinetic        RelativeErr\n" );
 
   step_print = 0;
@@ -288,9 +269,6 @@ int main ( int argc, char *argv[] )
   free ( force );
   free ( pos );
   free ( vel );
-  char tarcmd[2000];
-  sprintf(tarcmd,"tar zcf %s md??.trj",trjfile);
-  system(tarcmd);
 /*
   Terminate.
 */

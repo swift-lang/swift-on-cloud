@@ -9,13 +9,10 @@ type file;
   result = toInt(s[0]);
 }
 
-
-#app (file out) simulation (string npart, string steps, string mass, file md)
+//sh "-c" strjoin(["chmod a+x ./md; ./md","3",npart,steps, "10 .0001", mass, "0.1 1.0 0.2", toString(randomInt()), @out, @traj]," ");
 app (file out, file traj) simulation (string npart, string steps, string mass, file md)
-{ 
-  #sh "-c" strjoin(["chmod a+x ./md; ./md","3",npart,steps,">/dev/null; cat md.dat"]," ") stdout=filename(o);
-  sh "-c" strjoin(["chmod a+x ./md; ./md","3",npart,steps, "10 .0001", mass, "0.1 1.0 0.2", toString(randomInt()), @out, @traj]," ");
-  # sh "-c" strjoin(["chmod a+x ./md; ./md","3",npart,steps, "10 .0001", mass, "0.1 1.0 0.2", toString(randomInt()), ">/dev/null; cat md.dat"]," ") stdout=filename(out);
+{
+    sh "-c" strjoin(["chmod a+x ./md; ./md","3",npart,steps, "10 .0001", mass, "0.1 1.0 0.2 0.08 300.0 0 2.5 2.0", toString(randomInt()), @out, @traj]," ");
 }
 
 app (file o) analyze (file s[])

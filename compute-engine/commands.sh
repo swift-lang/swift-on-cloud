@@ -210,6 +210,7 @@ generate_swiftproperties()
 {
     EXTERNAL_IP=$(gcutil --project=$GCE_PROJECTID listinstances | grep headnode | awk '{ print $10 }')
     SERVICE_PORT=50010
+    echo http://$EXTERNAL_IP:$SERVICE_PORT > PUBLIC_ADDRESS
     cat <<EOF > swift.properties
 site=cloud,local
 use.provider.staging=true

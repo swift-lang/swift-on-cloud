@@ -13,7 +13,7 @@ app (file out) genbias (int bias_range, int nvalues, file bias_script)
 }
 
 app (file out, file log) simulation (int timesteps, int sim_range,
-                                     file bias_file, int scale, int sim_count, 
+                                     file bias_file, int scale, int sim_count,
                                      file sim_script, file seed_file)
 {
   sh "simulate.sh" "-t" timesteps "-r" sim_range "-B" @bias_file "-x" scale
