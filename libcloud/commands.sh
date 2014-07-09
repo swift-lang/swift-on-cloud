@@ -1,20 +1,14 @@
 #!/bin/bash
 
 LOG=Setup_$$.log
-DEPOT_PREFIX="gs://swift-worker"
 
-
+# Is this valid/required for AWS ?
 check_project ()
 {
     RESULT=$(gcutil listinstances --project=$GCE_PROJECTID 2>&1)
-    if [[ $? != 0 ]]
-    then
-        echo "$RESULT"
-        echo "Troubleshooting :"
-        echo "1. Check the GCE_PROJECTID specified in your config file "
-        echo "2. If you added billing recently wait for your project to become active"
-    fi
+
 }
+
 
 start_worker ()
 {
@@ -25,17 +19,7 @@ start_worker ()
         return
     fi
 
-    if [[ -z $WORKER_IMAGE_ID ]]
-    then
-        setup_images
-    fi
-    gcutil --project=$GCE_PROJECTID \
-        addinstance swift-worker-$ID \
-        --image=$WORKER_IMAGE_ID \
-        --zone=$GCE_ZONE \
-        --machine_type=$WORKER_MACHINE_TYPE \
-        --auto_delete_boot_disk \
-        --metadata=startup-script:'#!/bin/bash
+startup-script='#!/bin/bash
 CENTRAL="188.99.9.9"
 WORKERPORT="50005"
 #Ping timeout
@@ -70,8 +54,10 @@ worker_loop ()
 }
 worker_loop &
 '
+
 }
 
+# Is this valid for AWS ?
 check_keys ()
 {
     [[ ! -f ~/.ssh/google_compute_engine      ]] && echo "Google private key missing" && return

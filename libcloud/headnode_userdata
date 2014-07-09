@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sudo touch /usr/bin/local/userdata
