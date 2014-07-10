@@ -19,6 +19,11 @@ then
     export JAVA=/usr/local/bin/jdk1.7.0_51/bin
     export SWIFT=/usr/local/bin/swift-0.95/bin
     export PATH=$JAVA:$SWIFT:$PATH
+elif [[ ! -z $(curl -s http://169.254.169.254/1.0/) ]];
+then
+    # We are on amazon
+    echo "On amazon"
+    # Path variables are already set.
 else # Running on local machine
     # Check if the variable PUBLIC_ADDRESS is set
     if [[ ! -z $PUBLIC_ADDRESS ]]
