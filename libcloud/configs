@@ -1,20 +1,19 @@
 AWS_CREDENTIALS_FILE=/home/yadu/.ssh/boto-test-credentials.csv
 AWS_KEYPAIR_NAME=boto-test-pair
+AWS_KEYPAIR_FILE=/home/yadu/.ssh/boto-test-pair.pem
+
+#ec2-user is the default user on Amazon linux
+#AWS_USERNAME=ec2-user
 
 AWS_REGION=us-west-2
 
-# Ami for headnode
-# Clean Ubuntu 14.04 image
-# HEADNODE_IMAGE=ami-68c2a858
-# Amazon linux x86_64
-#HEADNODE_IMAGE=ami-1b3b462b
-
 # Amazon linux x86_64 with Swift and JDK
-HEADNODE_IMAGE=ami-d5b0cee5
+HEADNODE_IMAGE=ami-f1e896c1
 
 HEADNODE_MACHINE_TYPE=t1.micro
 
 SECURITY_GROUP=swift_security_group1
 
+WORKER_MACHINE_TYPE=t1.micro
 # Ami for workers
-WORKER_IMAGE=todo
+WORKER_IMAGE=ami-f1e896c1

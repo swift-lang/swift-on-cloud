@@ -36,6 +36,7 @@ def read_configs(config_file):
         config.update(credentials)
     else:
         print "AWS_CREDENTIALS_FILE , Missing"
+        return "AWS_CREDENTIAL_MISSING"
 
     return config
 

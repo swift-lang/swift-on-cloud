@@ -19,42 +19,6 @@ start_worker ()
         return
     fi
 
-startup-script='#!/bin/bash
-CENTRAL="188.99.9.9"
-WORKERPORT="50005"
-#Ping timeout
-PTIMEOUT=4
-apt-get update
-apt-get install -y imagemagick
-worker_loop ()
-{
-    while :
-    do
-        echo "Pinging headnode"
-        ping headnode -w $PTIMEOUT
-        if [[ "$?" == "0" ]]
-        then
-            echo "Headnode present in same network"
-            worker.pl http://headnode:$WORKERPORT 0099 ~/workerlog -w 3600
-        else
-            echo "Headnode in separate network. Attempt to contact $CENTRAL"
-            ping $CENTRAL -w $PTIMEOUT
-            if [[ "$?" == "0" ]]
-            then
-                echo "CENTRAL present"
-                worker.pl http://$CENTRAL:$WORKERPORT 0099 ~/workerlog -w 3600
-                sleep 5
-            else
-                echo "No CENTRAL or Headnode found"
-                echo "Sleeping"
-                sleep 10;
-            fi
-        fi
-    done
-}
-worker_loop &
-'
-
 }
 
 # Is this valid for AWS ?
@@ -282,9 +246,15 @@ dissolve()
 
 connect()
 {
+    source configs
     NODE=$1
     [[ -z $1 ]] && NODE="headnode"
-    gcutil --project=$GCE_PROJECTID ssh $NODE
+    [[ -z $AWS_USERNAME ]] && AWS_USERNAME="ec2-user"
+
+    IP=$(./aws.py list_resource $NODE)
+    echo "Connecting to AWS node:$NODE on $IP as $AWS_USERNAME"
+    ssh -A -o StrictHostKeyChecking=no -l $AWS_USERNAME -i $AWS_KEYPAIR_FILE $IP
 }
+
 
 
