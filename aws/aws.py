@@ -4,6 +4,7 @@ import os
 import configurator
 import sys
 import random
+import logging
 
 from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
@@ -17,6 +18,8 @@ NODESTATES = { NodeState.RUNNING    : "RUNNING",
                NodeState.STOPPED    : "STOPPED",
                NodeState.PENDING    : "PENDING",
                NodeState.UNKNOWN    : "UNKNOWN" }
+
+logging.basicConfig(filename='aws.log', level=logging.INFO)
 
 def list_resources(driver):
 
@@ -48,44 +51,54 @@ def get_public_ip(driver, name):
     print "Could not find a resource with the id ", name
     return -1
 
-def create_security_group(driver, configs):
+def aws_create_security_group(driver, configs):
     group_name = configs["SECURITY_GROUP"]
     current    = driver.ex_list_security_groups()
     if group_name in current:
-        print "INFO: Security group: ", group_name, " is already present"
+        logging.info("Security group: %s is already present", group_name)
     else:
-        print "INFO: Creating new security group: ", group_name
+        logging.info("Creating new security group: %s", group_name)
         res = driver.ex_create_security_group(name=group_name,description="Open all ports")
         if not driver.ex_authorize_security_group(group_name, 0, 65000, '0.0.0.0/0'):
-            print "INFO: Authorizing ports for security group failed"
+            logging.info("Authorizing ports for security group failed")
         if not driver.ex_authorize_security_group(group_name, 0, 65000, '0.0.0.0/0', protocol='udp'):
-            print "INFO: Authorizing ports for security group failed"
-        print res
+            logging.info("Authorizing ports for security group failed")
+        logging.debug("Security group: %s", str(res))
 
 def check_keypair(driver, configs):
     if "AWS_KEYPAIR_NAME" in configs and "AWS_KEYPAIR_FILE" in configs:
-        print "AWS_KEYPAIR_NAME : ", configs['AWS_KEYPAIR_NAME']
-        print "AWS_KEYPAIR_FILE : ", configs['AWS_KEYPAIR_FILE']
+        logging.debug("AWS_KEYPAIR_NAME : %s", configs['AWS_KEYPAIR_NAME'])
+        logging.debug("AWS_KEYPAIR_FILE : %s", configs['AWS_KEYPAIR_FILE'])
         all_pairs = driver.list_key_pairs()
         for pair in all_pairs:
             if pair.name == configs['AWS_KEYPAIR_NAME']:
-                print "INFO: KEYPAIR exists, registered"
+                logging.info("KEYPAIR exists, registered")
                 return 0
 
-        print "INFO : KEYPAIR does not exist. Creating keypair"
+        logging.info("KEYPAIR does not exist. Creating keypair")
         key_pair = driver.create_key_pair(name=configs['AWS_KEYPAIR_NAME'])
         f = open(configs['AWS_KEYPAIR_FILE'], 'w')
         f.write(str(key_pair.private_key) + '\n')
         f.close()
         os.chmod(configs['AWS_KEYPAIR_FILE'], 0600)
+        logging.info("KEYPAIR created")
     else:
-        print "AWS_KEYPAIR_NAME and/or AWS_KEYPAIR_FILE missing"
-        print "ERROR: Cannot proceed without AWS_KEYPAIR_NAME and AWS_KEYPAIR_FILE"
+        logging.error("AWS_KEYPAIR_NAME and/or AWS_KEYPAIR_FILE missing")
+        logging.error("Cannot proceed without AWS_KEYPAIR_NAME and AWS_KEYPAIR_FILE")
         exit(-1)
 
 
 def start_headnode(driver, configs):
     userdata   = configurator.getstring("headnode")
+
+    # Check if headnode
+    nodes      = driver.list_nodes()
+    headnode   = False
+    for node in nodes:
+        if node.name == "headnode" and node.state == NodeState.RUNNING:
+            headnode = node
+            print "INFO: Headnode is RUNNING"
+            return 0
 
     size       = NodeSize(id=configs['HEADNODE_MACHINE_TYPE'], name='headnode',
                           ram=None, disk=None, bandwidth=None, price=None, driver=driver)
@@ -96,7 +109,9 @@ def start_headnode(driver, configs):
                                     ex_keyname=configs['AWS_KEYPAIR_NAME'],
                                     ex_securitygroup=configs['SECURITY_GROUP'],
                                     ex_userdata=userdata )
+    print "INFO: Waiting for headnode bootup ..."
     driver._wait_until_running(node, wait_period=5, timeout=240)
+    print "INFO: Headnode active!"
     if node.public_ips:
         print '-'*51
         print '{0:20} | {1:10} | {2:15}'.format(node.name, NODESTATES[node.state], node.public_ips[0])
@@ -114,10 +129,10 @@ def start_worker(driver, configs, worker_names):
         return -1
 
     # Setup userdata
-    userdata   = configurator.getstring("headnode")
+    userdata   = configurator.getstring("worker")
     userdata   = userdata.replace("SET_HEADNODE_IP", headnode.public_ips[0])
-
-    print userdata
+    logging.info("Headnode connection url : ",headnode.public_ips[0])
+    logging.debug("Worker userdata : %s", userdata)
 
     list_nodes = []
     for worker_name in worker_names:
@@ -131,7 +146,7 @@ def start_worker(driver, configs, worker_names):
                                         ex_securitygroup=configs['SECURITY_GROUP'],
                                         ex_userdata=userdata )
         list_nodes.append(node)
-    print list_nodes
+        logging.info("Worker node started : %s",str(node))
 
 
 def terminate_all_nodes():
@@ -156,7 +171,7 @@ def init():
     #configurator.pretty_configs(configs)
     driver     = get_driver(Provider.EC2_US_WEST_OREGON) # was EC2
     ec2_driver = driver(configs['AWSAccessKeyId'], configs['AWSSecretKey'])
-    create_security_group(ec2_driver, configs)
+    aws_create_security_group(ec2_driver, configs)
     check_keypair(ec2_driver, configs)
     return configs,ec2_driver
 

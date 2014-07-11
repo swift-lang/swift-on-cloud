@@ -8,10 +8,10 @@ check_project ()
     RESULT=$(gcutil listinstances --project=$GCE_PROJECTID 2>&1)
 }
 
-
 start_worker ()
 {
-    echo "Starting worker - TODO"
+    echo "Starting worker(s) $*"
+    ./aws.py start_worker $*
 }
 
 # Is this valid for AWS ?
@@ -21,13 +21,6 @@ check_keys ()
     [[ ! -f ~/.ssh/google_compute_engine      ]] && echo "Google private key missing" && return
     [[ ! -f ~/.ssh/google_compute_engine.pub  ]] && echo "Google public key missing"  && return
 }
-
-
-stop_workers()
-{
-    echo "Stopping all instances"
-}
-
 
 stop_n_workers()
 {
@@ -43,27 +36,25 @@ stop_n_workers()
 # This script ensures that only the specified number of workers are active
 start_n_workers ()
 {
+    echo "In start_n_workers"
     COUNT=$1
     CURRENT=1
-    out=$(gcutil --project=$GCE_PROJECTID listinstances | grep "swift-worker")
+    out=$(list_resources | grep "swift-worker")
     if [[ "$?" == 0 ]]
     then
         echo "Current workers"
         echo "${out[*]}"
-        CURRENT=$(gcutil --project=$GCE_PROJECTID listinstances | grep "swift-worker" | wc -l)
+        CURRENT=$(list_resources | grep "swift-worker" | wc -l)
         echo "Count : " $CURRENT
         echo "New workers needed : $(($COUNT - $CURRENT))"
     fi
 
     for i in $(seq $CURRENT 1 $COUNT)
     do
-        start_worker $i &> $LOG &
+        start_worker swift-worker-$i &> $LOG &
     done
     wait
-    gcutil --project=$GCE_PROJECTID listinstances
-    echo "Updating WORKER_HOSTS"
-    EXTERNAL_IPS=$(gcutil --project=$GCE_PROJECTID listinstances | grep worker | awk '{print $10}')
-    WORKER_NAMES=$(gcutil --project=$GCE_PROJECTID listinstances | grep worker | awk '{print $2}')
+    list_resources
 }
 
 start_n_more ()
@@ -125,6 +116,28 @@ dissolve()
     ./aws.py dissolve
 }
 
+start_headnode()
+{
+    ./aws.py start_headnode
+}
+
+start_workers()
+{
+    WORKERS_REQUESTED=$AWS_WORKER_COUNT
+    CURRENT_COUNT=$(list_resources | grep "swift-worker" | wc -l)
+    echo "Current workers   : $CURRENT_COUNT"
+    echo "Workers requested : $WORKERS_REQUESTED"
+    WORKERS_REQUIRED=$(($WORKERS_REQUESTED - $CURRENT_COUNT))
+    if [[ $WORKERS_REQUIRED -gt 0 ]]
+    then
+        #printf("swift-worker-%03d", {$CURRENT_COUNT..$(($CURRENT_COUNT+$COUNT_NEEDED))})
+        END=$(($CURRENT_COUNT+$WORKERS_REQUIRED-1))
+        start_worker $(printf "swift-worker-%03d " $(seq $CURRENT_COUNT 1 $END))
+    else
+        echo "No additional workers needed"
+    fi
+}
+
 connect()
 {
     source configs
@@ -137,8 +150,12 @@ connect()
     ssh -A -o StrictHostKeyChecking=no -l $AWS_USERNAME -i $AWS_KEYPAIR_FILE $IP
 }
 
+
 init()
 {
     source configs
+    start_headnode
+    start_workers
+    list_resources
 }
 init
