@@ -26,8 +26,9 @@ def read_configs(config_file):
     config = _read_conf(config_file)
 
     if 'AWS_CREDENTIALS_FILE' in config :
+        config['AWS_CREDENTIALS_FILE'] =  os.path.expanduser(config['AWS_CREDENTIALS_FILE'])
+        config['AWS_CREDENTIALS_FILE'] =  os.path.expandvars(config['AWS_CREDENTIALS_FILE'])
 
-        #print "Credentials file = ", config['AWS_CREDENTIALS_FILE']
         cred_lines    =  open(config['AWS_CREDENTIALS_FILE']).readlines()
         cred_details  =  cred_lines[1].split(',')
         credentials   = { 'AWS_Username'   : cred_details[0],
@@ -36,8 +37,60 @@ def read_configs(config_file):
         config.update(credentials)
     else:
         print "AWS_CREDENTIALS_FILE , Missing"
-        return "AWS_CREDENTIAL_MISSING"
+        print "ERROR: Cannot proceed without access to AWS_CREDENTIALS_FILE"
+        exit(-1)
 
+    if 'AWS_KEYPAIR_FILE' in config:
+        config['AWS_KEYPAIR_FILE'] = os.path.expanduser(config['AWS_CREDENTIALS_FILE'])
+        config['AWS_KEYPAIR_FILE'] = os.path.expandvars(config['AWS_CREDENTIALS_FILE'])
     return config
 
 #configs = read_configs("./configs")
+#pretty_configs(configs)
+
+#!/usr/bin/env python
+
+HEADNODE_USERDATA='''#!/bin/bash
+WORKERPORT="50005"; SERVICEPORT="50010"
+export JAVA=/usr/local/bin/jdk1.7.0_51/bin
+export SWIFT=/usr/local/bin/swift-0.95-RC6/bin
+export PATH=$JAVA:$SWIFT:$PATH
+coaster_loop ()
+{
+    while :
+    do
+        coaster-service -p $SERVICEPORT -localport $WORKERPORT -nosec -passive &> /var/log/coaster-service.logs
+        sleep 10;
+    done
+}
+coaster_loop &
+'''
+
+WORKER_USERDATA='''#!/bin/bash
+HEADNODE=SET_HEADNODE_IP
+WORKERPORT="50005"
+#Ping timeout
+PTIMEOUT=4
+export JAVA=/usr/local/bin/jdk1.7.0_51/bin
+export SWIFT=/usr/local/bin/swift-0.95-RC6/bin
+export PATH=$JAVA:$SWIFT:$PATH
+worker_loop ()
+{
+    while :
+    do
+        echo "Pinging HEADNODE on $HEADNODE"
+        worker.pl http://$HEADNODE:$WORKERPORT 0099 ~/workerlog -w 3600
+        sleep 5
+    done
+}
+worker_loop &
+'''
+
+def getstring(target):
+    if target == "headnode":
+        return HEADNODE_USERDATA
+    elif target == "worker":
+        return WORKER_USERDATA
+    else:
+        return -1
+

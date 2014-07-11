@@ -65,8 +65,7 @@ def create_security_group(ec2_driver):
     print res
 
 def start_headnode(driver, configs):
-    #userdata   = "\n".join(open("headnode_userdata").readlines())
-    userdata   = open("headnode_userdata").read()
+    userdata   = configurator.getstring("headnode")
 
     size       = NodeSize(id=configs['HEADNODE_MACHINE_TYPE'], name='headnode',
                           ram=None, disk=None, bandwidth=None, price=None, driver=driver)
@@ -94,8 +93,10 @@ def start_worker(driver, configs, worker_names):
         return -1
 
     # Setup userdata
-    userdata   = open("worker_userdata").read()
+    userdata   = configurator.getstring("headnode")
     userdata   = userdata.replace("SET_HEADNODE_IP", headnode.public_ips[0])
+
+    print userdata
 
     list_nodes = []
     for worker_name in worker_names:
@@ -178,6 +179,9 @@ if   args[0] == "start_worker":
     if len(args) ==  2 :
         worker_name = args[1]
     start_worker(driver,configs,[worker_name])
+
+elif args[0] == "check_keys":
+    check_keys(driver,configs)
 
 elif args[0] == "start_headnode":
     start_headnode(driver,configs)

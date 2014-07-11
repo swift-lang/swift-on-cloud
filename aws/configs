@@ -1,6 +1,6 @@
-AWS_CREDENTIALS_FILE=/home/yadu/.ssh/boto-test-credentials.csv
+AWS_CREDENTIALS_FILE=~/.ssh/boto-test-credentials.csv
 AWS_KEYPAIR_NAME=boto-test-pair
-AWS_KEYPAIR_FILE=/home/yadu/.ssh/boto-test-pair.pem
+AWS_KEYPAIR_FILE=~/.ssh/boto-test-pair.pem
 
 #ec2-user is the default user on Amazon linux
 #AWS_USERNAME=ec2-user
