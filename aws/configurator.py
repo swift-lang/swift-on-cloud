@@ -41,8 +41,8 @@ def read_configs(config_file):
         exit(-1)
 
     if 'AWS_KEYPAIR_FILE' in config:
-        config['AWS_KEYPAIR_FILE'] = os.path.expanduser(config['AWS_CREDENTIALS_FILE'])
-        config['AWS_KEYPAIR_FILE'] = os.path.expandvars(config['AWS_CREDENTIALS_FILE'])
+        config['AWS_KEYPAIR_FILE'] = os.path.expanduser(config['AWS_KEYPAIR_FILE'])
+        config['AWS_KEYPAIR_FILE'] = os.path.expandvars(config['AWS_KEYPAIR_FILE'])
     return config
 
 #configs = read_configs("./configs")

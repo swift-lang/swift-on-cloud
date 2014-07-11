@@ -68,82 +68,21 @@ start_n_workers ()
 
 start_n_more ()
 {
-    setup_images
-    ACTIVE=$(gcutil --project=$GCE_PROJECTID listinstances | grep worker | wc -l)
+    ACTIVE=$(./aws.py list_resources | grep worker | wc -l)
     MORE=$1
     for i in $(seq $(($ACTIVE+1)) 1 $(($ACTIVE+$MORE)) )
     do
         echo "Starting worker $i"
-        start_worker $i &> $LOG &
+        ./aws.py start_worker swift-worker-$i &> $LOG &
     done
     wait
-    gcutil --project=$GCE_PROJECID listinstances
-    echo "Updating WORKER_HOSTS"
-    EXTERNAL_IPS=$(gcutil --project=$GCE_PROJECTID listinstances | grep worker | awk '{print $10}')
-    WORKER_NAMES=$(gcutil --project=$GCE_PROJECTID listinstances | grep worker | awk '{print $2}')
+    ./aws.py list_resources
 }
 
 stop_headnode()
 {
     echo "Stopping headnode"
-    gcutil --project=$GCE_PROJECTID deleteinstance "headnode" --delete_boot_pd --force
-}
-
-add_image()
-{
-    gcutil --project=$GCE_PROJECTID addimage $1 $2
-}
-
-setup_images()
-{
-    echo "Checking images"
-    IFS=$'\n\r'; image_list=($(gcutil --project=$GCE_PROJECTID listimages | grep -o "swift-[^\ ]*"))
-    #echo ${image_list[*]}
-    if [[ $HEADNODE_IMAGE == $DEPOT_PREFIX* ]]
-    then
-        HEADNODE_IMAGE_ID="swift-headnode-image-$(echo ${HEADNODE_IMAGE%.image.tar.gz} | tail -c 6)"
-        echo ${image_list[*]} | grep -o $HEADNODE_IMAGE_ID &> /dev/null
-        if [[ "$?" == "0" ]]
-        then # The image is already added to the project
-            echo "$HEADNODE_IMAGE_ID present"
-        else # The image is not present and needs to be added
-            echo "Adding image $HEADNODE_IMAGE_ID"
-            add_image $HEADNODE_IMAGE_ID $HEADNODE_IMAGE
-        fi
-    else
-        echo "Not from swift-worker"
-    fi
-
-    if [[ $WORKER_IMAGE == $DEPOT_PREFIX* ]]
-    then
-        WORKER_IMAGE_ID="swift-worker-image-$(echo ${WORKER_IMAGE%.image.tar.gz} | tail -c 6)"
-        echo ${image_list[*]} | grep -o $WORKER_IMAGE_ID &> /dev/null
-        if [[ "$?" == "0" ]]
-        then # The image is already added to the project
-            echo "$WORKER_IMAGE_ID present"
-        else # The image is not present and needs to be added
-            echo "Adding image $WORKER_IMAGE_ID"
-            add_image $WORKER_IMAGE_ID $WORKER_IMAGE
-        fi
-    else
-        echo "Not from $DEPOT_PREFIX"
-    fi
-
-}
-
-setup_firewall()
-{
-    echo "Checking for swift firewall rules"
-    gcutil --project=$GCE_PROJECTID listfirewalls | grep swift-ports
-    if [[ "$?" == "0" ]]
-    then
-        echo "Firewall present"
-    else
-        echo "Creating firewall"
-        gcutil --project=$GCE_PROJECTID addfirewall swift-ports --network=default \
-            --allowed=tcp:50000-60000,udp:50000-60000 \
-            --allowed_ip_sources='0.0.0.0/0'
-    fi
+    ./aws.py stop_headnode
 }
 
 generate_swiftproperties()
@@ -178,13 +117,12 @@ EOF
 
 list_resources()
 {
-    gcutil --project=$GCE_PROJECTID listinstances # | grep worker | awk '{print $2}'
+    ./aws.py list_resources
 }
 
 dissolve()
 {
-    stop_headnode;
-    stop_workers;
+    ./aws.py dissolve
 }
 
 connect()
@@ -198,3 +136,9 @@ connect()
     echo "Connecting to AWS node:$NODE on $IP as $AWS_USERNAME"
     ssh -A -o StrictHostKeyChecking=no -l $AWS_USERNAME -i $AWS_KEYPAIR_FILE $IP
 }
+
+init()
+{
+    source configs
+}
+init

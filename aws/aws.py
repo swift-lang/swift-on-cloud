@@ -9,7 +9,7 @@ from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 from libcloud.compute.base import NodeSize, NodeImage
 from libcloud.compute.types import NodeState
-
+import libcloud.compute.types
 
 NODESTATES = { NodeState.RUNNING    : "RUNNING",
                NodeState.REBOOTING  : "REBOOTING",
@@ -18,9 +18,9 @@ NODESTATES = { NodeState.RUNNING    : "RUNNING",
                NodeState.PENDING    : "PENDING",
                NodeState.UNKNOWN    : "UNKNOWN" }
 
-def list_resources(ec2_driver):
+def list_resources(driver):
 
-    resources = ec2_driver.list_nodes()
+    resources = driver.list_nodes()
     if not resources:
         print "No active resources"
     else:
@@ -36,8 +36,8 @@ def list_resources(ec2_driver):
     return resources
 
 
-def get_public_ip(ec2_driver, name):
-    resources = ec2_driver.list_nodes()
+def get_public_ip(driver, name):
+    resources = driver.list_nodes()
     if not resources:
         print "No active resources"
     for resource in resources:
@@ -48,21 +48,41 @@ def get_public_ip(ec2_driver, name):
     print "Could not find a resource with the id ", name
     return -1
 
-def create_security_group(ec2_driver):
-    group_name = "swift_security_group1"
-    current    = ec2_driver.ex_list_security_groups()
+def create_security_group(driver, configs):
+    group_name = configs["SECURITY_GROUP"]
+    current    = driver.ex_list_security_groups()
     if group_name in current:
-        print group_name, "Is already present"
+        print "INFO: Security group: ", group_name, " is already present"
     else:
-        print group_name, "Creating new security group"
-        res = ec2_driver.ex_create_security_group(name=group_name,description="Open all ports")
+        print "INFO: Creating new security group: ", group_name
+        res = driver.ex_create_security_group(name=group_name,description="Open all ports")
+        if not driver.ex_authorize_security_group(group_name, 0, 65000, '0.0.0.0/0'):
+            print "INFO: Authorizing ports for security group failed"
+        if not driver.ex_authorize_security_group(group_name, 0, 65000, '0.0.0.0/0', protocol='udp'):
+            print "INFO: Authorizing ports for security group failed"
         print res
 
-    if not ec2_driver.ex_authorize_security_group(group_name, 0, 65000, '0.0.0.0/0'):
-        print "Authorizing ports for security group failed"
-    if not ec2_driver.ex_authorize_security_group(group_name, 0, 65000, '0.0.0.0/0', protocol='udp'):
-        print "Authorizing ports for security group failed"
-    print res
+def check_keypair(driver, configs):
+    if "AWS_KEYPAIR_NAME" in configs and "AWS_KEYPAIR_FILE" in configs:
+        print "AWS_KEYPAIR_NAME : ", configs['AWS_KEYPAIR_NAME']
+        print "AWS_KEYPAIR_FILE : ", configs['AWS_KEYPAIR_FILE']
+        all_pairs = driver.list_key_pairs()
+        for pair in all_pairs:
+            if pair.name == configs['AWS_KEYPAIR_NAME']:
+                print "INFO: KEYPAIR exists, registered"
+                return 0
+
+        print "INFO : KEYPAIR does not exist. Creating keypair"
+        key_pair = driver.create_key_pair(name=configs['AWS_KEYPAIR_NAME'])
+        f = open(configs['AWS_KEYPAIR_FILE'], 'w')
+        f.write(str(key_pair.private_key) + '\n')
+        f.close()
+        os.chmod(configs['AWS_KEYPAIR_FILE'], 0600)
+    else:
+        print "AWS_KEYPAIR_NAME and/or AWS_KEYPAIR_FILE missing"
+        print "ERROR: Cannot proceed without AWS_KEYPAIR_NAME and AWS_KEYPAIR_FILE"
+        exit(-1)
+
 
 def start_headnode(driver, configs):
     userdata   = configurator.getstring("headnode")
@@ -76,6 +96,7 @@ def start_headnode(driver, configs):
                                     ex_keyname=configs['AWS_KEYPAIR_NAME'],
                                     ex_securitygroup=configs['SECURITY_GROUP'],
                                     ex_userdata=userdata )
+    driver._wait_until_running(node, wait_period=5, timeout=240)
     if node.public_ips:
         print '-'*51
         print '{0:20} | {1:10} | {2:15}'.format(node.name, NODESTATES[node.state], node.public_ips[0])
@@ -112,24 +133,6 @@ def start_worker(driver, configs, worker_names):
         list_nodes.append(node)
     print list_nodes
 
-def dissolve(driver, configs):
-    print "dissolve"
-
-def init():
-    configs    = configurator.read_configs('configs')
-    #configurator.pretty_configs(configs)
-    driver     = get_driver(Provider.EC2_US_WEST_OREGON) # was EC2
-    ec2_driver = driver(configs['AWSAccessKeyId'], configs['AWSSecretKey'])
-    return configs,ec2_driver
-
-def create_node():
-    configs,driver = init()
-    resources  = list_resources(driver)
-    print resources
-    #create_security_group(ec2_driver)
-    start_node(driver,configs)
-    resources  = list_resources(driver)
-    print resources
 
 def terminate_all_nodes():
     configs,driver = init()
@@ -148,10 +151,14 @@ def terminate_node(driver, node_name):
     print "ERROR: Could not find node ", node_name
     return 1
 
-
-def no_func(string):
-    print "Sorry no such function defined", string
-
+def init():
+    configs    = configurator.read_configs('configs')
+    #configurator.pretty_configs(configs)
+    driver     = get_driver(Provider.EC2_US_WEST_OREGON) # was EC2
+    ec2_driver = driver(configs['AWSAccessKeyId'], configs['AWSSecretKey'])
+    create_security_group(ec2_driver, configs)
+    check_keypair(ec2_driver, configs)
+    return configs,ec2_driver
 
 def help():
     help_string = """ Usage for aws.py : python aws.py [<option> <arguments...>]
@@ -175,13 +182,10 @@ if len(args) < 1:
     help()
 
 if   args[0] == "start_worker":
-    worker_name = "swift-worker-" + str(random.randint(1,999))
-    if len(args) ==  2 :
-        worker_name = args[1]
-    start_worker(driver,configs,[worker_name])
-
-elif args[0] == "check_keys":
-    check_keys(driver,configs)
+    worker_name = ["swift-worker-" + str(random.randint(1,999))]
+    if len(args) >=  2 :
+        worker_name = args[1:]
+    start_worker(driver,configs,worker_name)
 
 elif args[0] == "start_headnode":
     start_headnode(driver,configs)
@@ -208,9 +212,3 @@ elif args[0] == "list_resource":
 else:
     print "ERROR: Option ", args[0], " not recognized"
     help()
-
-
-#create_node()
-#foo()
-
-#init()

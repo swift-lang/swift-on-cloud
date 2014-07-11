@@ -1,6 +1,12 @@
 AWS_CREDENTIALS_FILE=~/.ssh/boto-test-credentials.csv
-AWS_KEYPAIR_NAME=boto-test-pair
-AWS_KEYPAIR_FILE=~/.ssh/boto-test-pair.pem
+
+#AWS_KEYPAIR_NAME=boto-test-pair
+#AWS_KEYPAIR_FILE=~/.ssh/boto-test-pair.pem
+
+# Update the following only if you want to use a specific keypair
+AWS_KEYPAIR_NAME=swift-test-pair
+AWS_KEYPAIR_FILE=~/.ssh/swift-test-pair.pem
+
 
 #ec2-user is the default user on Amazon linux
 #AWS_USERNAME=ec2-user
@@ -11,6 +17,8 @@ AWS_REGION=us-west-2
 HEADNODE_IMAGE=ami-f1e896c1
 
 HEADNODE_MACHINE_TYPE=t1.micro
+
+AWS_WORKER_COUNT=5
 
 SECURITY_GROUP=swift_security_group1
 
