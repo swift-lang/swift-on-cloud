@@ -61,13 +61,8 @@ start_n_more ()
 {
     ACTIVE=$(./aws.py list_resources | grep worker | wc -l)
     MORE=$1
-    for i in $(seq $(($ACTIVE+1)) 1 $(($ACTIVE+$MORE)) )
-    do
-        echo "Starting worker $i"
-        ./aws.py start_worker swift-worker-$i &> $LOG &
-    done
-    wait
-    ./aws.py list_resources
+    start_worker $(printf "swift-worker-%03d " $(seq $(($ACTIVE+1)) 1 $(($ACTIVE+$MORE)) ) )
+    list_resources
 }
 
 stop_headnode()

@@ -131,7 +131,6 @@ def start_worker(driver, configs, worker_names):
     # Setup userdata
     userdata   = configurator.getstring("worker")
     userdata   = userdata.replace("SET_HEADNODE_IP", headnode.public_ips[0])
-    logging.info("Headnode connection url : ",headnode.public_ips[0])
     logging.debug("Worker userdata : %s", userdata)
 
     list_nodes = []
