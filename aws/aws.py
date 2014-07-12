@@ -155,15 +155,17 @@ def terminate_all_nodes():
         print "Deleting node : ", node.name
         driver.destroy_node(node)
 
-def terminate_node(driver, node_name):
+# node_names is a list
+def terminate_node(driver, node_names):
     nodes          = driver.list_nodes()
+    deleted_flag   = False
     for node in nodes:
-        if node.name == node_name and node.state == NodeState.RUNNING :
+        if node.name in node_names and node.state == NodeState.RUNNING :
             print "Deleting node : ", node.name
             code = driver.destroy_node(node)
-            return code
-    print "ERROR: Could not find node ", node_name
-    return 1
+            deleted_flag = True
+    return deleted_flag
+
 
 def init():
     configs    = configurator.read_configs('configs')
@@ -176,8 +178,8 @@ def init():
 
 def help():
     help_string = """ Usage for aws.py : python aws.py [<option> <arguments...>]
-    start_worker <worker_id> : Starts worker with name set to worker_id, returns a unique id
-    stop_node <id>           : Terminates the node which matches the id with its name or unique id
+    start_worker <worker_id>*: Starts worker with name set to worker_id, returns a unique id
+    stop_node <id>*          : Terminates the node which matches the id with its name or unique id
     start_headnode           : Starts the headnode, to which workers connect to
     stop_headnode            : Terminates the headnode
     dissolve                 : Terminates all active resources
@@ -205,12 +207,14 @@ elif args[0] == "start_headnode":
     start_headnode(driver,configs)
 
 elif args[0] == "stop_headnode":
-    terminate_node(driver,"headnode")
+    terminate_node(driver,["headnode"])
 
 elif args[0] == "stop_node":
-    if len(args) != 2 :
-        help
-    terminate_node(driver,args[1])
+    if len(args) >=  2 :
+        worker_names = args[1:]
+        terminate_node(driver,worker_names)
+    else:
+        help()
 
 elif args[0] == "dissolve":
     terminate_all_nodes()

@@ -26,9 +26,10 @@ stop_n_workers()
 {
     COUNT=1
     [[ ! -z "$1" ]] && COUNT=$1
-    echo "Stopping $COUNT instances"
-    INSTANCES=$(gcutil --project=$GCE_PROJECTID listinstances | grep worker | awk '{print $2}' | tail -n $COUNT)
-    gcutil --project=$GCE_PROJECTID deleteinstance $INSTANCES --delete_boot_pd --force
+    echo "Stopping $COUNT instances :"
+    INSTANCES=$(list_resources | grep worker | awk '{print $1}' | tail -n $COUNT)
+    echo "$INSTANCES"
+    ./aws.py stop_node $INSTANCES
 }
 
 
