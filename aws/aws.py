@@ -116,6 +116,10 @@ def start_headnode(driver, configs):
         print '-'*51
         print '{0:20} | {1:10} | {2:15}'.format(node.name, NODESTATES[node.state], node.public_ips[0])
         print '-'*51
+        f = open('./PUBLIC_ADDRESS', 'w')
+        f.write(str(node.public_ips[0])) + '\n')
+        f.close()
+
 
 
 def start_worker(driver, configs, worker_names):
