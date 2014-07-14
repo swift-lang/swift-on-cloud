@@ -1,4 +1,4 @@
-AWS_CREDENTIALS_FILE=~/.ssh/boto-test-credentials.csv
+AWS_CREDENTIALS_FILE=~/.ssh/aws-credentials.csv
 
 # Set the number of worker nodes required
 AWS_WORKER_COUNT=5

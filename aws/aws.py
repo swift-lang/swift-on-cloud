@@ -78,7 +78,7 @@ def check_keypair(driver, configs):
         logging.info("KEYPAIR does not exist. Creating keypair")
         key_pair = driver.create_key_pair(name=configs['AWS_KEYPAIR_NAME'])
         f = open(configs['AWS_KEYPAIR_FILE'], 'w')
-        f.write(str(key_pair.private_key) + '\n')
+        f.write(str(key_pair.private_key))
         f.close()
         os.chmod(configs['AWS_KEYPAIR_FILE'], 0600)
         logging.info("KEYPAIR created")
@@ -117,7 +117,7 @@ def start_headnode(driver, configs):
         print '{0:20} | {1:10} | {2:15}'.format(node.name, NODESTATES[node.state], node.public_ips[0])
         print '-'*51
         f = open('./PUBLIC_ADDRESS', 'w')
-        f.write(str(node.public_ips[0])) + '\n')
+        f.write(str(node.public_ips[0]))
         f.close()
 
 
